@@ -9,20 +9,29 @@ interface MainSectionProps {
 const MainSectionComponent: React.FC<MainSectionProps> = ({ children }) => {  
   return (
     <Box
-      component="main"
+      // sx={{
+      //   backgroundColor: (theme) =>
+      //     theme.palette.mode === 'light'
+      //       ? theme.palette.grey[100]
+      //           :   theme.palette.grey[900],
+      //   flexGrow: 1,
+      //   // width: '100%',
+      //   // height  : '100vh',
+      //   overflow: 'auto',
+      // }}
       sx={{
-        backgroundColor: (theme) =>
-          theme.palette.mode === 'light'
-            ? theme.palette.grey[100]
-                :   theme.palette.grey[900],
-        flexGrow: 1,
-        // width: '100%',
-        // height  : '100vh',
-        overflow: 'auto',
+        // flexGrow     : 1,
+        paddingY     : 8,
+        // paddingX     : 2,
+        // width        : '100%',
+        // display      : 'flex',
+        // flexDirection: 'column',
+        // minHeight    : '100vh',
+        // overflow     : 'auto',
       }}
     >
-      <Toolbar />
-      <Container disableGutters sx={{ px: 3, my: 3 }}>
+      {/* <Toolbar /> */}
+      <Container disableGutters maxWidth={false} sx={{ display: "block", px: 3, my: 3 }}>
         {children}
       </Container> 
     </Box>

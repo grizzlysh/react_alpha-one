@@ -1,11 +1,11 @@
 import storage from 'redux-persist/lib/storage';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { User } from '@/types/user.type';
+import { UserOnline } from '@/types/UserOnline.type';
 import { RootState } from '@/stores/store';
 
 type UserState = {
-  user         : User;
+  user         : UserOnline;
   access_token : string;
   refresh_token: string;
   // org: Org[];
@@ -18,6 +18,10 @@ const initialState: UserState = {
     name    : '',
     sex     : '',
     email   : '',
+    role:{
+      uid : '',
+      name: '',
+    }
   },
   access_token : '',
   refresh_token: '',
@@ -27,7 +31,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUserAuth: (state, actions: PayloadAction<User>) => {
+    setUserAuth: (state, actions: PayloadAction<UserOnline>) => {
       const { payload } = actions;
       state.user        = payload;
       return state;
@@ -54,6 +58,6 @@ export const getUserAuth                                 = (state: RootState) =>
 export const getAccessToken                              = (state: RootState) => state.reducer.user.access_token;
 export const getRefreshToken                             = (state: RootState) => state.reducer.user.refresh_token ;
 // export const getOrg                                      = (state: RootState) => state.reducer.user.org;
-export const { setUserAuth, setAccessToken, userLogout } = userSlice.actions;
+export const { setUserAuth, setAccessToken, setRefreshToken, userLogout } = userSlice.actions;
 
 export default userSlice.reducer;

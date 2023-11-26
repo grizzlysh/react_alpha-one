@@ -25,9 +25,10 @@ const theme = createTheme({
         body: {
           // scrollbarColor: "#6B7280 #E5E7EB",
           "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
-            backgroundColor     : "transparent",
-            width               : '0.5rem',
-            '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
+            backgroundColor: "transparent",
+            width          : '0.5rem',
+            height         : '0.5rem',
+            boxShadow      : 'inset 0 0 6px rgba(0,0,0,0.00)',
           },
           "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
             backgroundColor: "#6B7280",
@@ -59,14 +60,43 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#556cd6',
+      light       : '#7c8f73',
+      main        : '#5C7450',
+      dark        : '#405138',
+      contrastText: '#fff',
     },
     secondary: {
-      main: '#19857b',
+      light       : '#636992',
+      main        : '#3C4477',
+      dark        : '#2a2f53',
+      contrastText: '#fff',
     },
     error: {
-      main: red.A400,
+      light       : '#b1335a',
+      main        : '#9E0031',
+      dark        : '#6e0022',
+      contrastText: '#fff',
     },
+    warning: {
+      light       : '#eaaa33',
+      main        : '#E59500',
+      dark        : '#a06800',
+      contrastText: '#000',
+    },
+    // {
+    //   primary: {
+    //     light       : '#9fb595',
+    //     main        : '#88A37B',
+    //     dark        : '#5f7256',
+    //     contrastText: '#fff',
+    //   },
+    //   secondary: {
+    //     light       : '#7c85bd',
+    //     main        : '#5C67AD',
+    //     dark        : '#404879',
+    //     contrastText: '#fff',
+    //   },
+    // }
   },
   typography: {
     fontFamily: publicSans.style.fontFamily,

@@ -3,9 +3,10 @@ import Head from 'next/head';
 import { Box } from '@mui/material';
 import { usePathname } from 'next/navigation';
 
+import useRedirect from '@/hooks/other/use-redirect';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
-import HeaderSectionComponent from '@/components/organisms/HeaderSection.component';
 import MainSectionComponent from '@/components/compounds/MainSection.component';
+import HeaderSectionComponent from '@/components/organisms/HeaderSection.component';
 import FooterSectionComponent from '@/components/compounds/FooterSection.component';
 
 interface AppLayoutProps {
@@ -22,6 +23,14 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
     // console.log(open);
     setOpenMenu(!openMenu);
   };
+  const accessToken = useTypedSelector(
+    (state) => state.reducer.user.access_token,
+  );
+
+  useRedirect({
+    toUrl    : '/login',
+    condition: !!accessToken === false,
+  });
 
 
   return (
@@ -30,27 +39,41 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
         <title> {title} | Pharmacie de Medecine </title>
       </Head>
 
-      <Box sx={{ display: 'flex' }}>
-        <HeaderSectionComponent openDrawer={openMenu} pathActive={pathName} handleDrawer={handleMenu} handleLogout={handleMenu} />
-        <Box
-          sx={{
+      {!!accessToken && (
+        <Box 
+          sx={{ 
+            display        : 'flex',
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
+                theme.palette.mode === 'light'
                 ? theme.palette.grey[100]
-                    :    theme.palette.grey[900],
-            display  : 'flex',
-            flexGrow : 1,
-            flexFlow : 'column',
-            flexWrap : 'nowrap',
-            minHeight: '100vh',
+                : theme.palette.grey[900],
           }}
         >
-          <MainSectionComponent>
-            {children}
-          </MainSectionComponent>
-          <FooterSectionComponent />
+          <HeaderSectionComponent openDrawer={openMenu} pathActive={pathName} handleDrawer={handleMenu} handleLogout={handleMenu} />
+          <Box
+            component = "main"
+            sx        = {{
+              // backgroundColor: (theme) =>
+              //   theme.palette.mode === 'light'
+              //   ? theme.palette.grey[100]
+              //   :  theme.palette.grey[900],
+    
+              flexGrow     : 1,
+              width        : '100%',
+              display      : 'flex',
+              flexDirection: 'column',
+              minHeight    : '100vh',
+              overflow     : "auto",
+              // flexWrap : 'nowrap',
+            }}
+          >
+            <MainSectionComponent>
+              {children}
+            </MainSectionComponent>
+            <FooterSectionComponent />
+          </Box>
         </Box>
-      </Box>
+      )}
     </>
   )
 }

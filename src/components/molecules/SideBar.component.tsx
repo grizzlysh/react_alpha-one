@@ -39,9 +39,12 @@ const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
       //   // outline        : '1px solid slategrey',
       // },
       '& .MuiDrawer-paper': {
-        width     : DRAWER_WIDTH,
-        easing    : theme.transitions.easing.sharp,
-        transition: theme.transitions.create('width', {
+        // boxShadow      : '1px 0px 2px -1px rgba(0,0,0,0.2), 2px 0px 2px 0px rgba(0,0,0,0.14), 1px 0px 5px 0px rgba(0,0,0,0.12)',
+        // boxShadow      : '1px 0px 3px rgba(0, 0, 0, 0.125)',
+        backgroundColor: 'transparent',
+        width          : DRAWER_WIDTH,
+        easing         : theme.transitions.easing.sharp,
+        transition     : theme.transitions.create('width', {
           duration: theme.transitions.duration.enteringScreen,
         }),
         overflowX: 'hidden',
@@ -59,7 +62,10 @@ const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
         width: `calc(${theme.spacing(8)} + 1px)`,
       },
       '& .MuiDrawer-paper': {
-        "*::-webkit-scrollbar" : {
+        // boxShadow      : '1px 0px 2px -1px rgba(0,0,0,0.2), 2px 0px 2px 0px rgba(0,0,0,0.14), 1px 0px 5px 0px rgba(0,0,0,0.12)',
+        // boxShadow             : '1px 0px 3px rgba(0, 0, 0, 0.125)',
+        backgroundColor       : 'transparent',
+        "*::-webkit-scrollbar": {
           display: "none",
         },
         "-ms-overflow-style"  : "none",
@@ -110,6 +116,7 @@ const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, hand
         }}
       >
         <AppMenuComponent
+          openDrawer   = {openDrawer}
           pathActive   = {pathActive}
           handleDrawer = {handleDrawer}
         />
@@ -120,6 +127,7 @@ const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, hand
         open    = {openDrawer}
       >
         <AppMenuComponent
+          openDrawer   = {openDrawer}
           pathActive   = {pathActive}
           handleDrawer = {handleDrawer}
         />

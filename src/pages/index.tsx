@@ -2,59 +2,65 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import { Box, Typography, Paper } from '@mui/material'
 
+import { NextPage } from 'next'
 import theme from '@/utils/theme'
 import ConComp from '@/components/_content'
 import HeaderPage from '@/components/molecules/HeaderPage.component'
 import AppLayoutComponent from '@/components/templates/AppLayout.component'
-import BreadcrumbsComponent from '@/components/compounds/Breadcrumbs.component'
-import { relative } from 'path'
+import StatusHeaderComponent from '@/components/molecules/StatusHeader.component'
 
-const inter = Inter({ subsets: ['latin'] })
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import AdbIcon from '@mui/icons-material/Adb';
+import PaperComponent from '@/components/atoms/Paper.component'
 
-export default function Home() {
+const cardList = [
+  {
+    color   : '#fcba03',
+    icon    : <AcUnitIcon />,
+    title   : 'AC',
+    subtitle: "Air Conditioner",
+    amount  : "IDR 123.000,-",  
+  },
+  {
+    color   : '#fc03d7',
+    icon    : <AdbIcon />,
+    title   : 'Android',
+    subtitle: "Gooogle Android",
+    amount  : "IDR 99.300.000,-",  
+  },
+  {
+    color   : '#03fc6f',
+    icon    : <AcUnitIcon />,
+    title   : 'Test',
+    subtitle: "Gooogle Android",
+    amount  : "IDR 9.900.000,-",  
+  },
+  {
+    color   : '#03a9fc',
+    icon    : <AdbIcon />,
+    title   : 'Android',
+    subtitle: "Gooogle Android",
+    amount  : "IDR 99.300.000,-",  
+  },
+  {
+    color   : '#fc0307',
+    icon    : <AcUnitIcon />,
+    title   : 'Test',
+    subtitle: "Gooogle Android",
+    amount  : "IDR 9.900.000,-",  
+  },
+]
+
+const HomePage: NextPage = () => {
 
   return (
     <AppLayoutComponent title='Home'>
       <HeaderPage title='Home'/>
-      <Box>      
-        <Paper
-          elevation = {2}
-          // square    = {false}
-          sx        = {{
-            position    : 'relative',
-            overflow    : 'hidden',
-            borderRadius: 4,
-            minHeight   : 200,
-            padding     : 2,
-          }}
-        >
-          Test
-        </Paper>
-      </Box>
-      {/* <Box>
-        <Typography
-          variant  = "h4"
-          color    = "initial"
-          fontSize = {'1.5rem'}
-          sx       = {{
-            // '@media (max-width:500px)': {
-            //   fontSize: '1.25rem',
-            // },
-            // '@media (min-width:600px)': {
-            //   fontSize: '1.5rem',
-            // },
-            [theme.breakpoints.down('md')]: {
-              fontSize: '1.25rem',
-            },
-          }}
-          fontWeight = {700}
-          lineHeight = {1.5}
-        >List</Typography>
-        <BreadcrumbsComponent />
-      </Box> */}
+      <StatusHeaderComponent card={cardList} />
+      <PaperComponent>
         <ConComp />
+      </PaperComponent>
     </AppLayoutComponent>
     // <>
     //   <Head>
@@ -170,3 +176,5 @@ export default function Home() {
     // </>
   )
 }
+
+export default HomePage;

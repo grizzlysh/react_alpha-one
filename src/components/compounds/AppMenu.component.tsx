@@ -8,24 +8,27 @@ import menu from '@/utils/menu';
 
 
 interface AppMenuProps {
+  openDrawer  : boolean,
   pathActive  : string,
   handleDrawer: () => void,
 }
 
-const AppMenuComponent: React.FC<AppMenuProps> = ({ pathActive, handleDrawer }) => {
+const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, handleDrawer }) => {
 
   return (
     <>
       <Toolbar
         sx = {{
-          display   : 'fixed',
-          alignItems: 'center',
-          top       : 0,
-          left      : 0,
-          right     : 0,
-          zIndex    : '-10',
-          px        : [1],
-          boxShadow : '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+          display        : 'fixed',
+          alignItems     : 'center',
+          top            : 0,
+          left           : 0,
+          right          : 0,
+          zIndex         : '-10',
+          px             : [1],
+          boxShadow      : openDrawer ? '0px 1px 3px rgba(0, 0, 0, 0.125)' : '',
+          // boxShadow      : openDrawer ? '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)': '',
+          // backgroundColor: 'transparent',
           // justifyContent: 'flex-end',
         }}
       >

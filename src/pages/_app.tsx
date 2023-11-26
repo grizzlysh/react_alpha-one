@@ -9,6 +9,7 @@ import { CacheProvider, EmotionCache } from '@emotion/react'
 import { PersistGate } from 'redux-persist/integration/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
+import 'react-toastify/dist/ReactToastify.css';
 import { Box } from '@mui/material'
 import { ThemeProvider } from '@mui/material'
 
