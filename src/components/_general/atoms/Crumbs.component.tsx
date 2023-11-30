@@ -39,7 +39,6 @@ const StyledCrumb = styled(Chip)(({ theme }) => {
 
 const CrumbComponent: React.FC<CrumbsProps> = ({ linkRef, textDefault, textGenerator, last }) => {
 
-  console.log(textDefault);
   const [text, setText] = React.useState(textDefault);
 
   React.useEffect( () => {

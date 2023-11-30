@@ -1,10 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 
-import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, ListItemIcon, ListItemText, Stack } from '@mui/material';
+import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, ListItemIcon, ListItemText, Stack, Link as MUILink } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import menu from '@/utils/menu';
+import theme from '@/utils/theme';
 
 
 interface AppMenuProps {
@@ -47,8 +48,9 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
       
       <Box 
         sx = {{
-          position:'relative',
-          overflow: "auto",
+          position : 'relative',
+          overflowY: "auto",
+          overflowX: "hidden",
         }}
       >
         <List 
@@ -65,11 +67,32 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
               const active = menu.path ? (pathActive === menu.path) : false;
 
               return (
-                <Link 
+                <MUILink
+                  passHref
+                  key       = {menu.title}
+                  component = {Link}
+                  // height    = {24}
+                  underline = "hover"
+                  href      = {menu.path}
+                  variant   = 'h1'
+                  sx        = {{
+                    textDecoration: 'none',
+                    display       : 'flex',
+                    alignItems    : 'center',
+                    lineHeight    : 1.5,
+                    fontSize      : '0.875rem',
+                    fontWeight    : 700,
+                    "&:hover"     : {
+                      color         : theme.palette.primary.main,
+                      textDecoration: "none"
+                    }
+                  }}
+                >
+                {/* <Link 
                   key  = {menu.title}
                   href = {menu.path}
                   passHref
-                >
+                > */}
                   <ListItemButton
                     sx= {{
                       pl: 2.5,
@@ -79,9 +102,20 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
                     <ListItemIcon>
                       {menu.icon}
                     </ListItemIcon>
-                    <ListItemText primary={menu.title} />
+                    <ListItemText
+                      // primary={menu.title}
+                    >
+                      <Typography sx = {{
+                        lineHeight    : 1.5,
+                        // fontSize      : '0.875rem',
+                        fontWeight    : 500,
+                      }}  > 
+                        {menu.title}
+                      </Typography>
+                    </ListItemText>
                   </ListItemButton>
-                </Link>
+                {/* </Link> */}
+              </MUILink>
               );
             })
           }

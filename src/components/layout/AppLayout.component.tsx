@@ -5,9 +5,11 @@ import { usePathname } from 'next/navigation';
 
 import useRedirect from '@/hooks/other/use-redirect';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
-import MainSectionComponent from '@/components/compounds/MainSection.component';
-import HeaderSectionComponent from '@/components/organisms/HeaderSection.component';
-import FooterSectionComponent from '@/components/compounds/FooterSection.component';
+import useLogout from '@/hooks/auth/use-logout';
+import TopBarComponent from './TopBar.component';
+import SideBarComponent from './SideBar.component';
+import BottomBarComponent from './BottomBar.component';
+import MainSectionComponent from './MainSection.component';
 
 interface AppLayoutProps {
   title   : string,
@@ -18,6 +20,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
   
   const [openMenu, setOpenMenu] = React.useState(false)
   const pathName                = usePathname();
+  const {logout: doLogout}      = useLogout();
   const handleMenu              = () => {
     // e.preventDefault()
     // console.log(open);
@@ -49,7 +52,8 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
                 : theme.palette.grey[900],
           }}
         >
-          <HeaderSectionComponent openDrawer={openMenu} pathActive={pathName} handleDrawer={handleMenu} handleLogout={handleMenu} />
+          <TopBarComponent openDrawer={openMenu} handleDrawer={handleMenu} handleLogout={doLogout} />
+          <SideBarComponent pathActive={pathName} openDrawer={openMenu} handleDrawer={handleMenu}/>
           <Box
             component = "main"
             sx        = {{
@@ -70,7 +74,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
             <MainSectionComponent>
               {children}
             </MainSectionComponent>
-            <FooterSectionComponent />
+            <BottomBarComponent />
           </Box>
         </Box>
       )}

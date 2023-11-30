@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material'
-import BreadcrumbsComponent from '../compounds/Breadcrumbs.component';
+import BreadcrumbsComponent from '../molecules/Breadcrumbs.component';
 import theme from '@/utils/theme';
 
 interface HeaderPageProps {

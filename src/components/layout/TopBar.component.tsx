@@ -62,13 +62,15 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
   return (
     // <ElevationScroll>
       <TopBar
+        id       = 'topbar'
         position = "fixed"
         open     = {openDrawer}
         color    = 'transparent'
-        sx       = {{      
+        sx       = {{   
           // backgroundColor: "red",
           // backgroundColor: 'Color(0x44000000)',
           // opacity       : "50%",
+          paddingRight  : '0 !important',
           backdropFilter: "blur(20px)",
           boxShadow     : '0px 2px 3px rgba(0, 0, 0, 0.125)',
         }}

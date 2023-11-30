@@ -1,5 +1,5 @@
 
-export interface ServiceResponse<T> {
+export interface SuccessResponse<T> {
   status_schema: {
     status_code: number
     status_message: string

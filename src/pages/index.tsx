@@ -1,18 +1,15 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-
+import React from 'react'
 import { NextPage } from 'next'
+
 import theme from '@/utils/theme'
 import ConComp from '@/components/_content'
-import HeaderPage from '@/components/molecules/HeaderPage.component'
-import AppLayoutComponent from '@/components/templates/AppLayout.component'
-import StatusHeaderComponent from '@/components/molecules/StatusHeader.component'
+import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
+import AppLayoutComponent from '@/components/layout/AppLayout.component'
+import StatusHeaderComponent from '@/components/_general/organisms/StatusHeader.component'
+import PermissionTable from '@/components/permission/PermissionTable.component'
 
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import AdbIcon from '@mui/icons-material/Adb';
-import PaperComponent from '@/components/atoms/Paper.component'
 
 const cardList = [
   {
@@ -58,9 +55,8 @@ const HomePage: NextPage = () => {
     <AppLayoutComponent title='Home'>
       <HeaderPage title='Home'/>
       <StatusHeaderComponent card={cardList} />
-      <PaperComponent>
-        <ConComp />
-      </PaperComponent>
+      <PermissionTable />
+      <ConComp />
     </AppLayoutComponent>
     // <>
     //   <Head>

@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } 
 import router from 'next/router';
 import dayjs from 'dayjs';
 import jwt_decode, { JwtPayload } from 'jwt-decode';
-import { API_URL, REFRESH_TOKEN_PATH } from '@/configs/constant';
+import { API_URL, AUTH_REFRESH_TOKEN_PATH } from '@/configs/constant';
 import { setAccessToken, setRefreshToken } from '@/stores/slices/auth.slice'
 import { store, RootState } from '@/stores/store';
 
@@ -42,7 +42,7 @@ http.interceptors.response.use(
       originalConfig._retry = true;
 
       try {
-        const refreshResponse = await http.get(`${API_URL}${REFRESH_TOKEN_PATH}`);
+        const refreshResponse = await http.get(`${API_URL}${AUTH_REFRESH_TOKEN_PATH}`);
         const data            = refreshResponse.data;
         store.dispatch(setAccessToken(data.data.access_token));
         store.dispatch(setRefreshToken(data.data.refresh_token));
@@ -56,6 +56,9 @@ http.interceptors.response.use(
         return Promise.reject(error)
       }
     }
+    // else if (err.response.status === 400) {
+    //   return err.response
+    // }
     return Promise.reject(err);
   }
 )

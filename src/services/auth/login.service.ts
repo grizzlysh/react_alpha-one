@@ -1,7 +1,7 @@
 import { http } from '@/services/axios';
-import { LOGIN_PATH } from '@/configs/constant';
+import { AUTH_LOGIN_PATH } from '@/configs/constant';
 import { UserOnline } from '@/types/UserOnline.type';
-import { ServiceResponse } from '@/types/ServiceResponse.type';
+import { SuccessResponse } from '@/types/SuccessResponse.type';
 
 export interface LoginRequest {
   username: string,
@@ -15,20 +15,20 @@ export interface LoginResponse {
 }
 
 const map = {
-  getDataFromService: (response: ServiceResponse<LoginResponse>) => {
+  getDataFromService: (response: SuccessResponse<LoginResponse>) => {
     return response;
   }
 }
 
-const getLogin = async (payload: LoginRequest) => {
+const getAuthLogin = async (payload: LoginRequest) => {
 
-  const { data } = await http.post(LOGIN_PATH, payload);
+  const { data } = await http.post(AUTH_LOGIN_PATH, payload);
   return data;
 
 }
 
-const loginService = {
-  getLogin,
+const authLoginService = {
+  getAuthLogin,
 };
 
-export default loginService;
+export default authLoginService;

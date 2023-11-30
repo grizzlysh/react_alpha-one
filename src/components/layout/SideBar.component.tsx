@@ -5,7 +5,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import { DRAWER_WIDTH } from '@/configs/constant';
 import {  Box, Drawer, DrawerProps } from '@mui/material';
-import AppMenuComponent from '@/components/compounds/AppMenu.component';
+import AppMenuComponent from './AppMenu.component';
 
 interface DesktopDrawerProps extends DrawerProps {
   open?: boolean;
@@ -17,6 +17,7 @@ const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing : 'border-box',
+    overflowX : 'hidden',
     ...(open && {
       width     : DRAWER_WIDTH,
       overflowX : 'hidden',

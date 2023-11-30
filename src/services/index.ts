@@ -1,7 +1,11 @@
-import loginService from "./auth/login.service";
+import authLoginService from "./auth/login.service";
+import authLogoutServices from "./auth/logout.service";
+import permissionReadService from "./permission/read";
 
 const api = {
-  ...loginService,
+  ...authLoginService,
+  ...authLogoutServices,
+  ...permissionReadService,
 };
 
 export default api;

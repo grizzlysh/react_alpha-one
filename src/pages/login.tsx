@@ -14,7 +14,7 @@ import { useLogin } from '@/hooks/auth/use-login'
 import useRedirect from '@/hooks/other/use-redirect'
 import { LoginRequest } from '@/services/auth/login.service'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
-import PaperComponent from '@/components/atoms/Paper.component'
+import PaperComponent from '@/components/_general/atoms/Paper.component'
 
 
 const LoginPage: NextPage = () => {
@@ -148,6 +148,7 @@ const LoginPage: NextPage = () => {
                         formState,
                       }) => (
                       <TextField
+                        autoComplete='off'
                         helperText = {error ? error.message : null}
                         color      = {'primary'}
                         size       = "medium"
@@ -177,17 +178,18 @@ const LoginPage: NextPage = () => {
                         fieldState: { error },
                         formState,
                       }) => (
-                      <TextField
-                        helperText = {error ? error.message : null}
-                        color      = {'primary'}
-                        size       = "medium"
-                        error      = {!!error}
-                        onChange   = {onChange}
-                        type       = 'text'
-                        value      = {value}
-                        label      = {"Password"}
-                        variant    = "outlined"
-                        sx         = {{mb:2}}
+                      <TextField                    
+                        autoComplete = 'off'
+                        helperText   = {error ? error.message : null}
+                        color        = {'primary'}
+                        size         = "medium"
+                        error        = {!!error}
+                        onChange     = {onChange}
+                        type         = 'text'
+                        value        = {value}
+                        label        = {"Password"}
+                        variant      = "outlined"
+                        sx           = {{mb:2}}
                         fullWidth
                       />
                       )
@@ -234,6 +236,7 @@ const LoginPage: NextPage = () => {
                   component = {Link}
                   height    = {24}
                   underline = "hover"
+                  href      = {'#'}
                   sx        = {{
                     display   : 'flex',
                     alignItems: 'center',
@@ -241,10 +244,9 @@ const LoginPage: NextPage = () => {
                     fontSize  : '0.875rem',
                     fontWeight: 600,
                     "&:hover" : {
-                      color         : theme.palette.primary.main,
+                      color: theme.palette.primary.main,
                     }
                   }}
-                  href      = {'#'}
                 >
                   {"Sign Up"}
                 </MUILink>

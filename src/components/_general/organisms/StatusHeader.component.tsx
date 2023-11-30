@@ -2,7 +2,7 @@ import React from 'react';
 
 
 import { Paper, Box, Stack, Divider } from '@mui/material'
-import StatusCardComponent from '../compounds/StatusCard.component';
+import StatusCardComponent from '../molecules/StatusCard.component';
 import PaperComponent from '../atoms/Paper.component';
 
 interface StatusHeaderProps {

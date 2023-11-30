@@ -4,7 +4,7 @@ import { Box, Typography } from '@mui/material';
 import MuiLink from '@mui/material/Link';
 
 
-const FooterSectionComponent: React.FC = () => {  
+const BottomBarComponent: React.FC = () => {  
   return (
     <Box sx={{
       alignContent  : 'center',
@@ -21,4 +21,4 @@ const FooterSectionComponent: React.FC = () => {
   )
 }
 
-export default FooterSectionComponent;
+export default BottomBarComponent;
