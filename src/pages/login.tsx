@@ -1,3 +1,4 @@
+import React from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { NextPage } from 'next'
@@ -6,7 +7,9 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form'
 
 import { LoadingButton } from "@mui/lab";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
-import { Button, CssBaseline, Box, Container, Stack, Typography, TextField, Avatar, Link as MUILink } from '@mui/material'
+import { Button, CssBaseline, Box, Container, Stack, Typography, TextField, Avatar, Link as MUILink, InputAdornment, IconButton } from '@mui/material'
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import styles from '@/styles/Home.module.css'
 import theme from '@/utils/theme'
@@ -15,11 +18,13 @@ import useRedirect from '@/hooks/other/use-redirect'
 import { LoginRequest } from '@/services/auth/login.service'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
+import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
 
 
 const LoginPage: NextPage = () => {
   
-  const accessToken = useTypedSelector(
+  const [showPassword, setShowPassword] = React.useState(false);
+  const accessToken                     = useTypedSelector(
     (state) => state.reducer.user.access_token,
   );
 
@@ -35,7 +40,7 @@ const LoginPage: NextPage = () => {
     control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { isValid, errors },
   } = useForm<LoginRequest>({
     defaultValues: {
       username: '',
@@ -43,6 +48,11 @@ const LoginPage: NextPage = () => {
     }
   })
 
+  
+  const handleShowPassword      = () => setShowPassword((show) => !show);
+  const handleMouseShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
   const handleLogin: SubmitHandler<LoginRequest> = (data) => {
     submitLogin(data)
   }
@@ -148,17 +158,17 @@ const LoginPage: NextPage = () => {
                         formState,
                       }) => (
                       <TextField
-                        autoComplete='off'
-                        helperText = {error ? error.message : null}
-                        color      = {'primary'}
-                        size       = "medium"
-                        error      = {!!error}
-                        onChange   = {onChange}
-                        type       = 'string'
-                        value      = {value}
-                        label      = {"Username"}
-                        variant    = "outlined"
-                        sx         = {{mb:2}}
+                        autoComplete = 'off'
+                        helperText   = {error ? error.message : null}
+                        color        = {'primary'}
+                        size         = "medium"
+                        error        = {!!error}
+                        onChange     = {onChange}
+                        type         = 'string'
+                        value        = {value}
+                        label        = {"Username"}
+                        variant      = "outlined"
+                        sx           = {{mb:2}}
                         fullWidth
                       />
                       )
@@ -179,35 +189,49 @@ const LoginPage: NextPage = () => {
                         formState,
                       }) => (
                       <TextField                    
+                        fullWidth
                         autoComplete = 'off'
                         helperText   = {error ? error.message : null}
                         color        = {'primary'}
                         size         = "medium"
                         error        = {!!error}
                         onChange     = {onChange}
-                        type         = 'text'
+                        type         = {showPassword ? 'text' : 'password'}
                         value        = {value}
                         label        = {"Password"}
                         variant      = "outlined"
                         sx           = {{mb:2}}
-                        fullWidth
+                        InputProps   = {{
+                          endAdornment : (
+                            <InputAdornment position="end">
+                              <IconButton
+                                aria-label  = "toggle password visibility"
+                                onClick     = {handleShowPassword}
+                                onMouseDown = {handleMouseShowPassword}
+                                edge        = "end"
+                              >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                              </IconButton>
+                            </InputAdornment>),
+                        }}
                       />
                       )
                     }
                   />
 
-                  <LoadingButton
+                  <LoadingButtonComponent
                     fullWidth
-                    type    = "submit"
-                    loading = {isLoading}
-                    variant = 'contained'
-                    color   = {'primary'}
-                    sx      = {{
+                    disabled  = {!isValid}
+                    type      = "submit"
+                    isLoading = {isLoading}
+                    variant   = 'contained'
+                    color     = {'primary'}
+                    sx        = {{
                       mt: 2,
                     }}
                   >
                     LOG IN
-                  </LoadingButton>
+                  </LoadingButtonComponent>
                 </Stack>
               </form>
             </PaperComponent>
@@ -224,13 +248,14 @@ const LoginPage: NextPage = () => {
                     alignItems: 'center',
                     lineHeight: 1.5,
                     fontSize  : '0.875rem',
+                    mr        : 1,
                     fontWeight: 200,
                     "&:hover" : {
                       color         : theme.palette.primary.main,
                     }
                   }}
                 >
-                  Don't have an account? &nbsp;
+                  Don&apos;t have an account?
                 </Typography>
                 <MUILink
                   component = {Link}

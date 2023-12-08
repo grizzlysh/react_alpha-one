@@ -6,15 +6,16 @@ import api from '@/services';
 import { PermissionReadRequest, PermissionReadResponse } from '@/services/permission/read';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 
-export const usePermissionGet = (data: PermissionReadRequest) => {
+export const usePermissionRead = (data: PermissionReadRequest) => {
   return useQuery({
     queryKey : ['permission-get'],
     queryFn  : (payload) => api.getPermission(data),
     enabled  : false,
     retry    : false,
     onSuccess: async (data: SuccessResponse<PermissionReadResponse>) => {
-      console.log(data)
       return data
     },
+    // refetchInterval     : 1000,
+    // refetchOnWindowFocus: true,
   });
 }

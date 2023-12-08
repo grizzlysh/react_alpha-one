@@ -20,6 +20,15 @@ export const roboto = Roboto({
 // Create a theme instance.
 const theme = createTheme({
   components: {
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
+          }
+        }
+      }
+    },
     MuiCssBaseline: {
       styleOverrides: {
         body: {
@@ -102,6 +111,7 @@ const theme = createTheme({
   typography: {
     fontFamily: publicSans.style.fontFamily,
   },
+  
 });
 
 export default theme;

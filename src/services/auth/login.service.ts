@@ -21,7 +21,6 @@ const map = {
 }
 
 const getAuthLogin = async (payload: LoginRequest) => {
-
   const { data } = await http.post(AUTH_LOGIN_PATH, payload);
   return data;
 

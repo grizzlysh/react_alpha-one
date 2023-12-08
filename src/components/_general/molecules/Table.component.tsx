@@ -8,7 +8,7 @@ import theme from '@/utils/theme';
 interface TableProps {
   columnData    : readonly GridColDef<{}>[],
   rowData       : readonly {}[],
-  loading       : boolean,
+  isLoading       : boolean,
   pageInfo      : {page: number, pageSize: number},
   handlePageInfo: Dispatch<{ page: number, pageSize: number }>,
   handleSortData: Dispatch<{ field: any; sort: any; }[]>,
@@ -87,7 +87,7 @@ function CustomNoRowsOverlay() {
   );
 }
 
-const TableComponent: React.FC<TableProps> = ({ columnData, rowData, loading, pageInfo, handlePageInfo, handleSortData, rowTotal, columnHide }) => {
+const TableComponent: React.FC<TableProps> = ({ columnData, rowData, isLoading, pageInfo, handlePageInfo, handleSortData, rowTotal, columnHide }) => {
   
   const [rowCountState, setRowCountState] = React.useState(
     rowTotal || 0,
@@ -100,10 +100,8 @@ const TableComponent: React.FC<TableProps> = ({ columnData, rowData, loading, pa
   }, [rowTotal, setRowCountState]);
 
   const handleSortModelChange = React.useCallback((sortModel: GridSortModel) => {
-
     handleSortData(sortModel)
   }, []);
-
 
   return (
     <Box sx={{
@@ -133,7 +131,7 @@ const TableComponent: React.FC<TableProps> = ({ columnData, rowData, loading, pa
         disableRowSelectionOnClick
         sortingMode             = "server"
         onSortModelChange       = {handleSortModelChange}
-        loading                 = {loading}
+        loading                 = {isLoading}
         pagination              = {true}
         paginationModel         = {pageInfo}
         pageSizeOptions         = {[5,10,15]}

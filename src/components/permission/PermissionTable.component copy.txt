@@ -10,23 +10,15 @@ import { GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import SelectComponent from '../_general/atoms/Select.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
-import ModalComponent from '../_general/molecules/Modal.component';
-import PermissionCreateComponent from './PermissionCreate.component';
-
-interface PermissionTableProps {
-  modalCreate           : boolean,
-  handleModalCreateClose: ()=>void,
-}
 
 
-const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleModalCreateClose }) => {
-  
-  const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'display_name', sort : 'asc',}])
-  const [rowData, setRowData]           = React.useState<{}[]>([]);
-  const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
-  const [queryOptions, setQueryOptions] = React.useState({
+const PermissionTable = () => {
+
+  const [rowData, setRowData]                 = React.useState<{}[]>([]);
+  const [pageData, setPageData]               = React.useState({page: 0, pageSize: 5 });
+  const [sortData, setSortData]               = React.useState([{field: 'display_name', sort : 'asc',}])
+  const [rowTotal, setRowTotal]               = React.useState(0);
+  const [queryOptions, setQueryOptions]       = React.useState({
     field: 'display_name',
     sort : 'asc',
     page : pageData.page.toString(),
@@ -34,7 +26,6 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
     cond : ''
   });
   const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionRead(queryOptions);
-
   const [columnData, setColumnData] = React.useState([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
     { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
@@ -65,13 +56,14 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
       sort : sortData[0]?.sort,
       page : pageData.page.toString(),
       size : pageData.pageSize.toString(),
-      cond : textSearch,
-    });
+      cond : ''
+    })
   }
 
   const getPermissionData = () => {
     doGetPermission().then(
       (resp: any) => {
+        console.log(resp.status)
         if(resp.status == "error"){
           return;
         }
@@ -94,54 +86,40 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
   },[queryOptions])
 
   return (
-    <>
-      <PaperComponent>
-        <TableFilterComponent 
-          buttonId     = 'permisson-filter'
-          modalId      = 'permisson-filter'
-          menuArray    = {[{ handleClick: () => console.log(), title: 'test'}]}
-          textSearch   = {textSearch}
-          handleSearch = {setTextSearch}
-          onSearch     = {handleQuery}
-        >
-          {/* <SelectComponent
-            selectId    = 'test'
-            selectLabel = 'Test'
-            options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
-          /> */}
-          {/* <SelectComponent
-            selectId    = 'test'
-            selectLabel = 'Test'
-            options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
-          /> */}
-          
-        </TableFilterComponent>
-        {
-          (isLoadingPermission) ? 
-            <TableSkeletonComponent />
-          :
-          <TableComponent 
-            rowData        = {rowData}
-            columnData     = {columnData}
-            isLoading      = {isLoadingPermission}
-            pageInfo       = {pageData}
-            handlePageInfo = {setPageData}
-            rowTotal       = {rowTotal}
-            handleSortData = {setSortData}
-            columnHide     = {{ uid: false }}
-          />
-        }
-      </PaperComponent>
-      <ModalComponent
-        modalId      = 'permission-create'
-        modalTitle   = 'Permission Create'
-        modalSize    = 'sm'
-        modalOpen    = {modalCreate}
-        modalOnClose = {handleModalCreateClose}
+    <PaperComponent>
+      <TableFilterComponent 
+        buttonId  = 'permisson-filter'
+        modalId   = 'permisson-filter'
+        menuArray = {[{ handleClick: () => console.log(), title: 'test'}]}
       >
-        <PermissionCreateComponent getPermissionData={getPermissionData}/>
-      </ModalComponent>
-    </>
+        {/* <SelectComponent
+          selectId    = 'test'
+          selectLabel = 'Test'
+          options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
+        /> */}
+        {/* <SelectComponent
+          selectId    = 'test'
+          selectLabel = 'Test'
+          options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
+        /> */}
+        
+      </TableFilterComponent>
+      {
+        (isLoadingPermission) ? 
+          <TableSkeletonComponent />
+        :
+        <TableComponent 
+          rowData        = {rowData}
+          columnData     = {columnData}
+          isLoading      = {isLoadingPermission}
+          pageInfo       = {pageData}
+          handlePageInfo = {setPageData}
+          rowTotal       = {rowTotal}
+          handleSortData = {setSortData}
+          columnHide     = {{ uid: false }}
+        />
+      }
+    </PaperComponent>
   )
 }
 

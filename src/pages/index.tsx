@@ -10,6 +10,9 @@ import PermissionTable from '@/components/permission/PermissionTable.component'
 
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import AdbIcon from '@mui/icons-material/Adb';
+import { usePermissionRead } from '@/hooks/permission/use-read'
+import ModalComponent from '@/components/_general/molecules/Modal.component'
+import PermissionCreateComponent from '@/components/permission/PermissionCreate.component'
 
 const cardList = [
   {
@@ -50,12 +53,18 @@ const cardList = [
 ]
 
 const HomePage: NextPage = () => {
+  const [openCreateModal, setOpenCreateModal] = React.useState(false);
+  const handleOpenCreateModal                 = () => setOpenCreateModal(true);
+  const handleCloseCreateModal                = () => setOpenCreateModal(false);
 
   return (
     <AppLayoutComponent title='Home'>
-      <HeaderPage title='Home'/>
+      <HeaderPage title='Home' handleModalCreateOpen={handleOpenCreateModal}/>
       <StatusHeaderComponent card={cardList} />
-      <PermissionTable />
+      <PermissionTable 
+        modalCreate            = {openCreateModal}
+        handleModalCreateClose = {handleCloseCreateModal}
+      />
       <ConComp />
     </AppLayoutComponent>
     // <>

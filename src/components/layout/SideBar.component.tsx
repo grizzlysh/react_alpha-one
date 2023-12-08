@@ -69,12 +69,12 @@ const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
         "*::-webkit-scrollbar": {
           display: "none",
         },
-        "-ms-overflow-style"  : "none",
-        "scrollbar-width"     : "none",
-        overflowY             : 'hidden',
-        overflowX             : 'hidden',
-        width                 : `calc(${theme.spacing(7)} + 1px)`,
-        transition            : theme.transitions.create('width', {
+        // "-ms-overflow-style": "none",
+        scrollbarWidth      : "none",
+        overflowY           : 'hidden',
+        overflowX           : 'hidden',
+        width               : `calc(${theme.spacing(7)} + 1px)`,
+        transition          : theme.transitions.create('width', {
           easing  : theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
         }),
