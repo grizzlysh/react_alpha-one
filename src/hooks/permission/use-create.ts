@@ -8,20 +8,27 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { PermissionCreateRequest } from "@/services/permission/create";
 
-export const usePermissionCreate = () => {
+interface usePermissionCreateProps {
+  getData   : ()=>void,
+  closeModal: ()=>void,
+}
+
+export const usePermissionCreate = ({getData, closeModal}: usePermissionCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
     mutationKey: ['permission-create'],
     mutationFn: (payload: PermissionCreateRequest) => api.createPermission(payload),
-    onSuccess: async (data: SuccessResponse<{}>) => {
+    onSuccess: async (resp: SuccessResponse<{}>) => {
       // await Promise.all([
       //   dispatch(setUserAuth(data.output_schema.user)),
       //   dispatch(setAccessToken(data.output_schema.access_token)),
       //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
       // ]);
-      AlertSuccess(data.status_schema.status_message)
+      AlertSuccess(resp.status_schema.status_message)
+      getData()
+      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

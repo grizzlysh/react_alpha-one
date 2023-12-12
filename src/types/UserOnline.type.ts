@@ -1,6 +1,6 @@
 
 export interface UserOnline {
-    uid     : string | undefined,
+    uid     : string,
     username: string,
     name    : string,
     sex     : string,

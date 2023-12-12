@@ -12,11 +12,12 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 
 interface PermissionCreateProps {
   getPermissionData: ()=>void,
+  handleCloseModal : ()=>void,
 }
 
-const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData }) => {
+const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData, handleCloseModal }) => {
 
-  const { mutate: submitCreatePermission, isLoading } = usePermissionCreate()
+  const { mutate: submitCreatePermission, isLoading } = usePermissionCreate({ getData: getPermissionData, closeModal: handleCloseModal })
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
   );

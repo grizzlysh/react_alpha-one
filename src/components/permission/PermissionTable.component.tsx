@@ -12,14 +12,22 @@ import SelectComponent from '../_general/atoms/Select.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 import PermissionCreateComponent from './PermissionCreate.component';
+import PermissionUpdateComponent from './PermissionUpdate.component';
+import { usePermissionDelete } from '@/hooks/permission/use-delete';
+import { UserOnline } from '@/types/UserOnline.type';
+import { useTypedSelector } from '@/hooks/other/use-type-selector';
+import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 
 interface PermissionTableProps {
   modalCreate           : boolean,
-  handleModalCreateClose: ()=>void,
+  handleCloseCreateModal: ()=>void,
 }
 
+const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
 
-const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleModalCreateClose }) => {
+  const currentUser: UserOnline                       = useTypedSelector(
+    (state) => state.reducer.user.user,
+  );
   
   const [textSearch, setTextSearch]     = React.useState('');
   const [sortData, setSortData]         = React.useState([{field: 'display_name', sort : 'asc',}])
@@ -46,14 +54,14 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
         key     = {"edit-"+params.id}
         icon    = {<EditIcon />}
         label   = "Edit"
-        // onClick = {() => handleOpenEditModal(params.row.id)}
+        onClick = {() => handleOpenUpdateModal(params.row.uid)}
         showInMenu
       />,
       <GridActionsCellItem
         key     = {"delete-"+params.id}
         icon    = {<DeleteIcon />}
         label   = "Delete"
-        // onClick = {() => {submitDelete({partner_id: params.row.id})}}
+        onClick = {() => {handleOpenDeleteModal(params.row.id)}}
         showInMenu
       />,
     ]},
@@ -82,6 +90,28 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
         setRowTotal(resp.data.output_schema.total_data)
       } 
     )
+  }
+
+
+  const [updatePermissionID, setUpdatePermissionID] = React.useState('');
+  const [openUpdateModal, setOpenUpdateModal]       = React.useState(false);
+  const handleCloseUpdateModal                    = () => setOpenUpdateModal(false);
+  const handleOpenUpdateModal                     = (permission_id: string) => {
+    setUpdatePermissionID(permission_id)
+    setOpenUpdateModal(true);
+  }
+  
+  
+  const [deletePermissionID, setDeletePermissionID] = React.useState('');
+  const [openDeleteModal, setOpenDeleteModal]       = React.useState(false);
+  const handleCloseDeleteModal                      = () => setOpenDeleteModal(false);
+  const handleOpenDeleteModal                       = (permission_id: string) => {
+    setDeletePermissionID(permission_id)
+    setOpenDeleteModal(true);
+  }
+  const { mutate: submitDelete, isLoading: isLoadIngDelete } = usePermissionDelete({ permission_id: updatePermissionID, getData: getPermissionData });
+  const handleDeletePermission = () => {
+    submitDelete({current_user_uid: currentUser.uid})
   }
   
   React.useEffect(() => {
@@ -137,10 +167,27 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleMo
         modalTitle   = 'Permission Create'
         modalSize    = 'sm'
         modalOpen    = {modalCreate}
-        modalOnClose = {handleModalCreateClose}
+        modalOnClose = {handleCloseCreateModal}
       >
-        <PermissionCreateComponent getPermissionData={getPermissionData}/>
+        <PermissionCreateComponent getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/>
       </ModalComponent>
+
+      <ModalComponent
+        modalId      = 'permission-edit'
+        modalTitle   = 'Permission Edit'
+        modalSize    = 'sm'
+        modalOpen    = {openUpdateModal}
+        modalOnClose = {handleCloseUpdateModal}
+      >
+        <PermissionUpdateComponent updatePermissionID={updatePermissionID} getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/>
+      </ModalComponent>
+
+      <DeleteConfirmComponent 
+        modalId      = 'permission-delete'
+        modalOpen    = {openDeleteModal}
+        modalOnClose = {handleCloseDeleteModal}
+        onDelete     = {handleDeletePermission}
+      />
     </>
   )
 }

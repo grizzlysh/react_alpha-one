@@ -8,27 +8,35 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { PermissionUpdateRequest } from "@/services/permission/update";
 
-export const usePermissionUpdate = (permission_id: string) => {
+interface usePermissionUpdateProps {
+  permission_id: string,
+  getData      : ()=>void,
+  closeModal   : ()=>void,
+}
+
+export const usePermissionUpdate = ({ permission_id, getData, closeModal }:usePermissionUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
     mutationKey: ['permission-update'],
     mutationFn: (payload: PermissionUpdateRequest) => api.updatePermission(payload, permission_id),
-    onSuccess: async (data: SuccessResponse<{}>) => {
+    onSuccess: async (resp: SuccessResponse<{}>) => {
       // await Promise.all([
       //   dispatch(setUserAuth(data.output_schema.user)),
       //   dispatch(setAccessToken(data.output_schema.access_token)),
       //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
       // ]);
-      AlertSuccess(data.status_schema.status_message)
+      AlertSuccess(resp.status_schema.status_message)
+      getData()
+      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'
       const { data } = err.response;
-      if (data.status_schema.status_code = 700){
-        data.status_schema.status_message = "Something went wrong, please try again"
-      }
+      // if (data.status_schema.status_code = 700){
+      //   data.status_schema.status_message = "Something went wrong, please try again"
+      // }
       AlertError(data.status_schema.status_message)
     },
   })

@@ -63,7 +63,7 @@ const HomePage: NextPage = () => {
       <StatusHeaderComponent card={cardList} />
       <PermissionTable 
         modalCreate            = {openCreateModal}
-        handleModalCreateClose = {handleCloseCreateModal}
+        handleCloseCreateModal = {handleCloseCreateModal}
       />
       <ConComp />
     </AppLayoutComponent>

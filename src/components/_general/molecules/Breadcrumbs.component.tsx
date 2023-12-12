@@ -38,7 +38,6 @@ const BreadcrumbsComponent = () => {
         breadMap[val.url] = val.title;
       }
     });
-    console.log(breadMap);
     return breadMap[subpath]
   }, [])
 

@@ -13,7 +13,7 @@ type UserState = {
 
 const initialState: UserState = {
   user: {
-    uid     : undefined,
+    uid     : '',
     username: '',
     name    : '',
     sex     : '',

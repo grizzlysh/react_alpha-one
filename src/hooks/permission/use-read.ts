@@ -12,8 +12,8 @@ export const usePermissionRead = (data: PermissionReadRequest) => {
     queryFn  : (payload) => api.getPermission(data),
     enabled  : false,
     retry    : false,
-    onSuccess: async (data: SuccessResponse<PermissionReadResponse>) => {
-      return data
+    onSuccess: async (resp: SuccessResponse<PermissionReadResponse>) => {
+      return resp
     },
     // refetchInterval     : 1000,
     // refetchOnWindowFocus: true,

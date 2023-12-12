@@ -4,13 +4,13 @@ import { InputAdornment, MenuItem, Stack, TextField } from "@mui/material";
 import VerticalMenuComponent from "../atoms/VerticalMenu.component";
 
 interface TableFilterComponent {
-  children    : React.ReactNode,
-  buttonId    : string,
-  modalId     : string,
-  textSearch  : string,
-  handleSearch: Dispatch<string>,
-  onSearch    : ()=>void,
-  menuArray   : { 
+  children    ?: React.ReactNode,
+  buttonId     : string,
+  modalId      : string,
+  textSearch   : string,
+  handleSearch : Dispatch<string>,
+  onSearch     : ()=>void,
+  menuArray    : { 
     handleClick: ()=>void, 
     title      : string 
   }[],

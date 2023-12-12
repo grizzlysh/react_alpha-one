@@ -15,7 +15,7 @@ const map = {
 
 const deletePermission = async (payload: PermissionDeleteRequest, permission_id: string) => {
 
-  const { data } = await http.post(PERMISSION_DELETE_PATH+permission_id, payload);
+  const { data } = await http.patch(PERMISSION_DELETE_PATH+permission_id);
   return data;
 
 }

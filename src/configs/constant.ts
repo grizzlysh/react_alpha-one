@@ -13,7 +13,8 @@ export const AUTH_LOGIN_PATH         = '/api/auth/login';
 export const AUTH_LOGOUT_PATH        = '/api/auth/logout';
 export const AUTH_REFRESH_TOKEN_PATH = '/api/auth/refresh';
 
-export const PERMISSION_CREATE_PATH = '/api/permission';
-export const PERMISSION_READ_PATH   = '/api/permission';
-export const PERMISSION_UPDATE_PATH = '/api/permission/:permission_uid';
-export const PERMISSION_DELETE_PATH = '/api/permission/:permission_uid';
+export const PERMISSION_CREATE_PATH    = '/api/permission';
+export const PERMISSION_READ_PATH      = '/api/permission';
+export const PERMISSION_READ_BYID_PATH = '/api/permission/';
+export const PERMISSION_UPDATE_PATH    = '/api/permission/';
+export const PERMISSION_DELETE_PATH    = '/api/permission/';
