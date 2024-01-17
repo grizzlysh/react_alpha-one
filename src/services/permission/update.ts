@@ -15,8 +15,8 @@ const map = {
   }
 }
 
-const updatePermission = async (payload: PermissionUpdateRequest, permission_id: string) => {
-  const { data } = await http.put(PERMISSION_UPDATE_PATH+permission_id, payload);
+const updatePermission = async (payload: PermissionUpdateRequest, permission_uid: string) => {
+  const { data } = await http.put(PERMISSION_UPDATE_PATH+permission_uid, payload);
   return data;
 
 }

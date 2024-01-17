@@ -2,34 +2,41 @@ import { MenuItem, TextField, OutlinedTextFieldProps as MUITextFieldProps } from
 import React from "react";
 
 interface SelectProps {
-  selectId   : string,
-  selectLabel: string,
-  options    : {
+  selectId    : string,
+  selectLabel : string,
+  selectState : string,
+  handleChange: (event: any)=>void,
+  helperText  : string | null | undefined,
+  error         : boolean | undefined,
+  options     : {
     value: string,
     label: string,
   }[],
 }
 
 
-const SelectComponent: React.FC<SelectProps> = ({ selectId, selectLabel, options }) => {
+const SelectComponent: React.FC<SelectProps> = ({ selectId, selectLabel, selectState, handleChange, options, helperText, error, }) => {
 
   return (
     <TextField
+      fullWidth
       select
-      id    = {selectId}
-      label = {selectLabel}
-      sx    = {{
-        '@media (min-width: 900px)': {        
-          maxWidth: '180px'
-        },
-        '@media (min-width: 0px)'  : {
-          width: '100%'
-        }
-      }}
+      autoComplete = "off"
+      error        = {error}
+      value        = {selectState}
+      onChange     = {handleChange}
+      id           = {selectId}
+      name         = {selectId}
+      label        = {selectLabel}
+      helperText   = {helperText}
     >
       {
         options.map( (val, idx) => (
-          <MenuItem key={idx} value={val.value}>
+          <MenuItem key={idx} value={val.value}
+            sx={{
+              label: val.label
+            }}
+          >
             {val.label}
           </MenuItem>
         ))

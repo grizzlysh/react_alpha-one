@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Fade from '@mui/material/Fade';
-import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, DialogProps } from '@mui/material';
 
 interface ModalProps {
   modalOpen   : boolean,
@@ -10,14 +10,23 @@ interface ModalProps {
   modalTitle  : string,
   modalSize   : string,
   children    : React.ReactNode,
+  isPermanent : boolean,
 }
 
-const ModalComponent: React.FC<ModalProps> = ({modalOpen, modalOnClose, modalId, modalTitle, modalSize, children }: any) => {
+const ModalComponent: React.FC<ModalProps> = ({modalOpen, modalOnClose, modalId, modalTitle, modalSize, children, isPermanent }: any) => {
+
+  const handleOnClose: DialogProps["onClose"] = (event, reason) => {
+    if (reason && reason === "backdropClick")
+      return;
+    modalOnClose()
+  }
+
   return (
 
       <Dialog
+        keepMounted
         open             = {modalOpen}
-        onClose          = {modalOnClose}
+        onClose          = {isPermanent ? handleOnClose : modalOnClose}
         fullWidth        = {true}
         maxWidth         = {modalSize}
         aria-labelledby  = {modalId}

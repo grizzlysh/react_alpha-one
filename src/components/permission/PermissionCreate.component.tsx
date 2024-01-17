@@ -7,7 +7,7 @@ import { usePermissionCreate } from '@/hooks/permission/use-create';
 import { PermissionCreateRequest } from '@/services/permission/create';
 import ButtonComponent from '../_general/atoms/Button.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
-import { UserOnline } from '@/types/UserOnline.type';
+import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 
 interface PermissionCreateProps {
@@ -48,10 +48,11 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
           <Controller
             name    = "display_name"
             control = {control}
-            rules   = {{ required: {
-              value  : true,
-              message: "Display Name fields is required"
-            },
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Display Name fields is required"
+              },
             }}
             render  = { ({ 
                 field     : { onChange, value },
@@ -99,10 +100,11 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
           />
 
           <LoadingButtonComponent
-            type      = 'submit'
-            disabled  = {!isValid}
-            isLoading = {isLoading}
-            id        = 'permission_create_submit'
+            buttonColor = 'primary'
+            type        = 'submit'
+            disabled    = {!isValid}
+            isLoading   = {isLoading}
+            id          = 'permission_create_submit'
           >
             Submit
           </LoadingButtonComponent>

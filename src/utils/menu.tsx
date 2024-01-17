@@ -1,14 +1,12 @@
 import React from 'react';
 import GamesIcon from '@mui/icons-material/Games';
-import PeopleIcon from '@mui/icons-material/People';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-
+import { People, Dashboard, AccountCircle } from '@mui/icons-material';
 interface MenuProps {
-  title: string,
-  path : string,
-  url  : string,
-  icon : React.ReactNode
+  title : string,
+  path  : string,
+  url   : string,
+  icon  : React.ReactNode,
+  child?: any[]
 }
 
 const menu:MenuProps[] = [
@@ -16,25 +14,71 @@ const menu:MenuProps[] = [
     title: 'Home',
     path : '/',
     url  : '',
-    icon : <DashboardIcon />,
+    icon : <Dashboard />,
   },
   {
-    title: 'Order',
-    path : '/order',
-    url  : 'order',
-    icon : <ShoppingCartIcon />,
+    title: 'Profile',
+    path : '/profile',
+    url  : 'profile',
+    icon : <AccountCircle />,
   },
   {
-    title: 'Customer',
-    path : '/customer',
-    url  : 'customer',
-    icon : <PeopleIcon />,
+    title: 'User Manage',
+    path : '',
+    url  : 'user_manage',
+    icon : <People />,
+    child: [
+      {
+        title: 'Permission',
+        path : '/permission',
+        url  : 'permission',
+        // icon : <People />,
+      },
+      {
+        title: 'Role',
+        path : '/role',
+        url  : 'role',
+        // icon : <ShoppingCart />,
+      },
+      {
+        title: 'User',
+        path : '/user',
+        url  : 'user',
+        // icon : <ShoppingCart />,
+      },
+    ]
   },
   {
-    title: 'Partner',
-    path : '/partner',
-    url  : 'partner',
-    icon : <PeopleIcon />,
+    title: 'divider',
+    path : '',
+    url  : '',
+    icon : '',
+  },
+  {
+    title: 'Klasifikasi Obat',
+    path : '',
+    url  : 'drug_class',
+    icon : <People />,
+    child: [
+      {
+        title: 'Bentuk',
+        path : '/shape',
+        url  : 'shape',
+        // icon : <People />,
+      },
+      {
+        title: 'Golongan',
+        path : '/type',
+        url  : 'type',
+        // icon : <ShoppingCart />,
+      },
+      {
+        title: 'Kelas Terapi',
+        path : '/category',
+        url  : 'category',
+        // icon : <ShoppingCart />,
+      },
+    ]
   },
 ]
 

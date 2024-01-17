@@ -1,7 +1,7 @@
 import { http } from '@/services/axios';
 import { PERMISSION_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import PermissionData from '@/types/PermissionData.type';
+import Permission from '@/types/Permission.type';
 
 export interface PermissionReadRequest {
   page : string,
@@ -12,7 +12,7 @@ export interface PermissionReadRequest {
 }
 
 export interface PermissionReadResponse {
-  data        : PermissionData[],
+  data        : Permission[],
   total_data  : number,
   total_pages : number,
   current_page: number

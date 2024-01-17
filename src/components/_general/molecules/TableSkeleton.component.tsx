@@ -9,18 +9,18 @@ const TableSkeletonComponent: React.FC = () => {
 
   const columnData = [
     { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+1} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
-    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+2} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
-    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+3} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
-    { field: 'action', type: 'actions', width:100, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+4} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
+    { field: 'no', headerName: '', type: 'number', flex: 0.1, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+1} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
+    { field: 'display_name', headerName: '', type: 'string', minWidth:100, flex: 0.75, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+2} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
+    // { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+3} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
+    { field: 'action', type: 'actions', width:50, renderCell: (params: GridRenderCellParams) => [ <Skeleton key={params.row+4} variant="text" sx={{ fontSize: '1rem', width: '100%' }}/> ]},
   ];
 
   const rowData = [
-    {uid:1, no: '', name: '', display_name: '', description: ''},
-    {uid:2, no: '', name: '', display_name: '', description: ''},
-    {uid:3, no: '', name: '', display_name: '', description: ''},
-    {uid:4, no: '', name: '', display_name: '', description: ''},
-    {uid:5, no: '', name: '', display_name: '', description: ''},
+    {uid:1, no: '', name: '', display_name: '',},
+    {uid:2, no: '', name: '', display_name: '',},
+    {uid:3, no: '', name: '', display_name: '',},
+    {uid:4, no: '', name: '', display_name: '',},
+    {uid:5, no: '', name: '', display_name: '',},
   ]
 
   return (

@@ -33,7 +33,7 @@ export const usePermissionCreate = ({getData, closeModal}: usePermissionCreatePr
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'
       const { data } = err.response; 
-      if (data.status_schema.status_code = 700){
+      if (data.status_schema.status_code == 700){
         data.status_schema.status_message = "Something went wrong, please try again"
       }
       AlertError(data.status_schema.status_message)

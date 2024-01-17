@@ -138,9 +138,9 @@ const TableComponent: React.FC<TableProps> = ({ columnData, rowData, isLoading, 
         rowCount                = {rowCountState}
         paginationMode          = "server"
         onPaginationModelChange = {handlePageInfo}
-        slots                   = {{
-          noRowsOverlay: CustomNoRowsOverlay,
-        }}
+        // slots                   = {{
+        //   noRowsOverlay: CustomNoRowsOverlay,
+        // }}
         sx                      = {{ 
           overflowX: 'scroll',
         }}

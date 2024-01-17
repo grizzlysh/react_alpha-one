@@ -3,6 +3,8 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { NextRouter, useRouter } from 'next/router';
 import CrumbComponent from '../atoms/Crumbs.component';
 import menu from '@/utils/menu';
+import { useRoleReadByID } from '@/hooks/role/use-read-by-id';
+import api from '@/services';
 
 
 const getPathSplitted = (pathStr: string) => {
@@ -23,9 +25,14 @@ const BreadcrumbsComponent = () => {
   const router                  = useRouter();
 
   const getTextGenrerator       = React.useCallback((param: string, router: NextRouter) => {
+
     return {
     //   "post_id": () => await fetchAPI(`/posts/${router.query.post_id}/`).title,
       "post_id": () => {return "oke"},
+      "create" : () => {return "Create"},
+      // "role_id": () => { const x: any = api.getRoleByID(`${router.query.role_id}`); return x.output_schema?.data?.display_name || '' }
+      "role_id": () => {return "Update"}
+      // "create": "Create",
     }[param];
   }, []);
   
@@ -35,9 +42,19 @@ const BreadcrumbsComponent = () => {
 
     menu.forEach( (val, idx) => {
       if(idx != 0){
-        breadMap[val.url] = val.title;
+        if(val.child){
+          val.child.forEach(
+            (child) => {
+              breadMap[child.url] = child.title
+            }
+          )
+        }
+        else {
+          breadMap[val.url] = val.title;
+        }
       }
     });
+    console.log(breadMap);
     return breadMap[subpath]
   }, [])
 
@@ -50,9 +67,9 @@ const BreadcrumbsComponent = () => {
       const param = pathNameSplit[idx].replace("[", "").replace("]", "");
   
       const href = asPathSplit.slice(0, idx+1).join("/");
-  
+
       return {
-        linkRef      : href,
+        linkRef      : "/"+href,
         textGenerator: getTextGenrerator(param, router),
         textDefault  : getDefaultTextGenerator(subpath),
       }

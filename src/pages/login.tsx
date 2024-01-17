@@ -53,7 +53,7 @@ const LoginPage: NextPage = () => {
   const handleMouseShowPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
   };
-  const handleLogin: SubmitHandler<LoginRequest> = (data) => {
+  const onLogin: SubmitHandler<LoginRequest> = (data) => {
     submitLogin(data)
   }
 
@@ -93,7 +93,7 @@ const LoginPage: NextPage = () => {
               spacing        = {0}
             >
             <PaperComponent sx={{ width: '100%' }}>
-              <form onSubmit={handleSubmit(handleLogin)}>
+              <form onSubmit={handleSubmit(onLogin)}>
                 <Stack
                   p={3}
                   direction      = {'column'}
@@ -147,10 +147,11 @@ const LoginPage: NextPage = () => {
                   <Controller
                     name    = "username"
                     control = {control}
-                    rules   = {{ required: {
-                      value  : true,
-                      message: "Username fields is required"
-                    },
+                    rules   = {{ 
+                      required: {
+                        value  : true,
+                        message: "Username fields is required"
+                      },
                     }}
                     render  = { ({ 
                         field     : { onChange, value },
@@ -178,10 +179,11 @@ const LoginPage: NextPage = () => {
                   <Controller
                     name    = "password"
                     control = {control}
-                    rules   = {{ required: {
-                      value  : true,
-                      message: "Password fields is required"
-                    },
+                    rules   = {{ 
+                      required: {
+                        value  : true,
+                        message: "Password fields is required"
+                      },
                     }}
                     render  = { ({ 
                         field     : { onChange, value },
@@ -219,14 +221,14 @@ const LoginPage: NextPage = () => {
                     }
                   />
 
-                  <LoadingButtonComponent
+                  <LoadingButtonComponent          
                     fullWidth
-                    disabled  = {!isValid}
-                    type      = "submit"
-                    isLoading = {isLoading}
-                    variant   = 'contained'
-                    color     = {'primary'}
-                    sx        = {{
+                    buttonColor = 'primary'
+                    disabled    = {!isValid}
+                    type        = "submit"
+                    isLoading   = {isLoading}
+                    variant     = 'contained'
+                    sx          = {{
                       mt: 2,
                     }}
                   >

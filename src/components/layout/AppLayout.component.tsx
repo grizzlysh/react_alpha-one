@@ -39,7 +39,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
   return (
     <>
       <Head>
-        <title> {title} | Pharmacie de Medecine </title>
+        <title> {title} | Farmacia </title>
       </Head>
 
       {!!accessToken && (

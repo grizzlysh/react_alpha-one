@@ -1,13 +1,10 @@
 import { http } from '@/services/axios';
 import { PERMISSION_READ_BYID_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import PermissionData from '@/types/PermissionData.type';
+import Permission from '@/types/Permission.type';
 
 export interface PermissionReadByIDResponse {
-  data        : PermissionData,
-  total_data  : number,
-  total_pages : number,
-  current_page: number
+  data: Permission,
 }
 
 const map = {
@@ -16,9 +13,9 @@ const map = {
   }
 }
 
-const getPermissionByID = async (permission_id: string) => {
+const getPermissionByID = async (permission_uid: string) => {
 
-  const { data } = await http.get(PERMISSION_READ_BYID_PATH+permission_id);
+  const { data } = await http.get(PERMISSION_READ_BYID_PATH+permission_uid);
   return data;
 
 }

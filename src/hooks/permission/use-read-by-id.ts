@@ -7,14 +7,14 @@ import { SuccessResponse } from '@/types/SuccessResponse.type';
 import { PermissionReadByIDResponse } from '@/services/permission/read_by_id';
 
 interface usePermissionReadByIDProps {
-  permission_id: string,
+  permission_uid: string,
   loadData     : (data: any)=>void,
 }
 
-export const usePermissionReadByID = ({ permission_id, loadData }: usePermissionReadByIDProps) => {
+export const usePermissionReadByID = ({ permission_uid, loadData }: usePermissionReadByIDProps) => {
   return useQuery({
     queryKey : ['permission-get-by-id'],
-    queryFn  : (payload) => api.getPermissionByID(permission_id),
+    queryFn  : (payload) => api.getPermissionByID(permission_uid),
     enabled  : false,
     retry    : false,
     onSuccess: async (resp: SuccessResponse<PermissionReadByIDResponse>) => {

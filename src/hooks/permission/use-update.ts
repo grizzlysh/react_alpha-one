@@ -9,18 +9,18 @@ import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { PermissionUpdateRequest } from "@/services/permission/update";
 
 interface usePermissionUpdateProps {
-  permission_id: string,
+  permission_uid: string,
   getData      : ()=>void,
   closeModal   : ()=>void,
 }
 
-export const usePermissionUpdate = ({ permission_id, getData, closeModal }:usePermissionUpdateProps ) => {
+export const usePermissionUpdate = ({ permission_uid, getData, closeModal }:usePermissionUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
     mutationKey: ['permission-update'],
-    mutationFn: (payload: PermissionUpdateRequest) => api.updatePermission(payload, permission_id),
+    mutationFn: (payload: PermissionUpdateRequest) => api.updatePermission(payload, permission_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       // await Promise.all([
       //   dispatch(setUserAuth(data.output_schema.user)),

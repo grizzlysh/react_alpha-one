@@ -1,11 +1,13 @@
 import React from 'react';
 import Link from 'next/link';
 
-import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, ListItemIcon, ListItemText, Stack, Link as MUILink } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, ListItemIcon, ListItemText, Stack, Link as MUILink, Collapse } from '@mui/material';
+import { ChevronLeft, ExpandMore, ExpandLess, ChevronRight } from '@mui/icons-material';
 
 import menu from '@/utils/menu';
 import theme from '@/utils/theme';
+import VerticalMenuComponent from '../_general/atoms/VerticalMenu.component';
+import VerticalModalComponent from '../_general/atoms/VerticalModal.component';
 
 
 interface AppMenuProps {
@@ -15,6 +17,21 @@ interface AppMenuProps {
 }
 
 const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, handleDrawer }) => {
+  const [openList, setopenList] = React.useState<{[key: string]: any}>({});
+
+  const handleListOpen = ( menu: any ) => {
+    if(!openDrawer){
+      // if (menu.child){
+        handleDrawer()
+      // }
+    }
+      // openList.foreach( (open) => {
+      //   setopenList(!open)
+      // })
+    setopenList(prev => ({
+      ...prev, [menu.title]: !prev[menu.title] 
+    }));
+  };
 
   return (
     <>
@@ -42,7 +59,7 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
           MENU
         </Typography>
         <IconButton onClick={handleDrawer}>
-          <ChevronLeftIcon />
+          <ChevronLeft />
         </IconButton>
       </Toolbar>
       
@@ -54,6 +71,7 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
         }}
       >
         <List 
+          key       = {"nav-0"}
           component = "nav"
           sx        = {{
             alignItems    : "center",
@@ -63,59 +81,129 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
         >
         {/* <Stack component="nav"> */}
           {
-            menu.map(menu => {
+            menu.map((menu,idx)=> {
               const active = menu.path ? (pathActive === menu.path) : false;
 
+
               return (
-                <MUILink
-                  passHref
-                  key       = {menu.title}
-                  component = {Link}
-                  // height    = {24}
-                  underline = "hover"
-                  href      = {menu.path}
-                  variant   = 'h1'
-                  sx        = {{
-                    textDecoration: 'none',
-                    display       : 'flex',
-                    alignItems    : 'center',
-                    lineHeight    : 1.5,
-                    fontSize      : '0.875rem',
-                    fontWeight    : 700,
-                    "&:hover"     : {
-                      color         : theme.palette.primary.main,
-                      textDecoration: "none"
-                    }
-                  }}
-                >
-                {/* <Link 
-                  key  = {menu.title}
-                  href = {menu.path}
-                  passHref
-                > */}
-                  <ListItemButton
-                    sx= {{
-                      pl: 2.5,
-                    }}
-                    selected    = {active}
+                (menu.title == 'divider') 
+                ?
+                  <Divider />
+                :
+                  <Box
+                    key = {menu.title+'-'+idx}
                   >
-                    <ListItemIcon>
-                      {menu.icon}
-                    </ListItemIcon>
-                    <ListItemText
-                      // primary={menu.title}
+                  <MUILink
+                    passHref
+                    shallow = {true}
+                    key       = {menu.title+'-'+idx}
+                    component = {Link}
+                    // height    = {24}
+                    underline = "hover"
+                    href      = {menu.path}
+                    variant   = 'h1'
+                    sx        = {{
+                      textDecoration: 'none',
+                      display       : 'flex',
+                      alignItems    : 'center',
+                      lineHeight    : 1.5,
+                      fontSize      : '0.875rem',
+                      fontWeight    : 700,
+                      "&:hover"     : {
+                        color         : theme.palette.primary.main,
+                        textDecoration: "none"
+                      }
+                    }}
+                  >
+                    <ListItemButton
+                      id       = {menu.title}                  
+                      key       = {menu.title+'-L'+idx}
+                      selected = {active}
+                      // onClick  = {menu.child ? (() => handleListOpen(menu.title)) : (() => '#')}
+                      onClick  = {() => handleListOpen(menu)}
+                      sx       = {{
+                        pl: 2.5,
+                      }}
+                      aria-controls={openList[menu.title] ? menu.title : undefined}
+                      aria-haspopup="true"
+                      aria-expanded={openList[menu.title] ? 'true' : undefined}
                     >
-                      <Typography sx = {{
-                        lineHeight    : 1.5,
-                        // fontSize      : '0.875rem',
-                        fontWeight    : 500,
-                      }}  > 
-                        {menu.title}
-                      </Typography>
-                    </ListItemText>
-                  </ListItemButton>
-                {/* </Link> */}
-              </MUILink>
+                      <ListItemIcon>
+                        {menu.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        // primary={menu.title}
+                      >
+                        <Typography sx = {{
+                          lineHeight    : 1.5,
+                          // fontSize      : '0.875rem',
+                          fontWeight    : 500,
+                        }}  > 
+                          {menu.title}
+                        </Typography>
+                      </ListItemText>
+                      { menu.child && (openList[menu.title] ? <ExpandMore /> : <ChevronRight />) }
+                    </ListItemButton>
+                  </MUILink>
+                  {menu.child?.map((submenu, index) => (
+                    <Collapse
+                      key     = {index}
+                      in      = {openList[menu.title]}
+                      timeout = "auto"
+                      unmountOnExit
+                    >
+                      <List                   
+                        key     = {'SL-'+index}
+                        component = "div"
+                        sx        = {{
+                          alignItems    : "center",
+                          alignContent  : "center",
+                          justifyContent: "center"
+                        }}
+                        disablePadding
+                      >
+                      <MUILink
+                        passHref
+                        shallow = {true}
+                        key       = {submenu.title}
+                        component = {Link}
+                        // height    = {24}
+                        underline = "hover"
+                        href      = {submenu.path}
+                        variant   = 'h1'
+                        sx        = {{
+                          textDecoration: 'none',
+                          display       : 'flex',
+                          alignItems    : 'center',
+                          lineHeight    : 1.5,
+                          fontSize      : '0.875rem',
+                          fontWeight    : 700,
+                          "&:hover"     : {
+                            color         : theme.palette.primary.main,
+                            textDecoration: "none"
+                          }
+                        }}
+                      >
+                        <ListItemButton
+                          id       = {menu.title}
+                          selected = {active}
+                          sx       = {{ pl: 9.5 }}
+                        >
+                          <ListItemText>
+                            <Typography sx = {{
+                              lineHeight    : 1.5,
+                              // fontSize      : '0.875rem',
+                              fontWeight    : 500,
+                            }} > 
+                              {submenu.title}
+                            </Typography>
+                          </ListItemText>
+                        </ListItemButton>
+                    </MUILink>
+                      </List>
+                    </Collapse>
+                  ))}
+                  </Box>
               );
             })
           }

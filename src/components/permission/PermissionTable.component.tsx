@@ -7,15 +7,16 @@ import TableComponent from '../_general/molecules/Table.component';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
-import TableFilterComponent from '../_general/molecules/TableFilter.component';
-import SelectComponent from '../_general/atoms/Select.component';
-import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
+
+import UserOnline from '@/types/UserOnline.type';
+import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import ModalComponent from '../_general/molecules/Modal.component';
+import { usePermissionDelete } from '@/hooks/permission/use-delete';
+import Permission, { initPermission } from '@/types/Permission.type';
 import PermissionCreateComponent from './PermissionCreate.component';
 import PermissionUpdateComponent from './PermissionUpdate.component';
-import { usePermissionDelete } from '@/hooks/permission/use-delete';
-import { UserOnline } from '@/types/UserOnline.type';
-import { useTypedSelector } from '@/hooks/other/use-type-selector';
+import TableFilterComponent from '../_general/molecules/TableFilter.component';
+import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 
 interface PermissionTableProps {
@@ -25,7 +26,7 @@ interface PermissionTableProps {
 
 const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
 
-  const currentUser: UserOnline                       = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -49,19 +50,19 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
     { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
     { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
-    { field: 'action', type: 'actions', width:100, getActions: (params: GridRenderCellParams) => [
+    { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
         icon    = {<EditIcon />}
         label   = "Edit"
-        onClick = {() => handleOpenUpdateModal(params.row.uid)}
+        onClick = {() => handleOpenUpdateModal(params.row)}
         showInMenu
       />,
       <GridActionsCellItem
         key     = {"delete-"+params.id}
         icon    = {<DeleteIcon />}
         label   = "Delete"
-        onClick = {() => {handleOpenDeleteModal(params.row.id)}}
+        onClick = {() => {handleOpenDeleteModal(params.row.uid)}}
         showInMenu
       />,
     ]},
@@ -93,11 +94,11 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
   }
 
 
-  const [updatePermissionID, setUpdatePermissionID] = React.useState('');
-  const [openUpdateModal, setOpenUpdateModal]       = React.useState(false);
-  const handleCloseUpdateModal                    = () => setOpenUpdateModal(false);
-  const handleOpenUpdateModal                     = (permission_id: string) => {
-    setUpdatePermissionID(permission_id)
+  const [updatePermission, setUpdatePermission] = React.useState<Permission>(initPermission);
+  const [openUpdateModal, setOpenUpdateModal]   = React.useState(false);
+  const handleCloseUpdateModal                  = () => setOpenUpdateModal(false);
+  const handleOpenUpdateModal                   = (permission: Permission) => {
+    setUpdatePermission(permission)
     setOpenUpdateModal(true);
   }
   
@@ -105,11 +106,11 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
   const [deletePermissionID, setDeletePermissionID] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal]       = React.useState(false);
   const handleCloseDeleteModal                      = () => setOpenDeleteModal(false);
-  const handleOpenDeleteModal                       = (permission_id: string) => {
-    setDeletePermissionID(permission_id)
+  const handleOpenDeleteModal                       = (permission_uid: string) => {
+    setDeletePermissionID(permission_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = usePermissionDelete({ permission_id: updatePermissionID, getData: getPermissionData });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete } = usePermissionDelete({ permission_uid: deletePermissionID, getData: getPermissionData, closeModal: handleCloseDeleteModal });
   const handleDeletePermission = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -138,6 +139,14 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
             selectId    = 'test'
             selectLabel = 'Test'
             options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
+            sx       = {{
+              '@media (min-width: 900px)': {        
+                maxWidth: '180px'
+              },
+              '@media (min-width: 0px)'  : {
+                width: '100%'
+              }
+            }}
           /> */}
           {/* <SelectComponent
             selectId    = 'test'
@@ -148,7 +157,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         </TableFilterComponent>
         {
           (isLoadingPermission) ? 
-            <TableSkeletonComponent />
+          <TableSkeletonComponent />
           :
           <TableComponent 
             rowData        = {rowData}
@@ -168,6 +177,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         modalSize    = 'sm'
         modalOpen    = {modalCreate}
         modalOnClose = {handleCloseCreateModal}
+        isPermanent  = {false}
       >
         <PermissionCreateComponent getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/>
       </ModalComponent>
@@ -178,8 +188,9 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         modalSize    = 'sm'
         modalOpen    = {openUpdateModal}
         modalOnClose = {handleCloseUpdateModal}
+        isPermanent  = {false}
       >
-        <PermissionUpdateComponent updatePermissionID={updatePermissionID} getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/>
+        <PermissionUpdateComponent updatePermission={updatePermission} getPermissionData={getPermissionData} handleCloseModal={handleCloseUpdateModal}/>
       </ModalComponent>
 
       <DeleteConfirmComponent 

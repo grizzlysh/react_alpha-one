@@ -1,32 +1,52 @@
 import React from 'react';
-import { LoadingButton, LoadingButtonProps as MUILoadingButtonProps } from "@mui/lab";
+import Button, { ButtonProps as MUIButtonProps } from '@mui/material/Button';
+import theme from '@/utils/theme';
+import CircularProgress from '@mui/material/CircularProgress';
 
-interface LoadingButtonProps extends MUILoadingButtonProps {
-  isLoading: boolean,
-  children : React.ReactNode,
-  // icon       ?: React.ReactNode,
-  // handleClick?: () => void,
+interface LoadingButtonProps extends MUIButtonProps {
+  isLoading  : boolean,
+  buttonColor: 'primary' | 'secondary' | 'error' | 'warning'
+  children   : React.ReactNode,
 }
 
-const LoadingButtonComponent: React.FC<LoadingButtonProps> = ({ children, isLoading, ...props }) => {
-  
+const LoadingButtonComponent: React.FC<LoadingButtonProps> = ({ isLoading, buttonColor, children, ...props }) => {
+
   return (
-    <LoadingButton
-      loading = {isLoading}
-      variant = 'contained'
-      color   = 'secondary'
-      sx      = {{
-        textTransform  : 'none',
-        px             : '12px',
-        borderRadius   : 2,
-        fontSize       : '0.875rem',
-        fontWeight     : 700,
-        lineHeight     : 1.5,
-      }}
-      {...props}
-    >
-      { children }
-    </LoadingButton>
+    <>
+    { (isLoading) ?
+      <Button
+        variant   = 'contained'
+        color     = {buttonColor}
+        sx        = {{
+          textTransform  : 'none',
+          px             : '12px',
+          borderRadius   : 2,
+          fontSize       : '0.875rem',
+          fontWeight     : 700,
+          lineHeight     : 1.5,
+        }}
+        {...props}
+      >
+        <CircularProgress size={'1.5rem'} sx={{ color: '#fff' }}/>
+      </Button>
+    :
+      <Button
+        variant   = 'contained'
+        color     = {buttonColor}
+        sx        = {{
+          textTransform  : 'none',
+          px             : '12px',
+          borderRadius   : 2,
+          fontSize       : '0.875rem',
+          fontWeight     : 700,
+          lineHeight     : 1.5,
+        }}
+        {...props}
+      >
+        { children }
+      </Button>
+    }
+    </>
   )
 }
 

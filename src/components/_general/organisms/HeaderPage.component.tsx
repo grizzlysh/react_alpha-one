@@ -1,16 +1,14 @@
 import React from 'react';
-import { Box, Button, Typography, Stack } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add';
+import { Box, Typography, Stack } from '@mui/material'
 
 import theme from '@/utils/theme';
-import ButtonComponent from '../atoms/Button.component';
 import BreadcrumbsComponent from '../molecules/Breadcrumbs.component';
 
 interface HeaderPageProps {
-  title                : string,
-  handleModalCreateOpen: () =>void,
+  title   : string,
+  children?: React.ReactNode,
 }
-const HeaderPage: React.FC<HeaderPageProps> = ({ title, handleModalCreateOpen }) => {
+const HeaderPage: React.FC<HeaderPageProps> = ({ title, children }) => {
   
   return (
     <Stack flexDirection={"row"} alignItems={"center"} marginBottom={3}>
@@ -37,17 +35,7 @@ const HeaderPage: React.FC<HeaderPageProps> = ({ title, handleModalCreateOpen })
         </Typography>
         <BreadcrumbsComponent />
       </Stack>
-      <ButtonComponent
-        startIcon = {<AddIcon />}
-        onClick   = {handleModalCreateOpen}
-        // sx        = {{
-        //   justifyContent: 'center',
-        //   alignItems    : 'center',
-        //   alignContent  : 'center',
-        // }}
-      >
-        Add New
-      </ButtonComponent>
+      {children}
     </Stack>
   )
 }

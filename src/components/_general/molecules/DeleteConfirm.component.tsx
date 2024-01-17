@@ -1,7 +1,7 @@
 import React from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import Fade from '@mui/material/Fade';
-import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button, DialogProps } from '@mui/material';
 import ButtonComponent from '../atoms/Button.component';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -13,11 +13,18 @@ interface DeleteConfirmProps {
 }
 
 const DeleteConfirmComponent: React.FC<DeleteConfirmProps> = ({modalOpen, modalOnClose, modalId, onDelete }: any) => {
+
+  const handleOnClose: DialogProps["onClose"] = (event, reason) => {
+    if (reason && reason === "backdropClick")
+      return;
+    modalOnClose()
+  }
+
   return (
 
       <Dialog
         open             = {modalOpen}
-        onClose          = {modalOnClose}
+        onClose          = {handleOnClose}
         maxWidth         = {'xs'}
         aria-labelledby  = {modalId}
         aria-describedby = {modalId+"-content"}
@@ -52,17 +59,11 @@ const DeleteConfirmComponent: React.FC<DeleteConfirmProps> = ({modalOpen, modalO
         </DialogContent>
 
         <DialogActions>
-            
-            {/* <ButtonComponent
-              onClick     = {modalOnClose}
-              buttonColor = {'secondary'}
-            >
-              Cancel
-            </ButtonComponent> */}
-
+          
             <Button 
-              id    = 'button-cancel'
-              color = 'primary'
+              id      = 'button-cancel'
+              color   = 'primary'
+              onClick = {modalOnClose}
             >
               Cancel
             </Button>

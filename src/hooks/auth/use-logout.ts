@@ -15,7 +15,7 @@ const useLogout = () => {
   return {
     logout : () => {
       dispatch(userLogout())
-      router.replace('/login')
+      router.replace('/login', undefined, { shallow: true })
       AlertSuccess("Logout Success")
     }
   }
