@@ -11,9 +11,10 @@ import { UserCreateRequest } from "@/services/user/create";
 interface useUserCreateProps {
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useUserCreate = ({getData, closeModal}: useUserCreateProps) => {
+export const useUserCreate = ({getData, closeModal, resetForm}: useUserCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,6 +24,7 @@ export const useUserCreate = ({getData, closeModal}: useUserCreateProps) => {
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

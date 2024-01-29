@@ -11,9 +11,10 @@ import { ShapeCreateRequest } from "@/services/shape/create";
 interface useShapeCreateProps {
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useShapeCreate = ({getData, closeModal}: useShapeCreateProps) => {
+export const useShapeCreate = ({getData, closeModal, resetForm}: useShapeCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,6 +24,7 @@ export const useShapeCreate = ({getData, closeModal}: useShapeCreateProps) => {
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

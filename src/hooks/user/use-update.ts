@@ -12,9 +12,10 @@ interface useUserUpdateProps {
   user_uid  : string,
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useUserUpdate = ({ user_uid, getData, closeModal }:useUserUpdateProps ) => {
+export const useUserUpdate = ({ user_uid, getData, closeModal, resetForm }:useUserUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -29,6 +30,7 @@ export const useUserUpdate = ({ user_uid, getData, closeModal }:useUserUpdatePro
       // ]);
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

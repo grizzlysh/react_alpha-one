@@ -17,7 +17,6 @@ interface PermissionCreateProps {
 
 const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData, handleCloseModal }) => {
 
-  const { mutate: submitCreatePermission, isLoading } = usePermissionCreate({ getData: getPermissionData, closeModal: handleCloseModal })
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -27,6 +26,7 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
     control,
     register,
     getValues,
+    reset,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<PermissionCreateRequest>({
@@ -36,6 +36,16 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
       current_user_uid: currentUser.uid,
     }
   })
+
+  const resetForm = () => {
+    reset({
+      display_name    : '',
+      description     : '',
+      current_user_uid: currentUser.uid,
+    })
+  }
+  
+  const { mutate: submitCreatePermission, isLoading } = usePermissionCreate({ getData: getPermissionData, closeModal: handleCloseModal, resetForm: resetForm })
 
   const onSubmit: SubmitHandler<PermissionCreateRequest> = (data) => {
     submitCreatePermission(data)

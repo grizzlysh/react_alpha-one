@@ -1,9 +1,13 @@
 import React from 'react';
+import { useRouter } from 'next/router';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { styled, useTheme } from '@mui/material/styles';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import { Toolbar, IconButton, Typography } from '@mui/material';
+import { Toolbar, IconButton, Typography, MenuItem, Menu, Stack, ListItemIcon, Paper } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 import { DRAWER_WIDTH } from '@/configs/constant';
@@ -59,6 +63,21 @@ const ElevationScroll = (props: ElevationScrollProps) => {
 
 const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, handleLogout, ...props} ) => {
 
+  const router                          = useRouter();
+  const [profileModal, setProfileModal] = React.useState<null | HTMLElement>(null)
+
+  const handleOpenProfileModal = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileModal(event.currentTarget)
+  }
+
+  const handleCloseProfileModal = () => {
+    setProfileModal(null)
+  }
+
+  const handleProfile = () => {
+    router.push('/profile', undefined, { shallow: true })
+  }
+
   return (
     // <ElevationScroll>
       <TopBar
@@ -106,11 +125,60 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
           </Typography>
 
           <IconButton
-            color   = "inherit"
-            onClick = {handleLogout}
+            // size          = "large"
+            aria-label    = "account of current user"
+            aria-controls = "menu-appbar"
+            aria-haspopup = "true"
+            onClick       = {handleOpenProfileModal}
+            color         = "inherit"
           >
-            <LogoutIcon />
+            <AccountCircleIcon />
           </IconButton>
+            {/* <IconButton
+              color   = "inherit"
+              onClick = {handleLogout}
+            >
+              <LogoutIcon />
+            </IconButton> */}
+          <Menu
+            id           = "menu-appbar"
+            anchorEl     = {profileModal}
+            anchorOrigin = {{
+              vertical  : 'bottom',
+              horizontal: 'right',
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical  : 'top',
+              horizontal: 'right',
+            }}
+            open    = {Boolean(profileModal)}
+            onClose = {handleCloseProfileModal}
+            sx      = {{
+              '& .MuiPaper-root': {
+                borderRadius  : 3,
+                minWidth      : 150,
+                overflow      : 'visible',
+                backdropFilter: 'blur(20px)',
+                // filter      : 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                // marginTop: theme.spacing(1),
+              }
+            }}
+          >
+            <MenuItem onClick={handleProfile}>
+              <ListItemIcon>
+                <ManageAccountsIcon fontSize="small" />
+              </ListItemIcon>
+               Profile
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Menu>
+
         </Toolbar>
       </TopBar>
     // </ElevationScroll>

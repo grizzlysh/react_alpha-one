@@ -10,11 +10,12 @@ import { PermissionUpdateRequest } from "@/services/permission/update";
 
 interface usePermissionUpdateProps {
   permission_uid: string,
-  getData      : ()=>void,
-  closeModal   : ()=>void,
+  getData       : ()=>void,
+  closeModal    : ()=>void,
+  resetForm     : ()=>void,
 }
 
-export const usePermissionUpdate = ({ permission_uid, getData, closeModal }:usePermissionUpdateProps ) => {
+export const usePermissionUpdate = ({ permission_uid, getData, closeModal, resetForm }:usePermissionUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -29,6 +30,7 @@ export const usePermissionUpdate = ({ permission_uid, getData, closeModal }:useP
       // ]);
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

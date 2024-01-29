@@ -13,9 +13,10 @@ interface useShapeUpdateProps {
   shape_uid : string,
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useShapeUpdate = ({ shape_uid, getData, closeModal }:useShapeUpdateProps ) => {
+export const useShapeUpdate = ({ shape_uid, getData, closeModal, resetForm }:useShapeUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -30,6 +31,7 @@ export const useShapeUpdate = ({ shape_uid, getData, closeModal }:useShapeUpdate
       // ]);
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

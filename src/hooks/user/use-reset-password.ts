@@ -12,9 +12,10 @@ import { UserResetPasswordRequest } from "@/services/user/reset_password";
 interface useUserResetPasswordProps {
   user_uid  : string,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useUserResetPassword = ({ user_uid, closeModal }:useUserResetPasswordProps ) => {
+export const useUserResetPassword = ({ user_uid, closeModal, resetForm }:useUserResetPasswordProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,6 +24,7 @@ export const useUserResetPassword = ({ user_uid, closeModal }:useUserResetPasswo
     mutationFn : (payload: UserResetPasswordRequest) => api.resetPasswordUser(payload, user_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

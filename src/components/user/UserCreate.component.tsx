@@ -19,11 +19,9 @@ interface UserCreateProps {
 
 const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleCloseModal }) => {
 
-  const { mutate: submitCreateUser, isLoading } = useUserCreate({ getData: getUserData, closeModal: handleCloseModal })
   const currentUser: UserOnline                 = useTypedSelector(
     (state) => state.reducer.user.user,
   );
-
   
   const [roleOptions, setRoleOptions] = React.useState<{value: string, label: string}[]>([])
   const sexOptions                    = [
@@ -45,6 +43,7 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
     register,
     getValues,
     handleSubmit,
+    reset,
     formState: { isValid, errors },
   } = useForm<UserCreateRequest>({
     defaultValues: {
@@ -57,6 +56,20 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
       role_uid        : '',
     }
   })
+
+  const resetForm = () => {
+    reset({
+      username        : '',
+      name            : '',
+      sex             : '',
+      email           : '',
+      password        : '',
+      current_user_uid: currentUser.uid,
+      role_uid        : '',
+    })
+  }
+  
+  const { mutate: submitCreateUser, isLoading } = useUserCreate({ getData: getUserData, closeModal: handleCloseModal, resetForm: resetForm })
 
   const onSubmit: SubmitHandler<UserCreateRequest> = (data) => {
     submitCreateUser(data)

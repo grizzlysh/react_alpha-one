@@ -15,7 +15,6 @@ interface ShapeCreateProps {
 
 const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handleCloseModal }) => {
 
-  const { mutate: submitCreateShape, isLoading } = useShapeCreate({ getData: getShapeData, closeModal: handleCloseModal })
   const currentUser: UserOnline                  = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -25,6 +24,7 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
     control,
     register,
     getValues,
+    reset,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<ShapeCreateRequest>({
@@ -33,6 +33,15 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
       current_user_uid: currentUser.uid,
     }
   })
+
+  const resetForm = () => {
+    reset({
+      name            : '',
+      current_user_uid: currentUser.uid,
+    })
+  }
+
+  const { mutate: submitCreateShape, isLoading } = useShapeCreate({ getData: getShapeData, closeModal: handleCloseModal, resetForm: resetForm })
 
   const onSubmit: SubmitHandler<ShapeCreateRequest> = (data) => {
     submitCreateShape(data)

@@ -1,7 +1,7 @@
 import storage from 'redux-persist/lib/storage';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { UserOnline } from '@/types/UserOnline.type';
+import UserOnline from '@/types/UserOnline.type';
 import { RootState } from '@/stores/store';
 
 type UserState = {
@@ -13,14 +13,17 @@ type UserState = {
 
 const initialState: UserState = {
   user: {
-    uid     : '',
-    username: '',
-    name    : '',
-    sex     : '',
-    email   : '',
-    role:{
+    uid       : '',
+    username  : '',
+    name      : '',
+    sex       : '',
+    email     : '',
+    created_at: '',
+    role      : {
       uid : '',
       name: '',
+      display_name   : '',
+      permission_role: []
     }
   },
   access_token : '',

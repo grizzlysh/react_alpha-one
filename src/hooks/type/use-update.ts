@@ -11,12 +11,13 @@ import { ShapeUpdateRequest } from "@/services/shape/update";
 import { TypeUpdateRequest } from "@/services/type/update";
 
 interface useTypeUpdateProps {
-  type_uid : string,
+  type_uid  : string,
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useTypeUpdate = ({ type_uid, getData, closeModal }:useTypeUpdateProps ) => {
+export const useTypeUpdate = ({ type_uid, getData, closeModal, resetForm }:useTypeUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -31,6 +32,7 @@ export const useTypeUpdate = ({ type_uid, getData, closeModal }:useTypeUpdatePro
       // ]);
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

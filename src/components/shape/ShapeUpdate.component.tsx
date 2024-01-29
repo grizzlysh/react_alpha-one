@@ -21,7 +21,6 @@ interface ShapeUpdateProps {
 
 const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShapeData, handleCloseModal }) => {
 
-  const { mutate: submitUpdateShape, isLoading: isLoadingUpdateShape } = useShapeUpdate({ shape_uid: updateShape.uid, closeModal: handleCloseModal, getData: getShapeData })
   const currentUser: UserOnline                                        = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -41,6 +40,12 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
     }
   })
 
+  const resetForm = () => {
+    reset({
+      name            : '',
+      current_user_uid: currentUser.uid,
+    })
+  }
   const loadData = (data: any) => {
     reset({
       name            : data.name,
@@ -48,6 +53,8 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
     })
   }
   
+  const { mutate: submitUpdateShape, isLoading: isLoadingUpdateShape } = useShapeUpdate({ shape_uid: updateShape.uid, closeModal: handleCloseModal, getData: getShapeData, resetForm: resetForm })
+
   React.useEffect( () => {
     loadData(updateShape)
   },[updateShape])

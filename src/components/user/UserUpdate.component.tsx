@@ -20,7 +20,6 @@ interface UserUpdateProps {
 
 const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserData, handleCloseModal }) => {
 
-  const { mutate: submitUpdateUser, isLoading: isLoadingUpdateUser } = useUserUpdate({ user_uid: updateUser.uid, closeModal: handleCloseModal, getData: getUserData})
   const currentUser: UserOnline                                      = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -61,6 +60,18 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     }
   })
 
+  const resteForm = () => {
+    reset({
+      username        : '',
+      name            : '',
+      sex             : '',
+      email           : '',
+      password        : '',
+      current_user_uid: currentUser.uid,
+      role_uid        : '',
+    })
+  }
+
   const loadData = (data: any) => {
     console.log(data);
     reset({
@@ -73,7 +84,9 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
       current_user_uid: currentUser.uid,
     })
   }
-
+  
+  const { mutate: submitUpdateUser, isLoading: isLoadingUpdateUser } = useUserUpdate({ user_uid: updateUser.uid, closeModal: handleCloseModal, getData: getUserData, resetForm: resteForm})
+  
   const getRoleOptions = () => {
     doGetRole().then(
       (resp: any) => {

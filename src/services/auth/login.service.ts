@@ -1,6 +1,6 @@
 import { http } from '@/services/axios';
 import { AUTH_LOGIN_PATH } from '@/configs/constant';
-import { UserOnline } from '@/types/UserOnline.type';
+import UserOnline from '@/types/UserOnline.type';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 
 export interface LoginRequest {

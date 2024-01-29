@@ -11,9 +11,10 @@ import { TypeCreateRequest } from "@/services/type/create";
 interface useTypeCreateProps {
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useTypeCreate = ({getData, closeModal}: useTypeCreateProps) => {
+export const useTypeCreate = ({getData, closeModal, resetForm}: useTypeCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,6 +24,7 @@ export const useTypeCreate = ({getData, closeModal}: useTypeCreateProps) => {
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

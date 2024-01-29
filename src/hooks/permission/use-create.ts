@@ -11,9 +11,10 @@ import { PermissionCreateRequest } from "@/services/permission/create";
 interface usePermissionCreateProps {
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const usePermissionCreate = ({getData, closeModal}: usePermissionCreateProps) => {
+export const usePermissionCreate = ({getData, closeModal, resetForm}: usePermissionCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -28,6 +29,7 @@ export const usePermissionCreate = ({getData, closeModal}: usePermissionCreatePr
       // ]);
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

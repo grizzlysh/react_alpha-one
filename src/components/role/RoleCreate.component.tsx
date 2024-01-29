@@ -2,7 +2,7 @@ import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Stack, TextField } from '@mui/material'
+import { Autocomplete, Box, Stack, TextField } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import Permission from '@/types/Permission.type'
@@ -20,7 +20,7 @@ import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.co
 
 interface InputPermission {
   permission_name: string,
-  permission_uid : string,
+  permission_uid : {} | null,
   read_permit    : boolean,
   write_permit   : boolean,
   modify_permit  : boolean,
@@ -112,7 +112,7 @@ const RoleCreateComponent: React.FC = () => {
   } = useForm<InputPermission>({
     defaultValues: {
       permission_name: '',
-      permission_uid : '',
+      permission_uid : null,
       read_permit    : false,
       write_permit   : false,
       modify_permit  : false,
@@ -130,7 +130,7 @@ const RoleCreateComponent: React.FC = () => {
     setPermissionList((prevList) => ([ ...prevList, permissionRow ]));
     reset({
       permission_name: '',
-      permission_uid : '',
+      permission_uid : null,
       read_permit    : false,
       write_permit   : false,
       modify_permit  : false,
@@ -307,15 +307,30 @@ const RoleCreateComponent: React.FC = () => {
                         field     : { onChange, value },
                         fieldState: { error },
                       }) => (
-                      <SelectComponent
-                        error        = {!!error}
-                        selectState  = {value}
-                        handleChange = {handleSelectPermission}
-                        selectId     = 'permission-select'
-                        selectLabel  = 'Permission'
-                        options      = {permissionOptions}
-                        helperText   = {error ? error.message : null}
-                      />
+                        <Autocomplete
+                          value    = {value || null}
+                          id       = "controllable-states-demo"
+                          options  = {permissionOptions}
+                          sx       = {{ width: 300 }}
+                          onChange = {(event: any, newValue: {} | null) => {
+                            onChange(newValue)
+                          }}
+                          renderInput = {(params: any) => 
+                          <TextField
+                            {...params}
+                            label      = "Controllable"
+                            helperText = {error ? error.message : null}
+                           />}
+                        />
+                      // <SelectComponent
+                      //   error        = {!!error}
+                      //   selectState  = {value}
+                      //   handleChange = {handleSelectPermission}
+                      //   selectId     = 'permission-select'
+                      //   selectLabel  = 'Permission'
+                      //   options      = {permissionOptions}
+                      //   helperText   = {error ? error.message : null}
+                      // />
                       )
                     }
                   />

@@ -59,7 +59,8 @@ const HomePage: NextPage = () => {
 
   return (
     <AppLayoutComponent title='Home'>
-      <HeaderPage title='Home' handleModalCreateOpen={handleOpenCreateModal}/>
+      <HeaderPage title='Home'>
+      </HeaderPage>
       <StatusHeaderComponent card={cardList} />
       <PermissionTable 
         modalCreate            = {openCreateModal}

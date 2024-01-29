@@ -18,7 +18,6 @@ interface PermissionUpdateProps {
 
 const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePermission, getPermissionData, handleCloseModal }) => {
 
-  const { mutate: submitUpdatePermission, isLoading: isLoadingUpdatePermission } = usePermissionUpdate({ permission_uid: updatePermission.uid, closeModal: handleCloseModal, getData: getPermissionData })
   const currentUser: UserOnline                                                  = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -39,6 +38,14 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
     }
   })
 
+  const resetForm = () => {
+    reset({
+      display_name    : '',
+      description     : '',
+      current_user_uid: currentUser.uid,
+    })
+  }
+
   const loadData = (data: any) => {
     reset({
       display_name    : data.display_name,
@@ -46,6 +53,8 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
       current_user_uid: currentUser.uid,
     })
   }
+  
+  const { mutate: submitUpdatePermission, isLoading: isLoadingUpdatePermission } = usePermissionUpdate({ permission_uid: updatePermission.uid, closeModal: handleCloseModal, getData: getPermissionData, resetForm: resetForm })
   
   React.useEffect( () => {
     loadData(updatePermission)

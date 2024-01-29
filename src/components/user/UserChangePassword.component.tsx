@@ -21,7 +21,6 @@ interface UserChangePasswordProps {
 
 const UserChangePasswordComponent: React.FC<UserChangePasswordProps> = ({ user_uid, handleCloseModal }) => {
 
-  const { mutate: submitChangePassword, isLoading } = useUserResetPassword({ user_uid: user_uid, closeModal: handleCloseModal })
   const currentUser: UserOnline                     = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -31,6 +30,7 @@ const UserChangePasswordComponent: React.FC<UserChangePasswordProps> = ({ user_u
     control,
     register,
     getValues,
+    reset,
     handleSubmit,
     formState: { isValid, errors },
   } = useForm<UserResetPasswordRequest>({
@@ -40,6 +40,16 @@ const UserChangePasswordComponent: React.FC<UserChangePasswordProps> = ({ user_u
       current_user_uid: currentUser.uid,
     }
   })
+
+  const resetForm = () => {
+    reset({
+      password        : '',
+      repassword      : '',
+      current_user_uid: currentUser.uid,
+    })
+  }
+  
+  const { mutate: submitChangePassword, isLoading } = useUserResetPassword({ user_uid: user_uid, closeModal: handleCloseModal, resetForm: resetForm })
 
   const onSubmit: SubmitHandler<UserResetPasswordRequest> = (data) => {
     submitChangePassword(data)

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "analyze": "npx cross-env ANALYZE=true npm run build"
+    "analyze": "npx cross-env ANALYZE=true npm run build",
+    "analyze:browser": "npx cross-env BUNDLE_ANALYZE=browser next build"
   },
   "dependencies": {
     "@emotion/cache": "^11.10.5",
