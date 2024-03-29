@@ -171,27 +171,10 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
           />
         }
       </PaperComponent>
-      <ModalComponent
-        modalId      = 'shape-create'
-        modalTitle   = 'Shape Create'
-        modalSize    = 'sm'
-        modalOpen    = {modalCreate}
-        modalOnClose = {handleCloseCreateModal}
-        isPermanent  = {false}
-      >
-        <ShapeCreateComponent getShapeData={getShapeData} handleCloseModal={handleCloseCreateModal}/>
-      </ModalComponent>
+      
+      <ShapeCreateComponent getShapeData={getShapeData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
 
-      <ModalComponent
-        modalId      = 'shape-edit'
-        modalTitle   = 'Shape Edit'
-        modalSize    = 'sm'
-        modalOpen    = {openUpdateModal}
-        modalOnClose = {handleCloseUpdateModal}
-        isPermanent  = {false}
-      >
-        <ShapeUpdateComponent updateShape={updateShape} getShapeData={getShapeData} handleCloseModal={handleCloseUpdateModal} />
-      </ModalComponent>
+      <ShapeUpdateComponent updateShape={updateShape} getShapeData={getShapeData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
 
       <DeleteConfirmComponent 
         modalId      = 'shape-delete'

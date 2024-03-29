@@ -64,9 +64,14 @@ const TableFilterComponent: React.FC<TableFilterComponent> = ({ children, button
               startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
             }}
             sx = {{ 
-              mr      : 1,
-              width   : '100%',
-              flexGrow: 1,
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: '#e1e4e6',
+                },
+              },
+              mr         : 1,
+              width      : '100%',
+              flexGrow   : 1,
             }}
           />
           <VerticalMenuComponent 

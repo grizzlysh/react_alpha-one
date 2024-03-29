@@ -1,49 +1,52 @@
 import React from 'react';
 import GamesIcon from '@mui/icons-material/Games';
-import { People, Dashboard, AccountCircle } from '@mui/icons-material';
-interface MenuProps {
-  title : string,
-  path  : string,
-  url   : string,
-  icon  : React.ReactNode,
-  child?: any[]
-}
+import { People, Groups, Dashboard, Book, Circle } from '@mui/icons-material';
+import { Menu } from '@/types/Menu.type';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import { Box } from '@mui/material';
 
-const menu:MenuProps[] = [
+
+
+const menu:Menu[] = [
   {
     title: 'Home',
     path : '/',
     url  : '',
+    state: ['/'],
     icon : <Dashboard />,
   },
-  {
-    title: 'Profile',
-    path : '/profile',
-    url  : 'profile',
-    icon : <AccountCircle />,
-  },
+  // {
+  //   title: 'Profile',
+  //   path : '/profile',
+  //   url  : 'profile',
+  //   icon : <AccountCircle />,
+  // },
   {
     title: 'User Manage',
     path : '',
     url  : 'user_manage',
-    icon : <People />,
+    state: ['/permission', '/role', '/user'],
+    icon : <Groups />,
     child: [
       {
         title: 'Permission',
         path : '/permission',
         url  : 'permission',
+        state: ['/permission'],
         // icon : <People />,
       },
       {
         title: 'Role',
         path : '/role',
         url  : 'role',
+        state: ['/role'],
         // icon : <ShoppingCart />,
       },
       {
         title: 'User',
         path : '/user',
         url  : 'user',
+        state: ['/user'],
         // icon : <ShoppingCart />,
       },
     ]
@@ -52,31 +55,46 @@ const menu:MenuProps[] = [
     title: 'divider',
     path : '',
     url  : '',
+    state: [''],
     icon : '',
   },
   {
-    title: 'Klasifikasi Obat',
+    title: 'Drug Class',
     path : '',
     url  : 'drug_class',
-    icon : <People />,
+    state: ['/shape', '/category', '/therapy-class'],
+    icon : <Book />,
     child: [
       {
-        title: 'Bentuk',
+        title: 'Shape',
         path : '/shape',
         url  : 'shape',
-        // icon : <People />,
+        state: ['/shape'],
+        // icon : <>&#x2022;</>,
+        icon: '',
       },
       {
-        title: 'Golongan',
-        path : '/type',
-        url  : 'type',
-        // icon : <ShoppingCart />,
-      },
-      {
-        title: 'Kelas Terapi',
+        title: 'Category',
         path : '/category',
         url  : 'category',
-        // icon : <ShoppingCart />,
+        state: ['/category'],
+        icon : <Box
+          sx={{
+            content        : '""',
+            width          : '4px',
+            height         : '4px',
+            borderRadius   : '50%',
+            backgroundColor: '#919eab',
+            transition     : 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+          }}        
+        />,
+      },
+      {
+        title: 'Therapy Class',
+        path : '/therapy-class',
+        url  : 'therapy-class',
+        state: ['/therapy-class'],
+        icon : <Circle />,
       },
     ]
   },

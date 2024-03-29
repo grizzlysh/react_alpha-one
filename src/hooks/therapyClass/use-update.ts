@@ -6,24 +6,22 @@ import api from "@/services"
 import { AlertError, AlertSuccess } from "@/utils/notification";
 import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
-import { PermissionUpdateRequest } from "@/services/permission/update";
-import { ShapeUpdateRequest } from "@/services/shape/update";
-import { TypeUpdateRequest } from "@/services/type/update";
+import { TherapyClassUpdateRequest } from "@/services/therapyClass/update";
 
-interface useTypeUpdateProps {
-  type_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
+interface useTherapyClassUpdateProps {
+  therapy_class_uid: string,
+  getData          : ()=>void,
+  closeModal       : ()=>void,
+  resetForm        : ()=>void,
 }
 
-export const useTypeUpdate = ({ type_uid, getData, closeModal, resetForm }:useTypeUpdateProps ) => {
+export const useTherapyClassUpdate = ({ therapy_class_uid, getData, closeModal, resetForm }:useTherapyClassUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
-    mutationKey: ['type-update'],
-    mutationFn: (payload: TypeUpdateRequest) => api.updateType(payload, type_uid),
+    mutationKey: ['therapyclass-update'],
+    mutationFn: (payload: TherapyClassUpdateRequest) => api.updateTherapyClass(payload, therapy_class_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       // await Promise.all([
       //   dispatch(setUserAuth(data.output_schema.user)),

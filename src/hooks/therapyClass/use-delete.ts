@@ -6,21 +6,21 @@ import api from "@/services"
 import { AlertError, AlertSuccess } from "@/utils/notification";
 import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
-import { TypeDeleteRequest } from "@/services/type/delete";
+import { TherapyClassDeleteRequest } from "@/services/therapyClass/delete";
 
-interface useTypeDeleteProps {
-  type_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
+interface useTherapyClassDeleteProps {
+  therapy_class_uid: string,
+  getData          : ()=>void,
+  closeModal       : ()=>void,
 }
 
-export const useTypeDelete = ({ type_uid, getData, closeModal }:useTypeDeleteProps) => {
+export const useTherapyClassDelete = ({ therapy_class_uid, getData, closeModal }:useTherapyClassDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
-    mutationKey: ['type-delete'],
-    mutationFn: (payload: TypeDeleteRequest) => api.deleteType(payload, type_uid),
+    mutationKey: ['therapyclass-delete'],
+    mutationFn: (payload: TherapyClassDeleteRequest) => api.deleteTherapyClass(payload, therapy_class_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
       getData()

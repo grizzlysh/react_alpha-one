@@ -1,5 +1,5 @@
 
-export default interface Type{
+export default interface TherapyClass{
   uid         : string,
   name        : string,
   created_at  : Date | null,
@@ -10,7 +10,7 @@ export default interface Type{
   deletedby   : { name: string, } | null,
 }
 
-export const initType = () => {
+export const initTherapyClass = () => {
   return {
     uid         : '',
     name        : '',

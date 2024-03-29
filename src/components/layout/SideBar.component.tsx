@@ -6,6 +6,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { DRAWER_WIDTH } from '@/configs/constant';
 import {  Box, Drawer, DrawerProps } from '@mui/material';
 import AppMenuComponent from './AppMenu.component';
+import { Menu } from '@/types/Menu.type';
 
 interface DesktopDrawerProps extends DrawerProps {
   open?: boolean;
@@ -87,13 +88,15 @@ const DesktopDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
 );
 
 interface SideBarProps {
-  pathActive  : string,
-  openDrawer  : boolean,
-  handleDrawer: () => void,
+  pathActive        : string,
+  openDrawer        : boolean,
+  handleDrawer      : () => void,
+  openListMenu      : {[key: string]: any},
+  handleOpenListMenu: (menu: Menu) => void,
   // handleLogout: () => void,
 }
 
-const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, handleDrawer }) => {
+const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, handleDrawer, openListMenu, handleOpenListMenu }) => {
 
   const theme        = useTheme();
   const matches      = useMediaQuery(theme.breakpoints.down('md'));
@@ -117,9 +120,11 @@ const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, hand
         }}
       >
         <AppMenuComponent
-          openDrawer   = {openDrawer}
-          pathActive   = {pathActive}
-          handleDrawer = {handleDrawer}
+          openDrawer         = {openDrawer}
+          pathActive         = {pathActive}
+          handleDrawer       = {handleDrawer}
+          openListMenu       = {openListMenu}
+          handleOpenListMenu = {handleOpenListMenu}
         />
       </Drawer>
       :
@@ -128,9 +133,11 @@ const SideBarComponent: React.FC<SideBarProps> = ({ pathActive, openDrawer, hand
         open    = {openDrawer}
       >
         <AppMenuComponent
-          openDrawer   = {openDrawer}
-          pathActive   = {pathActive}
-          handleDrawer = {handleDrawer}
+          openDrawer         = {openDrawer}
+          pathActive         = {pathActive}
+          handleDrawer       = {handleDrawer}
+          openListMenu       = {openListMenu}
+          handleOpenListMenu = {handleOpenListMenu}
         />
       </DesktopDrawer>
     }

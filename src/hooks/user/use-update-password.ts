@@ -6,33 +6,25 @@ import api from "@/services"
 import { AlertError, AlertSuccess } from "@/utils/notification";
 import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
-import { PermissionUpdateRequest } from "@/services/permission/update";
-import { ShapeUpdateRequest } from "@/services/shape/update";
-import { CategoryUpdateRequest } from "@/services/category/update";
+import { UserUpdateRequest } from "@/services/user/update";
+import { UserUpdatePasswordRequest } from "@/services/user/update_password";
 
-interface useCategoryUpdateProps {
-  category_uid: string,
-  getData     : ()=>void,
-  closeModal  : ()=>void,
-  resetForm   : ()=>void,
+interface useUserUpdatePasswordProps {
+  user_uid   : string,
+  closeModal : ()=>void,
+  resetForm ?: ()=>void,
 }
 
-export const useCategoryUpdate = ({ category_uid, getData, closeModal, resetForm }:useCategoryUpdateProps ) => {
+export const useUserUpdatePassword = ({ user_uid, closeModal, resetForm }:useUserUpdatePasswordProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
   return useMutation({
-    mutationKey: ['category-update'],
-    mutationFn : (payload: CategoryUpdateRequest) => api.updateCategory(payload, category_uid),
+    mutationKey: ['user-update-password'],
+    mutationFn : (payload: UserUpdatePasswordRequest) => api.updatePasswordUser(payload, user_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
-      // await Promise.all([
-      //   dispatch(setUserAuth(data.output_schema.user)),
-      //   dispatch(setAccessToken(data.output_schema.access_token)),
-      //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
-      // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
+      resetForm && resetForm() 
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {

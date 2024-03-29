@@ -5,25 +5,21 @@ import { Skeleton, Stack, TextField, Typography } from "@mui/material";
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
-import { usePermissionUpdate } from '@/hooks/permission/use-update';
-import { PermissionUpdateRequest } from '@/services/permission/update';
-import { usePermissionReadByID } from '@/hooks/permission/use-read-by-id';
-import Permission from '@/types/Permission.type';
-import Shape from '@/types/Shape.type';
-import { useShapeUpdate } from '@/hooks/shape/use-update';
-import { ShapeUpdateRequest } from '@/services/shape/update';
 import ModalComponent from '../_general/molecules/Modal.component';
+import TherapyClass from '@/types/TherapyClass.type';
+import { TherapyClassUpdateRequest } from '@/services/therapyClass/update';
+import { useTherapyClassUpdate } from '@/hooks/therapyClass/use-update';
 
-interface ShapeUpdateProps {
-  updateShape     : Shape,
-  getShapeData    : ()=>void,
-  handleCloseModal: ()=>void,
-  modalOpen       : boolean,
+interface TherapyClassUpdateProps {
+  updateTherapyClass : TherapyClass,
+  getTherapyClassData: ()=>void,
+  handleCloseModal   : ()=>void,
+  modalOpen          : boolean,
 }
 
-const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShapeData, handleCloseModal, modalOpen }) => {
+const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ updateTherapyClass, getTherapyClassData, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                                        = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -35,7 +31,7 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
     handleSubmit,
     reset,
     formState: { isValid, isDirty, errors },
-  } = useForm<ShapeUpdateRequest>({
+  } = useForm<TherapyClassUpdateRequest>({
     defaultValues: {
       name            : '',
       current_user_uid: currentUser.uid,
@@ -55,21 +51,21 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
     })
   }
   
-  const { mutate: submitUpdateShape, isLoading: isLoadingUpdateShape } = useShapeUpdate({ shape_uid: updateShape.uid, closeModal: handleCloseModal, getData: getShapeData, resetForm: resetForm })
+  const { mutate: submitUpdateTherapyClass, isLoading: isLoadingUpdateTherapyClass } = useTherapyClassUpdate({ therapy_class_uid: updateTherapyClass.uid, closeModal: handleCloseModal, getData: getTherapyClassData, resetForm: resetForm })
 
   React.useEffect( () => {
-    loadData(updateShape)
-  },[updateShape])
+    loadData(updateTherapyClass)
+  },[updateTherapyClass])
 
-  const onSubmit: SubmitHandler<ShapeUpdateRequest> = (data) => {
-    submitUpdateShape(data)
+  const onSubmit: SubmitHandler<TherapyClassUpdateRequest> = (data) => {
+    submitUpdateTherapyClass(data)
   }
 
   return (
     <>
       <ModalComponent
-        modalId      = 'shape-edit'
-        modalTitle   = 'Shape Edit'
+        modalId      = 'therapyclass-edit'
+        modalTitle   = 'Therapy Class Edit'
         modalSize    = 'sm'
         modalOpen    = {modalOpen}
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
@@ -94,7 +90,7 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  disabled     = {isLoadingUpdateShape}
+                  disabled     = {isLoadingUpdateTherapyClass}
                   helperText   = {error ? error.message : null}
                   size         = "medium"
                   error        = {!!error}
@@ -115,7 +111,7 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
               buttonColor = 'primary'
               type        = 'submit'
               disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdateShape}
+              isLoading   = {isLoadingUpdateTherapyClass}
               id          = 'shape_update_submit'
             >
               Submit
@@ -127,4 +123,4 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
   )
 };
 
-export default ShapeUpdateComponent;
+export default TherapyClassUpdateComponent;

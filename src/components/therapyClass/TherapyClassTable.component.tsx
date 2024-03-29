@@ -9,47 +9,51 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type';
+import { useCategoryRead } from '@/hooks/category/use-read';
+import Category, { initCategory } from '@/types/Category.type';
+import { useCategoryDelete } from '@/hooks/category/use-delete';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
-import ModalComponent from '../_general/molecules/Modal.component';
-import { usePermissionDelete } from '@/hooks/permission/use-delete';
-import Permission, { initPermission } from '@/types/Permission.type';
-import PermissionCreateComponent from './PermissionCreate.component';
-import PermissionUpdateComponent from './PermissionUpdate.component';
+import CategoryCreateComponent from './TherapyClassCreate.component';
+import CategoryUpdateComponent from './TherapyClassUpdate.component';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
+import { useTherapyClassRead } from '@/hooks/therapyClass/use-read';
+import TherapyClass, { initTherapyClass } from '@/types/TherapyClass.type';
+import { useTherapyClassDelete } from '@/hooks/therapyClass/use-delete';
+import TherapyClassCreateComponent from './TherapyClassCreate.component';
+import TherapyClassUpdateComponent from './TherapyClassUpdate.component';
 
-interface PermissionTableProps {
+interface TherapyClassTableProps {
   modalCreate           : boolean,
   handleCloseCreateModal: ()=>void,
 }
 
-const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
+const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'display_name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
   const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'display_name',
+    field: 'name',
     sort : 'asc',
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
   });
-  const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionRead(queryOptions);
+  const { refetch: doGetTherapyClass, data, isLoading: isLoadingTherapyClass } = useTherapyClassRead(queryOptions);
 
   const [columnData, setColumnData] = React.useState([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
     { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
     { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
-    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -78,8 +82,8 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     });
   }
 
-  const getPermissionData = () => {
-    doGetPermission().then(
+  const getTherapyClassData = () => {
+    doGetTherapyClass().then(
       (resp: any) => {
         if(resp.status == "error"){
           return;
@@ -94,24 +98,24 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
   }
 
 
-  const [updatePermission, setUpdatePermission] = React.useState<Permission>(initPermission);
-  const [openUpdateModal, setOpenUpdateModal]   = React.useState(false);
-  const handleCloseUpdateModal                  = () => setOpenUpdateModal(false);
-  const handleOpenUpdateModal                   = (permission: Permission) => {
-    setUpdatePermission(permission)
+  const [updateTherapyClass, setUpdateTherapyClass]   = React.useState<TherapyClass>(initTherapyClass);
+  const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
+  const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
+  const handleOpenUpdateModal                 = (therapy_class: TherapyClass) => {
+    setUpdateTherapyClass(therapy_class)
     setOpenUpdateModal(true);
   }
   
   
-  const [deletePermissionID, setDeletePermissionID] = React.useState('');
-  const [openDeleteModal, setOpenDeleteModal]       = React.useState(false);
-  const handleCloseDeleteModal                      = () => setOpenDeleteModal(false);
-  const handleOpenDeleteModal                       = (permission_uid: string) => {
-    setDeletePermissionID(permission_uid)
+  const [deleteTherapyClassID, setDeleteTherapyClassID] = React.useState('');
+  const [openDeleteModal, setOpenDeleteModal]           = React.useState(false);
+  const handleCloseDeleteModal                          = () => setOpenDeleteModal(false);
+  const handleOpenDeleteModal                           = (therapy_class_uid: string) => {
+    setDeleteTherapyClassID(therapy_class_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = usePermissionDelete({ permission_uid: deletePermissionID, getData: getPermissionData, closeModal: handleCloseDeleteModal });
-  const handleDeletePermission = () => {
+  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useTherapyClassDelete({ therapy_class_uid: deleteTherapyClassID, getData: getTherapyClassData, closeModal: handleCloseDeleteModal });
+  const handleDeletTherapyClass = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
   
@@ -121,48 +125,30 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
 
 
   React.useEffect(() => {
-    getPermissionData()
+    getTherapyClassData()
   },[queryOptions])
 
   return (
     <>
       <PaperComponent>
         <TableFilterComponent 
-          buttonId     = 'permisson-filter'
-          modalId      = 'permisson-filter'
+          buttonId     = 'therapyclass-filter'
+          modalId      = 'therapyclass-filter'
           menuArray    = {[{ handleClick: () => console.log(), title: 'test'}]}
           textSearch   = {textSearch}
           handleSearch = {setTextSearch}
           onSearch     = {handleQuery}
         >
-          {/* <SelectComponent
-            selectId    = 'test'
-            selectLabel = 'Test'
-            options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
-            sx       = {{
-              '@media (min-width: 900px)': {        
-                maxWidth: '180px'
-              },
-              '@media (min-width: 0px)'  : {
-                width: '100%'
-              }
-            }}
-          /> */}
-          {/* <SelectComponent
-            selectId    = 'test'
-            selectLabel = 'Test'
-            options     = { [ { value: 'a', label: 'a' }, { value: 'b', label: 'b' } ]}
-          /> */}
           
         </TableFilterComponent>
         {
-          (isLoadingPermission) ? 
+          (isLoadingTherapyClass) ? 
           <TableSkeletonComponent />
           :
           <TableComponent 
             rowData        = {rowData}
             columnData     = {columnData}
-            isLoading      = {isLoadingPermission}
+            isLoading      = {isLoadingTherapyClass}
             pageInfo       = {pageData}
             handlePageInfo = {setPageData}
             rowTotal       = {rowTotal}
@@ -172,36 +158,18 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         }
       </PaperComponent>
 
-      {/* <ModalComponent
-        modalId      = 'permission-create'
-        modalTitle   = 'Permission Create'
-        modalSize    = 'sm'
-        modalOpen    = {modalCreate}
-        modalOnClose = {handleCloseCreateModal}
-        isPermanent  = {false}
-      > */}
-        <PermissionCreateComponent getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate}/>
-      {/* </ModalComponent> */}
-
-      {/* <ModalComponent
-        modalId      = 'permission-edit'
-        modalTitle   = 'Permission Edit'
-        modalSize    = 'sm'
-        modalOpen    = {openUpdateModal}
-        modalOnClose = {handleCloseUpdateModal}
-        isPermanent  = {false}
-      > */}
-        <PermissionUpdateComponent updatePermission={updatePermission} getPermissionData={getPermissionData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal}/>
-      {/* </ModalComponent> */}
+      <TherapyClassCreateComponent getTherapyClassData={getTherapyClassData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      
+      <TherapyClassUpdateComponent updateTherapyClass={updateTherapyClass} getTherapyClassData={getTherapyClassData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
 
       <DeleteConfirmComponent 
-        modalId      = 'permission-delete'
+        modalId      = 'therapyclass-delete'
         modalOpen    = {openDeleteModal}
         modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeletePermission}
+        onDelete     = {handleDeletTherapyClass}
       />
     </>
   )
 }
 
-export default PermissionTable;
+export default TherapyClassTable;

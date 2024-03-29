@@ -14,12 +14,12 @@ import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import moment from 'moment'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import ModalComponent from '@/components/_general/molecules/Modal.component';
-import UserChangePasswordComponent from '@/components/user/UserChangePassword.component';
+import ProfileUpdatePasswordComponent from '@/components/profile/ProfileUpdatePassword.component';
 
 const ProfilePage: NextPage = () => {
-  const [openResetPasswordModal, setOpenResetPasswordModal] = React.useState(false);
-  const handleOpenResetPasswordModal                        = () => setOpenResetPasswordModal(true);
-  const handleCloseResetPasswordModal                       = () => setOpenResetPasswordModal(false);
+  const [openUpdatePasswordModal, setOpenUpdatePasswordModal] = React.useState(false);
+  const handleOpenUpdatePasswordModal                         = () => setOpenUpdatePasswordModal(true);
+  const handleCloseUpdatePasswordModal                        = () => setOpenUpdatePasswordModal(false);
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -102,7 +102,7 @@ const ProfilePage: NextPage = () => {
               <ButtonComponent
                 buttonColor = 'primary'
                 // startIcon   = {<AddIcon />}
-                onClick     = {handleOpenResetPasswordModal}
+                onClick     = {handleOpenUpdatePasswordModal}
               >
                 
                 CHANGE PASSWORD
@@ -172,16 +172,16 @@ const ProfilePage: NextPage = () => {
         </Stack>
       </PaperComponent>
 
-      <ModalComponent
+      {/* <ModalComponent
         modalId      = 'profile-change-password'
         modalTitle   = 'Change Password'
         modalSize    = 'sm'
         modalOpen    = {openResetPasswordModal}
         modalOnClose = {handleCloseResetPasswordModal}
         isPermanent  = {false}
-      >
-        <UserChangePasswordComponent user_uid={currentUser.uid} handleCloseModal={handleCloseResetPasswordModal} />
-      </ModalComponent>
+      > */}
+        <ProfileUpdatePasswordComponent user_uid={currentUser.uid} handleCloseModal={handleCloseUpdatePasswordModal} modalOpen={openUpdatePasswordModal} />
+      {/* </ModalComponent> */}
     </AppLayoutComponent>
   )
 }

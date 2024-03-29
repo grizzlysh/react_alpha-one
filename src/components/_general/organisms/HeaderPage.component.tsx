@@ -14,10 +14,12 @@ const HeaderPage: React.FC<HeaderPageProps> = ({ title, children }) => {
     <Stack flexDirection={"row"} alignItems={"center"} marginBottom={3}>
       <Stack flexDirection={"column"} flexGrow={1}>
         <Typography
-          variant  = "h4"
-          color    = "initial"
-          fontSize = {'1.5rem'}
-          sx       = {{
+          variant   = "h4"
+          component = "h1"
+          id        = "header-title"
+          color     = "initial"
+          fontSize  = {'1.5rem'}
+          sx        = {{
             // '@media (max-width:500px)': {
             //   fontSize: '1.25rem',
             // },

@@ -37,31 +37,45 @@ const TopBar = styled(MuiAppBar, {
   },
 }));
 
-
 interface TopBarProps {
-  openDrawer  : boolean,
-  handleDrawer: () => void,
-  handleLogout: () => void,
+  openDrawer    : boolean,
+  handleDrawer  : () => void,
+  handleLogout  : () => void,
+  isTitleVisible: boolean,
+  title         : string,
 }
 
-interface ElevationScrollProps {
-  children: React.ReactElement
-}
+// interface ElevationScrollProps {
+//   children: React.ReactElement
+// }
 
-const ElevationScroll = (props: ElevationScrollProps) => {
-  const { children } = props;
+// const ElevationScroll = (props: ElevationScrollProps) => {
+//   const { children } = props;
 
-  const trigger = useScrollTrigger({
-    disableHysteresis: true,
-    threshold        : 0,
-  });
+//   const trigger = useScrollTrigger({
+//     disableHysteresis: true,
+//     threshold        : 0,
+//   });
 
-  return React.cloneElement(children, {
-    elevation: trigger ? 4 : 0,
-  });
-}
+//   return React.cloneElement(children, {
+//     elevation: trigger ? 4 : 0,
+//   });
+// }
 
-const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, handleLogout, ...props} ) => {
+// const TitleTopBar = styled(Typography)(
+//   ( {theme} ) => ({
+//     '@keyframes fadeIn': {
+//       '0%'  : {opacity: 0,},
+//       '100%': {opacity: 1,},
+//     },
+//     '@keyframes fadeOut': {
+//       '0%'  : {opacity: 1,},
+//       '100%': {opacity: 0,},
+//     },
+//   })
+// )
+
+const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, handleLogout, isTitleVisible, title, ...props} ) => {
 
   const router                          = useRouter();
   const [profileModal, setProfileModal] = React.useState<null | HTMLElement>(null)
@@ -115,13 +129,30 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
           </IconButton>
 
           <Typography
-            component = "h1"
-            variant   = "h6"
-            color     = "inherit"
-            sx        = {{ flexGrow: 1 }}
             noWrap
+            id         = {'topbar-title'}
+            component  = "h1"
+            variant    = "h4"
+            color      = "initial"
+            fontSize   = {'1.5rem'}
+            fontWeight = {700}
+            lineHeight = {1.5}
+            sx         = {{ 
+              '@keyframes fadeIn': {
+                '0%'  : {opacity: 0,},
+                '100%': {opacity: 1,},
+              },
+              '@keyframes fadeOut': {
+                '0%'  : {opacity: 1,},
+                '100%': {opacity: 0,},
+              },
+              opacity   : 0,
+              flexGrow  : 1,
+              visibility: !isTitleVisible ? "visible" : "hidden",
+              animation : !isTitleVisible ? 'fadeIn 0.5s forwards': 'fadeOut 0.5s forwards',
+            }}
           >
-            Dashboard
+            {title}
           </Typography>
 
           <IconButton

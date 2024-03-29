@@ -20,7 +20,7 @@ import TableSkeletonComponent from '../_general/molecules/TableSkeleton.componen
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 import UserUpdateComponent from './UserUpdate.component';
 import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
-import { useUserResetPassword } from '@/hooks/user/use-reset-password';
+import { useUserUpdatePassword } from '@/hooks/user/use-update-password';
 
 interface UserTableProps {
   modalCreate           : boolean,
@@ -143,7 +143,8 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     setResetUserID(user_uid)
     setOpenResetModal(true);
   }
-  const { mutate: submitResetPassword, isLoading: isLoadingReset } = useUserResetPassword({ user_uid: resetUserID, closeModal: handleCloseResetModal });
+  const { mutate: submitResetPassword, isLoading: isLoadingReset } = useUserUpdatePassword({ user_uid: resetUserID, closeModal: handleCloseResetModal });
+
   const handleResetUser = () => {
     submitResetPassword({password: 'password', repassword: 'password', current_user_uid: currentUser.uid})
   }
@@ -204,27 +205,28 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
           />
         }
       </PaperComponent>
-      <ModalComponent
+      
+      {/* <ModalComponent
         modalId      = 'user-create'
         modalTitle   = 'User Create'
         modalSize    = 'sm'
         modalOpen    = {modalCreate}
         modalOnClose = {handleCloseCreateModal}
         isPermanent  = {false}
-      >
-        <UserCreateComponent getUserData={getUserData} handleCloseModal={handleCloseCreateModal} />
-      </ModalComponent>
+      > */}
+        <UserCreateComponent getUserData={getUserData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      {/* </ModalComponent> */}
 
-      <ModalComponent
+      {/* <ModalComponent
         modalId      = 'user-edit'
         modalTitle   = 'User Edit'
         modalSize    = 'sm'
         modalOpen    = {openUpdateModal}
         modalOnClose = {handleCloseUpdateModal}
         isPermanent  = {false}
-      >
-        <UserUpdateComponent updateUser={updateUser} getUserData={getUserData} handleCloseModal={handleCloseUpdateModal} />
-      </ModalComponent>
+      > */}
+        <UserUpdateComponent updateUser={updateUser} getUserData={getUserData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      {/* </ModalComponent> */}
 
       {/* <DeleteConfirmComponent 
         modalId      = 'user-delete'

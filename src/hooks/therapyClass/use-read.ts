@@ -4,15 +4,15 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { TypeReadRequest, TypeReadResponse } from '@/services/type/read';
+import { TherapyClassReadRequest, TherapyClassReadResponse } from '@/services/therapyClass/read';
 
-export const useTypeRead = (data: TypeReadRequest) => {
+export const useTherapyClassRead = (data: TherapyClassReadRequest) => {
   return useQuery({
-    queryKey : ['type-get'],
-    queryFn  : (payload) => api.getType(data),
+    queryKey : ['therapyclass-get'],
+    queryFn  : (payload) => api.getTherapyClass(data),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<TypeReadResponse  >) => {
+    onSuccess: async (resp: SuccessResponse<TherapyClassReadResponse  >) => {
       return resp
     },
     // refetchInterval     : 1000,

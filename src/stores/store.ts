@@ -11,6 +11,7 @@ import {
 } from 'redux-persist';
 
 import UserReducer from '@/stores/slices/auth.slice'
+import AppReducer from '@/stores/slices/app.slice'
 // import storage from 'redux-persist/lib/storage';
 
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
@@ -38,7 +39,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   // sidebar: SidebarReducer,
-  user   : UserReducer,
+  user: UserReducer,
+  app : AppReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

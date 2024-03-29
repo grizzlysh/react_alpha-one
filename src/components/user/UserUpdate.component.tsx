@@ -11,14 +11,16 @@ import { UserUpdateRequest } from '@/services/user/update';
 import SelectComponent from '../_general/atoms/Select.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
+import ModalComponent from '../_general/molecules/Modal.component';
 
 interface UserUpdateProps {
   updateUser      : User,
   getUserData     : ()=>void,
   handleCloseModal: ()=>void,
+  modalOpen       : boolean,
 }
 
-const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserData, handleCloseModal }) => {
+const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserData, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline                                      = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -124,168 +126,177 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack direction={'column'}>
-          <Controller
-            name    = "username"
-            control = {control}
-            rules   = {{ 
-              required: {
-                value  : true,
-                message: "Username fields is required"
-              },
-            }}
-            render  = { ({ 
-                field     : { onChange, value },
-                fieldState: { error },
-                formState,
-              }) => (
-              <TextField            
-                autoComplete = 'off'
-                helperText   = {error ? error.message : null}
-                size         = "medium"
-                error        = {!!error}
-                onChange     = {onChange}
-                type         = 'string'
-                value        = {value}
-                label        = {"Username"}
-                variant      = "outlined"
-                sx           = {{mb:2}}
-                fullWidth
-              />
-              )
-            }
-          />
-
-          <Controller
-            name    = "name"
-            control = {control}
-            rules   = {{ 
-              required: {
-                value  : true,
-                message: "Name fields is required"
-              },
-            }}
-            render  = { ({ 
-                field     : { onChange, value },
-                fieldState: { error },
-                formState,
-              }) => (
-              <TextField            
-                autoComplete = 'off'
-                helperText   = {error ? error.message : null}
-                size         = "medium"
-                error        = {!!error}
-                onChange     = {onChange}
-                type         = 'string'
-                value        = {value}
-                label        = {"Name"}
-                variant      = "outlined"
-                sx           = {{mb:2}}
-                fullWidth
-              />
-              )
-            }
-          />
-
-          <Box sx = {{ mb: 2, }}>
+      <ModalComponent
+        modalId      = 'user-edit'
+        modalTitle   = 'User Edit'
+        modalSize    = 'sm'
+        modalOpen    = {modalOpen}
+        modalOnClose = {()=>{handleCloseModal(); resteForm();}}
+        isPermanent  = {false}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <Stack direction={'column'}>
             <Controller
-              name    = "sex"
+              name    = "username"
               control = {control}
-              rules   = {{
+              rules   = {{ 
                 required: {
                   value  : true,
-                  message: "Sex fields is required"
+                  message: "Username fields is required"
                 },
               }}
               render  = { ({ 
                   field     : { onChange, value },
                   fieldState: { error },
+                  formState,
                 }) => (
-                <SelectComponent
-                  error        = {!!error}
-                  selectState  = {value}
-                  handleChange = {onChange}
-                  selectId     = 'sex-select'
-                  selectLabel  = 'Sex'
-                  options      = {sexOptions}
+                <TextField            
+                  autoComplete = 'off'
                   helperText   = {error ? error.message : null}
+                  size         = "medium"
+                  error        = {!!error}
+                  onChange     = {onChange}
+                  type         = 'string'
+                  value        = {value}
+                  label        = {"Username"}
+                  variant      = "outlined"
+                  sx           = {{mb:2}}
+                  fullWidth
                 />
                 )
               }
             />
-          </Box>
 
-          <Controller
-            name    = "email"
-            control = {control}
-            rules   = {{ 
-              required: {
-                value  : true,
-                message: "Email fields is required"
-              },
-            }}
-            render  = { ({ 
-                field     : { onChange, value },
-                fieldState: { error },
-                formState,
-              }) => (
-              <TextField            
-                autoComplete = 'off'
-                helperText   = {error ? error.message : null}
-                size         = "medium"
-                error        = {!!error}
-                onChange     = {onChange}
-                type         = 'email'
-                value        = {value}
-                label        = {"Email"}
-                variant      = "outlined"
-                sx           = {{mb:2}}
-                fullWidth
-              />
-              )
-            }
-          />
-
-          <Box sx = {{ mb: 2, }}>
             <Controller
-              name    = "role_uid"
+              name    = "name"
               control = {control}
-              rules   = {{
+              rules   = {{ 
                 required: {
                   value  : true,
-                  message: "Role fields is required"
+                  message: "Name fields is required"
                 },
               }}
               render  = { ({ 
                   field     : { onChange, value },
                   fieldState: { error },
+                  formState,
                 }) => (
-                <SelectComponent
-                  error        = {!!error}
-                  selectState  = {value}
-                  handleChange = {onChange}
-                  selectId     = 'role-select'
-                  selectLabel  = 'Role'
-                  options      = {roleOptions}
+                <TextField            
+                  autoComplete = 'off'
                   helperText   = {error ? error.message : null}
+                  size         = "medium"
+                  error        = {!!error}
+                  onChange     = {onChange}
+                  type         = 'string'
+                  value        = {value}
+                  label        = {"Name"}
+                  variant      = "outlined"
+                  sx           = {{mb:2}}
+                  fullWidth
                 />
                 )
               }
             />
-          </Box>
 
-          <LoadingButtonComponent
-            buttonColor = 'primary'
-            type        = 'submit'
-            disabled    = {!isValid || !isDirty}
-            isLoading   = {isLoadingUpdateUser}
-            id          = 'user_update_submit'
-          >
-            Submit
-          </LoadingButtonComponent>
-        </Stack>
-      </form>
+            <Box sx = {{ mb: 2, }}>
+              <Controller
+                name    = "sex"
+                control = {control}
+                rules   = {{
+                  required: {
+                    value  : true,
+                    message: "Sex fields is required"
+                  },
+                }}
+                render  = { ({ 
+                    field     : { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                  <SelectComponent
+                    error        = {!!error}
+                    selectState  = {value}
+                    handleChange = {onChange}
+                    selectId     = 'sex-select'
+                    selectLabel  = 'Sex'
+                    options      = {sexOptions}
+                    helperText   = {error ? error.message : null}
+                  />
+                  )
+                }
+              />
+            </Box>
+
+            <Controller
+              name    = "email"
+              control = {control}
+              rules   = {{ 
+                required: {
+                  value  : true,
+                  message: "Email fields is required"
+                },
+              }}
+              render  = { ({ 
+                  field     : { onChange, value },
+                  fieldState: { error },
+                  formState,
+                }) => (
+                <TextField            
+                  autoComplete = 'off'
+                  helperText   = {error ? error.message : null}
+                  size         = "medium"
+                  error        = {!!error}
+                  onChange     = {onChange}
+                  type         = 'email'
+                  value        = {value}
+                  label        = {"Email"}
+                  variant      = "outlined"
+                  sx           = {{mb:2}}
+                  fullWidth
+                />
+                )
+              }
+            />
+
+            <Box sx = {{ mb: 2, }}>
+              <Controller
+                name    = "role_uid"
+                control = {control}
+                rules   = {{
+                  required: {
+                    value  : true,
+                    message: "Role fields is required"
+                  },
+                }}
+                render  = { ({ 
+                    field     : { onChange, value },
+                    fieldState: { error },
+                  }) => (
+                  <SelectComponent
+                    error        = {!!error}
+                    selectState  = {value}
+                    handleChange = {onChange}
+                    selectId     = 'role-select'
+                    selectLabel  = 'Role'
+                    options      = {roleOptions}
+                    helperText   = {error ? error.message : null}
+                  />
+                  )
+                }
+              />
+            </Box>
+
+            <LoadingButtonComponent
+              buttonColor = 'primary'
+              type        = 'submit'
+              disabled    = {!isValid || !isDirty}
+              isLoading   = {isLoadingUpdateUser}
+              id          = 'user_update_submit'
+            >
+              Submit
+            </LoadingButtonComponent>
+          </Stack>
+        </form>
+      </ModalComponent>
     </>
   )
 };

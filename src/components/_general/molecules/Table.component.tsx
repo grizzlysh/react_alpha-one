@@ -144,6 +144,7 @@ const TableComponent: React.FC<TableProps> = ({ columnData, rowData, isLoading, 
         sx                      = {{ 
           overflowX: 'scroll',
         }}
+        localeText={{ noRowsLabel: "No Data" }}
       />
     </Box>
   )

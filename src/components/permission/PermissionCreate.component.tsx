@@ -13,9 +13,10 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 interface PermissionCreateProps {
   getPermissionData: ()=>void,
   handleCloseModal : ()=>void,
+  modalOpen        : boolean,
 }
 
-const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData, handleCloseModal }) => {
+const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -53,73 +54,82 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction={'column'}>
-          <Controller
-            name    = "display_name"
-            control = {control}
-            rules   = {{ 
-              required: {
-                value  : true,
-                message: "Display Name fields is required"
-              },
-            }}
-            render  = { ({ 
-                field     : { onChange, value },
-                fieldState: { error },
-                formState,
-              }) => (
-              <TextField            
-                autoComplete = 'off'
-                helperText = {error ? error.message : null}
-                size       = "medium"
-                error      = {!!error}
-                onChange   = {onChange}
-                type       = 'string'
-                value      = {value}
-                label      = {"Display Name"}
-                variant    = "outlined"
-                sx         = {{mb:2}}
-                fullWidth
-              />
-              )
-            }
-          />
+      <ModalComponent
+        modalId      = 'permission-create'
+        modalTitle   = 'Permission Create'
+        modalSize    = 'sm'
+        modalOpen    = {modalOpen}
+        modalOnClose = {() => {handleCloseModal(); resetForm();}}
+        isPermanent  = {false}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack direction={'column'}>
+            <Controller
+              name    = "display_name"
+              control = {control}
+              rules   = {{ 
+                required: {
+                  value  : true,
+                  message: "Display Name fields is required"
+                },
+              }}
+              render  = { ({ 
+                  field     : { onChange, value },
+                  fieldState: { error },
+                  formState,
+                }) => (
+                <TextField            
+                  autoComplete = 'off'
+                  helperText = {error ? error.message : null}
+                  size       = "medium"
+                  error      = {!!error}
+                  onChange   = {onChange}
+                  type       = 'string'
+                  value      = {value}
+                  label      = {"Display Name"}
+                  variant    = "outlined"
+                  sx         = {{mb:2}}
+                  fullWidth
+                />
+                )
+              }
+            />
 
-          <Controller
-            name    = "description"
-            control = {control}
-            render  = { ({ 
-                field     : { onChange, value },
-                fieldState: { error },
-                formState,
-              }) => (
-              <TextField
-                autoComplete = 'off'
-                size         = "medium"
-                onChange     = {onChange}
-                value        = {value}
-                label        = {"Description"}
-                sx           = {{mb:2}}
-                minRows      = {4}
-                multiline
-                fullWidth
-              />
-              )
-            }
-          />
+            <Controller
+              name    = "description"
+              control = {control}
+              render  = { ({ 
+                  field     : { onChange, value },
+                  fieldState: { error },
+                  formState,
+                }) => (
+                <TextField
+                  autoComplete = 'off'
+                  size         = "medium"
+                  onChange     = {onChange}
+                  value        = {value}
+                  label        = {"Description"}
+                  sx           = {{mb:2}}
+                  minRows      = {4}
+                  multiline
+                  fullWidth
+                />
+                )
+              }
+            />
 
-          <LoadingButtonComponent
-            buttonColor = 'primary'
-            type        = 'submit'
-            disabled    = {!isValid}
-            isLoading   = {isLoading}
-            id          = 'permission_create_submit'
-          >
-            Submit
-          </LoadingButtonComponent>
-        </Stack>
-      </form>
+            <LoadingButtonComponent
+              buttonColor = 'primary'
+              type        = 'submit'
+              disabled    = {!isValid}
+              isLoading   = {isLoading}
+              id          = 'permission_create_submit'
+            >
+              Submit
+            </LoadingButtonComponent>
+          </Stack>
+        </form>
+      </ModalComponent>
     </>
   )
 };

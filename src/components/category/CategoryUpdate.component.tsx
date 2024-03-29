@@ -9,18 +9,24 @@ import { usePermissionUpdate } from '@/hooks/permission/use-update';
 import { PermissionUpdateRequest } from '@/services/permission/update';
 import { usePermissionReadByID } from '@/hooks/permission/use-read-by-id';
 import Permission from '@/types/Permission.type';
+import Shape from '@/types/Shape.type';
+import { useShapeUpdate } from '@/hooks/shape/use-update';
+import { ShapeUpdateRequest } from '@/services/shape/update';
 import ModalComponent from '../_general/molecules/Modal.component';
+import Category from '@/types/Category.type';
+import { useCategoryUpdate } from '@/hooks/category/use-update';
+import { CategoryUpdateRequest } from '@/services/category/update';
 
-interface PermissionUpdateProps {
-  updatePermission : Permission,
-  getPermissionData: ()=>void,
-  handleCloseModal : ()=>void,
-  modalOpen        : boolean,
+interface CategoryUpdateProps {
+  updateCategory  : Category,
+  getCategoryData : ()=>void,
+  handleCloseModal: ()=>void,
+  modalOpen       : boolean,
 }
 
-const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePermission, getPermissionData, handleCloseModal, modalOpen }) => {
+const CategoryUpdateComponent: React.FC<CategoryUpdateProps> = ({ updateCategory, getCategoryData, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                                                  = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -32,45 +38,41 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
     handleSubmit,
     reset,
     formState: { isValid, isDirty, errors },
-  } = useForm<PermissionUpdateRequest>({
+  } = useForm<CategoryUpdateRequest>({
     defaultValues: {
-      display_name    : '',
-      description     : '',
+      name            : '',
       current_user_uid: currentUser.uid,
     }
   })
 
   const resetForm = () => {
     reset({
-      display_name    : '',
-      description     : '',
+      name            : '',
       current_user_uid: currentUser.uid,
     })
   }
-
   const loadData = (data: any) => {
     reset({
-      display_name    : data.display_name,
-      description     : data.description,
+      name            : data.name,
       current_user_uid: currentUser.uid,
     })
   }
   
-  const { mutate: submitUpdatePermission, isLoading: isLoadingUpdatePermission } = usePermissionUpdate({ permission_uid: updatePermission.uid, closeModal: handleCloseModal, getData: getPermissionData, resetForm: resetForm })
-  
-  React.useEffect( () => {
-    loadData(updatePermission)
-  },[updatePermission])
+  const { mutate: submitUpdateCategory, isLoading: isLoadingUpdateCategory } = useCategoryUpdate({ category_uid: updateCategory.uid, closeModal: handleCloseModal, getData: getCategoryData, resetForm: resetForm })
 
-  const onSubmit: SubmitHandler<PermissionUpdateRequest> = (data) => {
-    submitUpdatePermission(data)
+  React.useEffect( () => {
+    loadData(updateCategory)
+  },[updateCategory])
+
+  const onSubmit: SubmitHandler<CategoryUpdateRequest> = (data) => {
+    submitUpdateCategory(data)
   }
 
   return (
     <>
       <ModalComponent
-        modalId      = 'permission-edit'
-        modalTitle   = 'Permission Edit'
+        modalId      = 'category-edit'
+        modalTitle   = 'Category Edit'
         modalSize    = 'sm'
         modalOpen    = {modalOpen}
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
@@ -80,12 +82,12 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
           <Stack direction={'column'}>
             <>
             <Controller
-              name    = "display_name"
+              name    = "name"
               control = {control}
               rules   = {{ 
                 required: {
                   value  : true,
-                  message: "Display Name fields is required"
+                  message: "Name fields is required"
                 },
               }}
               render  = { ({ 
@@ -95,40 +97,16 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  disabled     = {isLoadingUpdatePermission}
+                  disabled     = {isLoadingUpdateCategory}
                   helperText   = {error ? error.message : null}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
                   type         = 'string'
                   value        = {value}
-                  label        = {"Display Name"}
+                  label        = {"Name"}
                   variant      = "outlined"
                   sx           = {{mb:2}}
-                  fullWidth
-                />
-                )
-              }
-            />
-
-            <Controller
-              name    = "description"
-              control = {control}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField
-                  autoComplete = 'off'
-                  disabled     = {isLoadingUpdatePermission}
-                  size         = "medium"
-                  onChange     = {onChange}
-                  value        = {value}
-                  label        = {"Description"}
-                  sx           = {{mb:2}}
-                  minRows      = {4}
-                  multiline
                   fullWidth
                 />
                 )
@@ -140,8 +118,8 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
               buttonColor = 'primary'
               type        = 'submit'
               disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdatePermission}
-              id          = 'permission_update_submit'
+              isLoading   = {isLoadingUpdateCategory}
+              id          = 'shape_update_submit'
             >
               Submit
             </LoadingButtonComponent>
@@ -152,4 +130,4 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
   )
 };
 
-export default PermissionUpdateComponent;
+export default CategoryUpdateComponent;

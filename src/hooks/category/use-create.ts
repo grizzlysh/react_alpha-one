@@ -12,9 +12,10 @@ import { CategoryCreateRequest } from "@/services/category/create";
 interface useCategoryCreateProps {
   getData   : ()=>void,
   closeModal: ()=>void,
+  resetForm : ()=>void,
 }
 
-export const useCategoryCreate = ({getData, closeModal}: useCategoryCreateProps) => {
+export const useCategoryCreate = ({getData, closeModal, resetForm}: useCategoryCreateProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -24,6 +25,7 @@ export const useCategoryCreate = ({getData, closeModal}: useCategoryCreateProps)
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
       getData()
+      resetForm()
       closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
