@@ -8,7 +8,7 @@ import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data
 import Permission from '@/types/Permission.type'
 import UserOnline from '@/types/UserOnline.type'
 import { useRoleCreate } from '@/hooks/role/use-create'
-import { RoleCreateRequest } from '@/services/role/create'
+import { RoleCreatePermissionInput, RoleCreateRequest } from '@/services/role/create'
 import { usePermissionRead } from '@/hooks/permission/use-read'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
@@ -16,16 +16,8 @@ import SelectComponent from '@/components/_general/atoms/Select.component'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import CheckboxComponent from '@/components/_general/atoms/Checkbox.component'
 import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
+import { usePermissionDdl } from '@/hooks/permission/use-ddl';
 
-
-interface InputPermission {
-  permission_name: string,
-  permission_uid : {} | null,
-  read_permit    : boolean,
-  write_permit   : boolean,
-  modify_permit  : boolean,
-  delete_permit  : boolean,
-}
 
 const RoleCreateComponent: React.FC = () => {
 
@@ -33,13 +25,7 @@ const RoleCreateComponent: React.FC = () => {
   const [duplicatePermission, setDuplicatePermission] = React.useState(false);
   const [permissionList, setPermissionList]           = React.useState<{}[]>([])
 
-  const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionRead({
-    page : '',
-    size : '',
-    cond : '',
-    sort : '',
-    field: '',
-  });
+  const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionDdl();
 
   const { mutate: submitCreateRole, isLoading } = useRoleCreate()
   const currentUser: UserOnline                 = useTypedSelector(
@@ -75,12 +61,8 @@ const RoleCreateComponent: React.FC = () => {
         if(resp.status == "error"){
           return;
         }
-
-        const permissions = resp.data.output_schema.data?.map( (val: Permission) => (
-          {value: val.uid, label: val.display_name}
-        ));
         
-        setPermissionOptions(permissions)
+        setPermissionOptions(resp.data.output_schema.data)
       } 
     )
   }
@@ -94,6 +76,7 @@ const RoleCreateComponent: React.FC = () => {
       display_name    : '',
       description     : '',
       current_user_uid: currentUser.uid,
+      permissions     : ''
     }
   })
 
@@ -103,34 +86,42 @@ const RoleCreateComponent: React.FC = () => {
   }
   
   const { 
-    reset,
+    reset: resetPermission,
     setValue,
     getValues,
     control: controlPermission,
     handleSubmit: handleSubmitPermission,
     formState: { isValid: isValidPermission, errors: errorsPermission },
-  } = useForm<InputPermission>({
+  } = useForm<RoleCreatePermissionInput>({
     defaultValues: {
-      permission_name: '',
-      permission_uid : null,
-      read_permit    : false,
-      write_permit   : false,
-      modify_permit  : false,
-      delete_permit  : false,
+      permission   : null,
+      read_permit  : false,
+      write_permit : false,
+      modify_permit: false,
+      delete_permit: false,
     },
     mode: 'all',
   })
 
-  const onAddPermission = (data: InputPermission) => {
+  const onAddPermission = (data: RoleCreatePermissionInput) => {
     const permissionIndex      = permissionList.length;
     // const permissionSelected   = permissionOptions.find(option => option.value === data.permission_uid ) || '';
     // const permission_name      = permissionSelected ? permissionSelected.label : '';
     //       data.permission_name = permission_name
-    const permissionRow        = {no: permissionIndex+1, ...data}
+    const permissionRow        = {
+      no             : permissionIndex+1,
+      permission_name: data.permission?.label,
+      permission_uid : data.permission?.value,
+      read_permit    : data.read_permit,
+      write_permit   : data.write_permit,
+      modify_permit  : data.modify_permit,
+      delete_permit  : data.delete_permit,
+    }
     setPermissionList((prevList) => ([ ...prevList, permissionRow ]));
-    reset({
-      permission_name: '',
-      permission_uid : null,
+    resetPermission({
+      // permission_name: '',
+      // permission_uid : null,
+      permission     : null,
       read_permit    : false,
       write_permit   : false,
       modify_permit  : false,
@@ -143,17 +134,17 @@ const RoleCreateComponent: React.FC = () => {
     setPermissionList( (prevList) => prevList.filter( (row:any) => row.permission_uid !== index))
   },[]);
 
-  const handleSelectPermission = (event: any) => {
-    setValue('permission_uid', event.target.value)
-    const permissionSelected = permissionOptions.find(option => option.value === event.target.value ) || '';
-    const permission_name    = permissionSelected ? permissionSelected.label : '';
-    setValue('permission_name',permission_name)
-    checkDuplicate()
-  };
+  // const handleSelectPermission = (event: any) => {
+  //   // setValue('permission_uid', event.target.value)
+  //   const permissionSelected = permissionOptions.find(option => option.value === event.target.value ) || '';
+  //   const permission_name    = permissionSelected ? permissionSelected.label : '';
+  //   // setValue('permission_name',permission_name)
+  //   checkDuplicate()
+  // };
 
   const checkDuplicate = () => {
-    const input_permission_uid = getValues('permission_uid');
-    const check                = permissionList.filter( (val:any) => val.permission_uid == input_permission_uid)
+    const input_permission = getValues('permission');
+    const check            = permissionList.filter( (val:any) => val.permission_uid == input_permission?.value)
     
     if (check.length>0) {
       setDuplicatePermission(false)
@@ -294,7 +285,7 @@ const RoleCreateComponent: React.FC = () => {
                   }}
                 >
                   <Controller
-                    name    = "permission_uid"
+                    name    = "permission"
                     control = {controlPermission}
                     rules   = {{
                       // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
@@ -308,19 +299,22 @@ const RoleCreateComponent: React.FC = () => {
                         fieldState: { error },
                       }) => (
                         <Autocomplete
-                          value    = {value || null}
-                          id       = "controllable-states-demo"
-                          options  = {permissionOptions}
-                          sx       = {{ width: 300 }}
-                          onChange = {(event: any, newValue: {} | null) => {
-                            onChange(newValue)
-                          }}
-                          renderInput = {(params: any) => 
-                          <TextField
-                            {...params}
-                            label      = "Controllable"
-                            helperText = {error ? error.message : null}
-                           />}
+                          // fullWidth
+                          value                = {value}
+                          id                   = "permission"
+                          options              = {permissionOptions}
+                          // sx                   = {{ width: 300 }}
+                          onChange             = {(event: any, newValue) => { onChange(newValue); checkDuplicate(); }}
+                          isOptionEqualToValue = { (option: any, value: any) => value === "" ||  option.value == value.value}
+                          renderInput          = {(params: any) => 
+                            <TextField
+                              fullWidth
+                              {...params}
+                              label      = "Permission"
+                              error      = {!!error}
+                              helperText = {error ? error.message : null}
+                            />
+                          }
                         />
                       // <SelectComponent
                       //   error        = {!!error}
@@ -369,7 +363,7 @@ const RoleCreateComponent: React.FC = () => {
                           checkId      = {'write-check'}
                           checkLabel   = {'Write'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -390,7 +384,7 @@ const RoleCreateComponent: React.FC = () => {
                           checkId       = {'read-check'}
                           checkLabel    = {'Read'}
                           checkState    = {value}
-                          handleChange  = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -411,7 +405,7 @@ const RoleCreateComponent: React.FC = () => {
                           checkId      = {'modify-check'}
                           checkLabel   = {'Modify'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -432,7 +426,7 @@ const RoleCreateComponent: React.FC = () => {
                           checkId      = {'delete-check'}
                           checkLabel   = {'Delete'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -450,13 +444,13 @@ const RoleCreateComponent: React.FC = () => {
                 </ButtonComponent>
               </Stack>
             </Stack>
-            {/* {console.log(permissionList.length)} */}
+            
             <LoadingButtonComponent
               fullWidth
               buttonColor = 'primary'
               disabled    = {!isValid || !(permissionList.length>0)}
               isLoading   = {isLoading}
-              id          = 'permission_create_submit'
+              id          = 'role_create_submit'
               onClick     = {handleSubmit(onSubmit)}
             >
               SUBMIT

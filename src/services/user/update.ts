@@ -2,6 +2,15 @@ import { http } from '@/services/axios';
 import { USER_UPDATE_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 
+export interface UserUpdateInput {
+  username        : string,
+  name            : string,
+  sex             : {value: string, label: string} | null,
+  email           : string,
+  password        : string,
+  current_user_uid: string,
+  role_uid        : {value: string, label: string} | null,
+}
 export interface UserUpdateRequest {
   username        : string,
   name            : string,

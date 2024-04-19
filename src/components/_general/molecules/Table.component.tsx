@@ -8,7 +8,7 @@ import theme from '@/utils/theme';
 interface TableProps {
   columnData    : readonly GridColDef<{}>[],
   rowData       : readonly {}[],
-  isLoading       : boolean,
+  isLoading     : boolean,
   pageInfo      : {page: number, pageSize: number},
   handlePageInfo: Dispatch<{ page: number, pageSize: number }>,
   handleSortData: Dispatch<{ field: any; sort: any; }[]>,

@@ -2,7 +2,7 @@ import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Stack, TextField } from '@mui/material'
+import { Autocomplete, Box, Stack, TextField } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type'
@@ -18,16 +18,8 @@ import ButtonComponent from '@/components/_general/atoms/Button.component'
 import CheckboxComponent from '@/components/_general/atoms/Checkbox.component'
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component'
 import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
-
-
-interface InputPermission {
-  permission_name: string,
-  permission_uid : string,
-  read_permit    : boolean,
-  write_permit   : boolean,
-  modify_permit  : boolean,
-  delete_permit  : boolean,
-}
+import { usePermissionDdl } from '@/hooks/permission/use-ddl';
+import { RoleUpdatePermissionInput, RoleUpdateRequest } from '@/services/role/update';
 
 interface RoleUpdateProps {
   updateRole: string
@@ -43,14 +35,10 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
   const [permissionOptions, setPermissionOptions]     = React.useState<{value: string, label: string}[]>([])
   const [duplicatePermission, setDuplicatePermission] = React.useState(false);
   const [permissionList, setPermissionList]           = React.useState<{}[]>([])
+  const permissionListRef                             = React.useRef<{}[]>([])
+  const permissionListOriginalRef                     = React.useRef<{}[]>([])
 
-  const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionRead({
-    page : '',
-    size : '999',
-    cond : '',
-    sort : '',
-    field: '',
-  });
+  const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionDdl();
 
   const [permisisonColumn, setPermissionColumn] = React.useState([
     { field: 'number', type: 'string', headerName: 'No', flex : 0.1, sortable: false,
@@ -81,11 +69,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
           return;
         }
 
-        const permissions = resp.data.output_schema.data?.map( (val: Permission) => (
-          {value: val.uid, label: val.display_name}
-        ));
-        
-        setPermissionOptions(permissions)
+        setPermissionOptions(resp.data.output_schema.data)
       } 
     )
   }
@@ -93,17 +77,21 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
   const { 
     control,
     reset,
+    resetField,
+    setValue,
+    getValues,
     handleSubmit,
     formState: { isValid, isDirty, errors },
-  } = useForm<RoleCreateRequest>({
+  } = useForm<RoleUpdateRequest>({
     defaultValues: {
       display_name    : '',
       description     : '',
       current_user_uid: currentUser.uid,
+      permissions     : '',
     }
   })
 
-  const onSubmit: SubmitHandler<RoleCreateRequest> = (data) => {
+  const onSubmit: SubmitHandler<RoleUpdateRequest> = (data) => {
     const roleData = {...data, permissions: JSON.stringify(permissionList)}
     submitUpdateRole(roleData)
   }
@@ -123,78 +111,110 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
           display_name    : resp.data.output_schema.data.display_name,
           description     : resp.data.output_schema.data.description,
           current_user_uid: currentUser.uid,
+          permissions     : JSON.stringify(resp.data.output_schema.data.permission_role)
         })
 
-        // console.log(resp.data.output_schema)
         const permissions = resp.data.output_schema.data.permission_role?.map( (val: any) => (
           {
             permission_name: val.permissions.display_name,
             permission_uid : val.permissions.uid,
-            write_permit   : val.write_permit,
-            read_permit    : val.read_permit,
-            modify_permit  : val.modify_permit,
-            delete_permit  : val.delete_permit,
+            // permission   : {labal: val.permissions.display_name, value: val.permissions.uid},
+            write_permit : val.write_permit,
+            read_permit  : val.read_permit,
+            modify_permit: val.modify_permit,
+            delete_permit: val.delete_permit,
           }
         ));
         
-        // console.log(permissions)
         setPermissionList(permissions)
+        permissionListOriginalRef.current = permissions;
       }
     )
   }
 
   const { 
     reset: resetPermission,
-    setValue,
-    getValues,
+    // setValue,
+    getValues: getValuesPermission,
     control: controlPermission,
     handleSubmit: handleSubmitPermission,
     formState: { isValid: isValidPermission, errors: errorsPermission },
-  } = useForm<InputPermission>({
+  } = useForm<RoleUpdatePermissionInput>({
     defaultValues: {
-      permission_name: '',
-      permission_uid : '',
-      read_permit    : false,
-      write_permit   : false,
-      modify_permit  : false,
-      delete_permit  : false,
+      permission   : null,
+      write_permit : false,
+      read_permit  : false,
+      modify_permit: false,
+      delete_permit: false,
     },
     mode: 'all',
   })
 
-  const onAddPermission = (data: InputPermission) => {
+  const onAddPermission = (data: RoleUpdatePermissionInput) => {
     const permissionIndex      = permissionList.length;
     // const permissionSelected   = permissionOptions.find(option => option.value === data.permission_uid ) || '';
     // const permission_name      = permissionSelected ? permissionSelected.label : '';
     //       data.permission_name = permission_name
-    const permissionRow        = {no: permissionIndex+1, ...data}
+    const permissionRow        = {
+      // no             : permissionIndex+1,
+      permission_name: data.permission?.label,
+      permission_uid : data.permission?.value,
+      write_permit   : data.write_permit,
+      read_permit    : data.read_permit,
+      modify_permit  : data.modify_permit,
+      delete_permit  : data.delete_permit,
+    }
+
+    // const permissionListTemp = [...permissionList, permissionRow]
+    // const permissionTemp     = JSON.stringify(permissionListTemp);
+    // setValue('permissions',permissionTemp, { shouldDirty: true });
+    // setPermissionList(permissionListTemp);
+    
     setPermissionList((prevList) => ([ ...prevList, permissionRow ]));
+
     resetPermission({
-      permission_name: '',
-      permission_uid : '',
-      read_permit    : false,
+      // permission_name: '',
+      // permission_uid : null,
+      permission     : null,
       write_permit   : false,
+      read_permit    : false,
       modify_permit  : false,
       delete_permit  : false,
     })
     setDuplicatePermission(false);
+    // handleUpdatePermissionList()
   };
+
   
   const handleDeleteSelect = React.useCallback((index:number) => {
     setPermissionList( (prevList) => prevList.filter( (row:any) => row.permission_uid !== index))
+    // handleUpdatePermissionList()
   },[]);
+  
+  const handleUpdatePermissionList = () => {
+    const permissionTemp = JSON.stringify(permissionListRef.current);
+    
+    if (JSON.stringify(permissionListRef.current) != JSON.stringify(permissionListOriginalRef.current)) {
+      setValue('permissions',permissionTemp, { shouldDirty: true });
+    }
+    else {
+      setValue('permissions',permissionTemp, { shouldDirty: false });
+      reset(getValues(), { keepDirty: false, keepValues: true});
+    }
+  }
 
-  const handleSelectPermission = (event: any) => {
-    setValue('permission_uid', event.target.value)
-    const permissionSelected = permissionOptions.find(option => option.value === event.target.value ) || '';
-    const permission_name    = permissionSelected ? permissionSelected.label : '';
-    setValue('permission_name',permission_name)
-    checkDuplicate()
-  };
+  // const handleSelectPermission = (event: any) => {
+  //   setValue('permission_uid', event.target.value)
+  //   const permissionSelected = permissionOptions.find(option => option.value === event.target.value ) || '';
+  //   const permission_name    = permissionSelected ? permissionSelected.label : '';
+  //   setValue('permission_name',permission_name)
+  //   checkDuplicate()
+  // };
 
   const checkDuplicate = () => {
-    const input_permission_uid = getValues('permission_uid');
-    const check                = permissionList.filter( (val:any) => val.permission_uid == input_permission_uid)
+    const input_permission = getValuesPermission('permission');
+    const check            = permissionList.filter( (val:any) => val.permission_uid == input_permission?.value)
+    
     if (check.length>0) {
       setDuplicatePermission(false)
     }
@@ -209,6 +229,11 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
     }
     getPermissionOptions()
   },[updateRole])
+
+  React.useEffect( () => {
+    permissionListRef.current = permissionList
+    handleUpdatePermissionList()
+  }, [permissionList])
 
   return (
     <PaperComponent>
@@ -338,7 +363,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                   }}
                 >
                   <Controller
-                    name    = "permission_uid"
+                    name    = "permission"
                     control = {controlPermission}
                     rules   = {{
                       // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
@@ -351,15 +376,24 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                         field     : { onChange, value },
                         fieldState: { error },
                       }) => (
-                      <SelectComponent
-                        error        = {!!error}
-                        selectState  = {value}
-                        handleChange = {handleSelectPermission}
-                        selectId     = 'permission-select'
-                        selectLabel  = 'Permission'
-                        options      = {permissionOptions}
-                        helperText   = {error ? error.message : null}
-                      />
+                        <Autocomplete
+                          // fullWidth
+                          value                = {value}
+                          id                   = "permission"
+                          options              = {permissionOptions}
+                          // sx                   = {{ width: 300 }}
+                          onChange             = {(event: any, newValue) => { onChange(newValue); checkDuplicate(); }}
+                          isOptionEqualToValue = { (option: any, value: any) => value === "" ||  option.value == value.value}
+                          renderInput          = {(params: any) => 
+                            <TextField
+                              fullWidth
+                              {...params}
+                              label      = "Permission"
+                              error      = {!!error}
+                              helperText = {error ? error.message : null}
+                            />
+                          }
+                        />
                       )
                     }
                   />
@@ -398,7 +432,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                           checkId      = {'write-check'}
                           checkLabel   = {'Write'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -419,7 +453,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                           checkId       = {'read-check'}
                           checkLabel    = {'Read'}
                           checkState    = {value}
-                          handleChange  = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -440,7 +474,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                           checkId      = {'modify-check'}
                           checkLabel   = {'Modify'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -461,7 +495,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                           checkId      = {'delete-check'}
                           checkLabel   = {'Delete'}
                           checkState   = {value}
-                          handleChange = {onChange}
+                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
                         />
                         )
                       }
@@ -483,9 +517,9 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
             <LoadingButtonComponent
               fullWidth
               buttonColor = 'primary'
-              disabled    = {!isValid || !(permissionList.length>0)}
+              disabled    = {!isValid || !(permissionList.length>0) || !isDirty}
               isLoading   = {isLoading}
-              id          = 'permission_create_submit'
+              id          = 'role_update_submit'
               onClick     = {handleSubmit(onSubmit)}
             >
               SUBMIT

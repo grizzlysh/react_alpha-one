@@ -1,17 +1,19 @@
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Box, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Stack, TextField } from "@mui/material";
 
 import Role from '@/types/Role.type';
 import UserOnline from '@/types/UserOnline.type';
 import { useRoleRead } from '@/hooks/role/use-read';
 import { useUserCreate } from '@/hooks/user/use-create';
-import { UserCreateRequest } from '@/services/user/create';
+import { UserCreateInput, UserCreateRequest } from '@/services/user/create';
 import SelectComponent from '../_general/atoms/Select.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
+import { sexOptions } from '@/utils/ddlOptions';
+import { useRoleDdl } from '@/hooks/role/use-ddl';
 
 interface UserCreateProps {
   getUserData     : ()=>void,
@@ -24,20 +26,9 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
   const currentUser: UserOnline                 = useTypedSelector(
     (state) => state.reducer.user.user,
   );
-  
-  const [roleOptions, setRoleOptions] = React.useState<{value: string, label: string}[]>([])
-  const sexOptions                    = [
-    {value: 'm', label: 'Laki-laki'},
-    {value: 'f', label: 'Perempuan'},
-  ]
-
-  const { refetch: doGetRole, data, isLoading: isLoadingRole } = useRoleRead({
-    page : '',
-    size : '999',
-    cond : '',
-    sort : '',
-    field: '',
-  });
+    
+  const [roleOptions, setRoleOptions]                          = React.useState<{value: string, label: string}[]>([])
+  const { refetch: doGetRole, data, isLoading: isLoadingRole } = useRoleDdl();
   
   const { 
     watch,
@@ -47,15 +38,15 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
     handleSubmit,
     reset,
     formState: { isValid, errors },
-  } = useForm<UserCreateRequest>({
+  } = useForm<UserCreateInput>({
     defaultValues: {
       username        : '',
       name            : '',
-      sex             : '',
+      sex             : null,
       email           : '',
       password        : '',
       current_user_uid: currentUser.uid,
-      role_uid        : '',
+      role_uid        : null,
     }
   })
 
@@ -63,18 +54,29 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
     reset({
       username        : '',
       name            : '',
-      sex             : '',
+      sex             : null,
       email           : '',
       password        : '',
       current_user_uid: currentUser.uid,
-      role_uid        : '',
+      role_uid        : null,
     })
   }
   
   const { mutate: submitCreateUser, isLoading } = useUserCreate({ getData: getUserData, closeModal: handleCloseModal, resetForm: resetForm })
 
-  const onSubmit: SubmitHandler<UserCreateRequest> = (data) => {
-    submitCreateUser(data)
+  const onSubmit: SubmitHandler<UserCreateInput> = (data) => {
+    const submitData: UserCreateRequest = {
+      
+      username        : data.username,
+      name            : data.name,
+      sex             : data.sex?.value || '',
+      email           : data.email,
+      password        : data.password,
+      role_uid        : data.role_uid?.value || '',
+      current_user_uid: data.current_user_uid,
+    }
+    
+    submitCreateUser(submitData)
   }
 
   const getRoleOptions = () => {
@@ -84,11 +86,7 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
           return;
         }
 
-        const roles = resp.data.output_schema.data?.map( (val: Role) => (
-          {value: val.uid, label: val.display_name}
-        ));
-        
-        setRoleOptions(roles)
+        setRoleOptions(resp.data.output_schema.data)
       } 
     )
   }
@@ -176,6 +174,7 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
                 name    = "sex"
                 control = {control}
                 rules   = {{
+                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                   required: {
                     value  : true,
                     message: "Sex fields is required"
@@ -185,15 +184,23 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
                     field     : { onChange, value },
                     fieldState: { error },
                   }) => (
-                  <SelectComponent
-                    error        = {!!error}
-                    selectState  = {value}
-                    handleChange = {onChange}
-                    selectId     = 'sex-select'
-                    selectLabel  = 'Sex'
-                    options      = {sexOptions}
-                    helperText   = {error ? error.message : null}
-                  />
+                    <Autocomplete
+                      value                = {value}
+                      id                   = "sex-autocomplete"
+                      options              = {sexOptions}
+                      sx                   = {{mb:2}}
+                      onChange             = {(event: any, value: any) => { onChange(value) }}
+                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                      renderInput          = {(params: any) => 
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size       = "medium"
+                        label      = "Sex"
+                        error      = {!!error}
+                        helperText = {error ? error.message : null}
+                      />}
+                    />
                   )
                 }
               />
@@ -266,6 +273,7 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
                 name    = "role_uid"
                 control = {control}
                 rules   = {{
+                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                   required: {
                     value  : true,
                     message: "Role fields is required"
@@ -275,15 +283,23 @@ const UserCreateComponent: React.FC<UserCreateProps> = ({ getUserData, handleClo
                     field     : { onChange, value },
                     fieldState: { error },
                   }) => (
-                  <SelectComponent
-                    error        = {!!error}
-                    selectState  = {value}
-                    handleChange = {onChange}
-                    selectId     = 'role-select'
-                    selectLabel  = 'Role'
-                    options      = {roleOptions}
-                    helperText   = {error ? error.message : null}
-                  />
+                    <Autocomplete
+                      value                = {value}
+                      id                   = "role-autocomplete"
+                      options              = {roleOptions}
+                      sx                   = {{mb:2}}
+                      onChange             = {(event: any, value: any) => { onChange(value) }}
+                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                      renderInput          = {(params: any) => 
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size       = "medium"
+                        label      = "Role"
+                        error      = {!!error}
+                        helperText = {error ? error.message : null}
+                      />}
+                    />
                   )
                 }
               />

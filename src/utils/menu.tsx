@@ -1,19 +1,18 @@
 import React from 'react';
-import GamesIcon from '@mui/icons-material/Games';
-import { People, Groups, Dashboard, Book, Circle } from '@mui/icons-material';
+import { People, Groups, Dashboard, Book, Circle, LocalShipping, MedicationLiquid, Receipt, LocalPharmacy } from '@mui/icons-material';
 import { Menu } from '@/types/Menu.type';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Box } from '@mui/material';
 
 
 
-const menu:Menu[] = [
+const menu: Menu[] = [
   {
     title: 'Home',
-    path : '/',
-    url  : '',
+    path: '/',
+    url: '',
     state: ['/'],
-    icon : <Dashboard />,
+    icon: <Dashboard />,
   },
   // {
   //   title: 'Profile',
@@ -23,29 +22,29 @@ const menu:Menu[] = [
   // },
   {
     title: 'User Manage',
-    path : '',
-    url  : 'user_manage',
+    path: '',
+    url: 'user_manage',
     state: ['/permission', '/role', '/user'],
-    icon : <Groups />,
+    icon: <Groups />,
     child: [
       {
         title: 'Permission',
-        path : '/permission',
-        url  : 'permission',
+        path: '/permission',
+        url: 'permission',
         state: ['/permission'],
         // icon : <People />,
       },
       {
         title: 'Role',
-        path : '/role',
-        url  : 'role',
+        path: '/role',
+        url: 'role',
         state: ['/role'],
         // icon : <ShoppingCart />,
       },
       {
         title: 'User',
-        path : '/user',
-        url  : 'user',
+        path: '/user',
+        url: 'user',
         state: ['/user'],
         // icon : <ShoppingCart />,
       },
@@ -53,51 +52,75 @@ const menu:Menu[] = [
   },
   {
     title: 'divider',
-    path : '',
-    url  : '',
+    path: '',
+    url: '',
     state: [''],
-    icon : '',
+    icon: '',
   },
   {
     title: 'Drug Class',
-    path : '',
-    url  : 'drug_class',
+    path: '',
+    url: 'drug_class',
     state: ['/shape', '/category', '/therapy-class'],
-    icon : <Book />,
+    icon: <Book />,
     child: [
       {
         title: 'Shape',
-        path : '/shape',
-        url  : 'shape',
+        path: '/shape',
+        url: 'shape',
         state: ['/shape'],
         // icon : <>&#x2022;</>,
         icon: '',
       },
       {
         title: 'Category',
-        path : '/category',
-        url  : 'category',
+        path: '/category',
+        url: 'category',
         state: ['/category'],
-        icon : <Box
+        icon: <Box
           sx={{
-            content        : '""',
-            width          : '4px',
-            height         : '4px',
-            borderRadius   : '50%',
+            content: '""',
+            width: '4px',
+            height: '4px',
+            borderRadius: '50%',
             backgroundColor: '#919eab',
-            transition     : 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
-          }}        
+            transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+          }}
         />,
       },
       {
         title: 'Therapy Class',
-        path : '/therapy-class',
-        url  : 'therapy-class',
+        path: '/therapy-class',
+        url: 'therapy-class',
         state: ['/therapy-class'],
-        icon : <Circle />,
+        icon: <Circle />,
       },
     ]
   },
+  {
+    title: 'Distributor',
+    path: '/distributor',
+    url: 'distributor',
+    state: ['/distributor'],
+    icon: <LocalShipping />,
+  },
+  {
+    title: 'Drug',
+    path: '/drug',
+    url: 'drug',
+    state: ['/drug'],
+    icon: <MedicationLiquid />,
+  },
+
+  {
+    title: 'Invoice',
+    path: '/invoice',
+    url: 'invoice',
+    state: ['/invoice'],
+    icon: <Receipt />,
+  },
+
+  
 ]
 
 export default menu;

@@ -1,17 +1,19 @@
 import React from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { Box, FormControlLabel, Skeleton, Stack, Switch, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, FormControlLabel, Skeleton, Stack, Switch, TextField, Typography } from "@mui/material";
 
 import User from '@/types/User.type';
 import Role from '@/types/Role.type';
 import UserOnline from '@/types/UserOnline.type';
 import { useRoleRead } from '@/hooks/role/use-read';
 import { useUserUpdate } from '@/hooks/user/use-update';
-import { UserUpdateRequest } from '@/services/user/update';
+import { UserUpdateInput, UserUpdateRequest } from '@/services/user/update';
 import SelectComponent from '../_general/atoms/Select.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
+import { useRoleDdl } from '@/hooks/role/use-ddl';
+import { sexOptions } from '@/utils/ddlOptions';
 
 interface UserUpdateProps {
   updateUser      : User,
@@ -26,20 +28,9 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     (state) => state.reducer.user.user,
   );
 
-  const [disablePassword, setDisablePassword] = React.useState(true)
-  const [roleOptions, setRoleOptions]         = React.useState<{value: string, label: string}[]>([])
-  const sexOptions                            = [
-    {value: 'm', label: 'Laki-laki'},
-    {value: 'f', label: 'Perempuan'},
-  ]
-
-  const { refetch: doGetRole, data, isLoading: isLoadingRole } = useRoleRead({
-    page : '',
-    size : '999',
-    cond : '',
-    sort : '',
-    field: '',
-  });
+  const [disablePassword, setDisablePassword]                  = React.useState(true)
+  const [roleOptions, setRoleOptions]                          = React.useState<{value: string, label: string}[]>([])
+  const { refetch: doGetRole, data, isLoading: isLoadingRole } = useRoleDdl();
   
   const { 
     watch,
@@ -50,15 +41,15 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     handleSubmit,
     reset,
     formState: { isValid, isDirty, dirtyFields, errors },
-  } = useForm<UserUpdateRequest>({
+  } = useForm<UserUpdateInput>({
     defaultValues: {
       username        : '',
       name            : '',
-      sex             : '',
+      sex             : null,
       email           : '',
       password        : '',
       current_user_uid: currentUser.uid,
-      role_uid        : '',
+      role_uid        : null,
     }
   })
 
@@ -66,23 +57,22 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     reset({
       username        : '',
       name            : '',
-      sex             : '',
+      sex             : null,
       email           : '',
       password        : '',
       current_user_uid: currentUser.uid,
-      role_uid        : '',
+      role_uid        : null,
     })
   }
 
   const loadData = (data: any) => {
-    console.log(data);
     reset({
       username        : data.username,
       name            : data.name,
-      sex             : data.sex,
       email           : data.email,
+      sex             : data.sex == 'm' ? {value: 'm', label: 'Laki-laki'} : {value: 'f', label: 'Perempuan'},
       password        : '',
-      role_uid        : data.role.uid,
+      role_uid        : { value: data.role.uid, label: data.role.name },
       current_user_uid: currentUser.uid,
     })
   }
@@ -95,18 +85,25 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
         if(resp.status == "error"){
           return;
         }
-
-        const roles = resp.data.output_schema.data?.map( (val: Role) => (
-          {value: val.uid, label: val.display_name}
-        ));
         
-        setRoleOptions(roles)
+        setRoleOptions(resp.data.output_schema.data)
       } 
     )
   }
   
-  const onSubmit: SubmitHandler<UserUpdateRequest> = (data) => {
-    submitUpdateUser(data)
+  const onSubmit: SubmitHandler<UserUpdateInput> = (data) => {
+    
+    const submitData: UserUpdateRequest = {
+      
+      username        : data.username,
+      name            : data.name,
+      sex             : data.sex?.value || '',
+      email           : data.email,
+      password        : data.password,
+      role_uid        : data.role_uid?.value || '',
+      current_user_uid: data.current_user_uid,
+    }
+    submitUpdateUser(submitData)
   }
 
   const handleSwitchPassword = () => {
@@ -203,6 +200,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                 name    = "sex"
                 control = {control}
                 rules   = {{
+                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                   required: {
                     value  : true,
                     message: "Sex fields is required"
@@ -212,15 +210,23 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                     field     : { onChange, value },
                     fieldState: { error },
                   }) => (
-                  <SelectComponent
-                    error        = {!!error}
-                    selectState  = {value}
-                    handleChange = {onChange}
-                    selectId     = 'sex-select'
-                    selectLabel  = 'Sex'
-                    options      = {sexOptions}
-                    helperText   = {error ? error.message : null}
-                  />
+                    <Autocomplete
+                      value                = {value}
+                      id                   = "sex-autocomplete"
+                      options              = {sexOptions}
+                      sx                   = {{mb:2}}
+                      onChange             = {(event: any, value: any) => { onChange(value) }}
+                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                      renderInput          = {(params: any) => 
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size       = "medium"
+                        label      = "Sex"
+                        error      = {!!error}
+                        helperText = {error ? error.message : null}
+                      />}
+                    />
                   )
                 }
               />
@@ -258,10 +264,12 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
             />
 
             <Box sx = {{ mb: 2, }}>
+
               <Controller
                 name    = "role_uid"
                 control = {control}
                 rules   = {{
+                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                   required: {
                     value  : true,
                     message: "Role fields is required"
@@ -271,15 +279,23 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                     field     : { onChange, value },
                     fieldState: { error },
                   }) => (
-                  <SelectComponent
-                    error        = {!!error}
-                    selectState  = {value}
-                    handleChange = {onChange}
-                    selectId     = 'role-select'
-                    selectLabel  = 'Role'
-                    options      = {roleOptions}
-                    helperText   = {error ? error.message : null}
-                  />
+                    <Autocomplete
+                      value                = {value}
+                      id                   = "role-autocomplete"
+                      options              = {roleOptions}
+                      sx                   = {{mb:2}}
+                      onChange             = {(event: any, value: any) => { onChange(value) }}
+                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                      renderInput          = {(params: any) => 
+                      <TextField
+                        fullWidth
+                        {...params}
+                        size       = "medium"
+                        label      = "Role"
+                        error      = {!!error}
+                        helperText = {error ? error.message : null}
+                      />}
+                    />
                   )
                 }
               />
