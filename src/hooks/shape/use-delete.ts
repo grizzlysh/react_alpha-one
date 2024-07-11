@@ -10,11 +10,9 @@ import { ShapeDeleteRequest } from "@/services/shape/delete";
 
 interface useShapeDeleteProps {
   shape_uid : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
 }
 
-export const useShapeDelete = ({ shape_uid, getData, closeModal }:useShapeDeleteProps) => {
+export const useShapeDelete = ({ shape_uid }:useShapeDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,8 +21,6 @@ export const useShapeDelete = ({ shape_uid, getData, closeModal }:useShapeDelete
     mutationFn: (payload: ShapeDeleteRequest) => api.deleteShape(payload, shape_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

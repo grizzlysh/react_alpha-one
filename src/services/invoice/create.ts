@@ -1,21 +1,64 @@
 import { http } from '@/services/axios';
-import { PERMISSION_CREATE_PATH, ROLE_CREATE_PATH } from '@/configs/constant';
+import { INVOICE_CREATE_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { ddlOptions } from '@/utils/ddlOptions';
+import { DdlOptions } from '@/utils/ddlOption';
 
-export interface RoleCreatePermissionInput {
-  permission     : ddlOptions | null,
-  read_permit    : boolean,
-  write_permit   : boolean,
-  modify_permit  : boolean,
-  delete_permit  : boolean,
+export interface InvoiceDetailCreateInput {
+  drug            : DdlOptions | null,
+  no_batch        : string,
+  expired_date    : string,
+  qty_pcs         : string | null,
+  qty_box         : string | null,
+  price_box       : string | null,
+  total_price     : number | null,
+  total_drug_price: number | null,
+  discount        : string | null,
+  discount_nominal: number | null,
+  ppn             : boolean,
+  ppn_nominal     : number | null,
 }
 
-export interface RoleCreateRequest {
-  display_name    : string,
-  description     : string,
+export interface InvoiceCreateInput {
+  no_invoice      : string,
+  invoice_date    : string,
+  receive_date    : string,
+  total_invoice   : number,
+  count_item      : number,
+  due_date        : string,
+  status          : {value: string, label: string} | null,
+  total_pay       : string | null,
+  total_debt      : number,
+  distributor_uid : {value: string, label: string} | null,
+  detail_invoices : string,
   current_user_uid: string,
-  permissions     : string,
+}
+export interface InvoiceDetailCreateRequest {
+  drug_uid        : string,
+  drug_name       : string,
+  no_batch        : string,
+  expired_date    : string,
+  qty_pcs         : number,
+  qty_box         : number,
+  price_box       : number,
+  total_price     : number,
+  total_drug_price: number,
+  discount        : number,
+  discount_nominal: number,
+  ppn             : number,
+  ppn_nominal     : number,
+}
+export interface InvoiceCreateRequest {
+  no_invoice      : string,
+  invoice_date    : string,
+  receive_date    : string,
+  total_invoice   : number,
+  count_item      : number,
+  due_date        : string,
+  status          : string,
+  total_pay       : number,
+  distributor_uid : string | null,
+  detail_invoices : string,
+  current_user_uid: string,
 }
 
 const map = {
@@ -24,15 +67,15 @@ const map = {
   }
 }
 
-const createRole = async (payload: RoleCreateRequest) => {
+const createInvoice = async (payload: InvoiceCreateRequest) => {
 
-  const { data } = await http.post(ROLE_CREATE_PATH, payload);
+  const { data } = await http.post(INVOICE_CREATE_PATH, payload);
   return data;
 
 }
 
-const roleCreateService = {
-  createRole,
+const invoiceCreateService = {
+  createInvoice,
 };
 
-export default roleCreateService;
+export default invoiceCreateService;

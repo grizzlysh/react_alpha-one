@@ -4,15 +4,16 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { DistributorReadRequest, DistributorReadResponse } from '@/services/distributor/read';
+import Distributor from '@/types/Distributor.type';
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
-export const useDistributorRead = (data: DistributorReadRequest) => {
+export const useDistributorRead = (data: PaginationRequest) => {
   return useQuery({
     queryKey : ['distributor-get'],
     queryFn  : (payload) => api.getDistributor(data),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<DistributorReadResponse>) => {
+    onSuccess: async (resp: SuccessResponse<PaginationResponse<Distributor>>) => {
       return resp
     },
     // refetchInterval     : 1000,

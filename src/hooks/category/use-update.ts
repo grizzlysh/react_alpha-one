@@ -12,12 +12,9 @@ import { CategoryUpdateRequest } from "@/services/category/update";
 
 interface useCategoryUpdateProps {
   category_uid: string,
-  getData     : ()=>void,
-  closeModal  : ()=>void,
-  resetForm   : ()=>void,
 }
 
-export const useCategoryUpdate = ({ category_uid, getData, closeModal, resetForm }:useCategoryUpdateProps ) => {
+export const useCategoryUpdate = ({ category_uid }:useCategoryUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -25,15 +22,7 @@ export const useCategoryUpdate = ({ category_uid, getData, closeModal, resetForm
     mutationKey: ['category-update'],
     mutationFn : (payload: CategoryUpdateRequest) => api.updateCategory(payload, category_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
-      // await Promise.all([
-      //   dispatch(setUserAuth(data.output_schema.user)),
-      //   dispatch(setAccessToken(data.output_schema.access_token)),
-      //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
-      // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

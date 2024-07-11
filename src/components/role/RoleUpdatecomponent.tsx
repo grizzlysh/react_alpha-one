@@ -6,20 +6,17 @@ import { Autocomplete, Box, Stack, TextField } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type'
-import Permission from '@/types/Permission.type'
 import { useRoleUpdate } from '@/hooks/role/use-update'
-import { RoleCreateRequest } from '@/services/role/create'
 import { useRoleReadByID } from '@/hooks/role/use-read-by-id'
-import { usePermissionRead } from '@/hooks/permission/use-read'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
-import SelectComponent from '@/components/_general/atoms/Select.component'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import CheckboxComponent from '@/components/_general/atoms/Checkbox.component'
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component'
 import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
 import { usePermissionDdl } from '@/hooks/permission/use-ddl';
-import { RoleUpdatePermissionInput, RoleUpdateRequest } from '@/services/role/update';
+import { RolePermissionUpdateInput, RoleUpdateRequest } from '@/services/role/update';
+import { DdlOptions } from '@/utils/ddlOption';
 
 interface RoleUpdateProps {
   updateRole: string
@@ -32,7 +29,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
     (state) => state.reducer.user.user,
   );
 
-  const [permissionOptions, setPermissionOptions]     = React.useState<{value: string, label: string}[]>([])
+  const [permissionOptions, setPermissionOptions]     = React.useState<DdlOptions[]>([])
   const [duplicatePermission, setDuplicatePermission] = React.useState(false);
   const [permissionList, setPermissionList]           = React.useState<{}[]>([])
   const permissionListRef                             = React.useRef<{}[]>([])
@@ -139,7 +136,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
     control: controlPermission,
     handleSubmit: handleSubmitPermission,
     formState: { isValid: isValidPermission, errors: errorsPermission },
-  } = useForm<RoleUpdatePermissionInput>({
+  } = useForm<RolePermissionUpdateInput>({
     defaultValues: {
       permission   : null,
       write_permit : false,
@@ -150,7 +147,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
     mode: 'all',
   })
 
-  const onAddPermission = (data: RoleUpdatePermissionInput) => {
+  const onAddPermission = (data: RolePermissionUpdateInput) => {
     const permissionIndex      = permissionList.length;
     // const permissionSelected   = permissionOptions.find(option => option.value === data.permission_uid ) || '';
     // const permission_name      = permissionSelected ? permissionSelected.label : '';
@@ -245,17 +242,18 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
               display = {"flex"}
               // gap     = {2}
               sx      = {{
-                marginBottom: 2,
                 '@media (min-width: 0px)'  : {
                   flexDirection: 'column',
                   alignItems   : 'center',
                   gap          : 0,
+                  marginBottom : 2,
                 },
                 '@media (min-width: 700px)': {
                   flexDirection : 'row',
                   alignItems    : 'stretch',
                   justifyContent: 'flex-start',
                   gap           : 2,
+                  marginBottom  : 0,
                   // divider      : (<Divider orientation="vertical" flexItem />)
                 },
               }}  
@@ -290,7 +288,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                     }) => (
                     <TextField            
                       autoComplete = 'off'
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                       size       = "medium"
                       error      = {!!error}
                       onChange   = {onChange}
@@ -298,7 +296,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       value      = {value}
                       label      = {"Display Name"}
                       variant    = "outlined"
-                      sx         = {{mb:2}}
+                      sx         = {{mb:1}}
                       fullWidth
                     />
                     )
@@ -322,14 +320,9 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       onChange     = {onChange}
                       value        = {value}
                       label        = {"Description"}
-                      sx           = {{
-                        '@media (min-width: 0px)'  : {
-                          mb: 2,
-                        },
-                        '@media (min-width: 700px)': {
-                          mb: 0,
-                        },
-                      }}
+                      error        = {!!error}
+                      helperText   = {error ? error.message : " "}
+                      sx           = {{mb:1}}
                     />
                     )
                   }
@@ -346,7 +339,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                   '@media (min-width: 700px)': {
                     flexDirection : 'column',
                     alignItems    : 'flex-start',
-                    justifyContent: 'space-between',
+                    justifyContent: 'start',
                     width         : '50%',
                   },
                 }}  
@@ -358,7 +351,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       mb: 2,
                     },
                     '@media (min-width: 700px)': {
-                      mb: 0,
+                      mb: 1,
                     },
                   }}
                 >
@@ -390,7 +383,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                               {...params}
                               label      = "Permission"
                               error      = {!!error}
-                              helperText = {error ? error.message : null}
+                              helperText = {error ? error.message : " "}
                             />
                           }
                         />
@@ -406,7 +399,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       mb: 2,
                     },
                     '@media (min-width: 700px)': {
-                      mb: 0,
+                      mb: 3,
                     },
                   }}
                 >    
@@ -521,6 +514,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
               isLoading   = {isLoading}
               id          = 'role_update_submit'
               onClick     = {handleSubmit(onSubmit)}
+              sx          = {{mt:1}}
             >
               SUBMIT
             </LoadingButtonComponent>

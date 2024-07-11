@@ -3,8 +3,6 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { Stack, TextField } from "@mui/material";
 
 import UserOnline from '@/types/UserOnline.type';
-import { useShapeCreate } from '@/hooks/shape/use-create';
-import { ShapeCreateRequest } from '@/services/shape/create';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
@@ -12,12 +10,12 @@ import { CategoryCreateRequest } from '@/services/category/create';
 import { useCategoryCreate } from '@/hooks/category/use-create';
 
 interface CategoryCreateProps {
-  getCategoryData    : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
-  modalOpen      : boolean,
+  modalOpen       : boolean,
 }
 
-const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ getCategoryData, handleCloseModal, modalOpen }) => {
+const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -45,11 +43,19 @@ const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ getCategoryDat
     })
   }
 
-  const { mutate: submitCreateCategory, isLoading } = useCategoryCreate({ getData: getCategoryData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreateCategory, isLoading, isSuccess } = useCategoryCreate()
 
   const onSubmit: SubmitHandler<CategoryCreateRequest> = (data) => {
     submitCreateCategory(data)
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -79,7 +85,7 @@ const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ getCategoryDat
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -87,7 +93,7 @@ const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ getCategoryDat
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -100,8 +106,9 @@ const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ getCategoryDat
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'shape_create_submit'
+              sx           = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

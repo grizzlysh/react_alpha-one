@@ -10,11 +10,9 @@ import { TherapyClassDeleteRequest } from "@/services/therapyClass/delete";
 
 interface useTherapyClassDeleteProps {
   therapy_class_uid: string,
-  getData          : ()=>void,
-  closeModal       : ()=>void,
 }
 
-export const useTherapyClassDelete = ({ therapy_class_uid, getData, closeModal }:useTherapyClassDeleteProps) => {
+export const useTherapyClassDelete = ({ therapy_class_uid }:useTherapyClassDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,8 +21,6 @@ export const useTherapyClassDelete = ({ therapy_class_uid, getData, closeModal }
     mutationFn: (payload: TherapyClassDeleteRequest) => api.deleteTherapyClass(payload, therapy_class_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

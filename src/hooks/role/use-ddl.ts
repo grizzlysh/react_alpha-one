@@ -4,8 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { TherapyClassDdlResponse } from '@/services/therapyClass/ddl';
-import { RoleDdlResponse } from '@/services/role/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useRoleDdl = () => {
   return useQuery({
@@ -13,7 +12,7 @@ export const useRoleDdl = () => {
     queryFn  : (payload) => api.getRoleDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<RoleDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

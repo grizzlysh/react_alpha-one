@@ -6,9 +6,7 @@ import UserOnline from '@/types/UserOnline.type';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
-import { DistributorCreateInput, DistributorCreateRequest } from '@/services/distributor/create';
-import { useDistributorCreate } from '@/hooks/distributor/use-create';
-import { ddlOptions, statusOptions } from '@/utils/ddlOptions';
+import { DdlOptions, statusOptions } from '@/utils/ddlOption';
 import { DrugCreateInput, DrugCreateRequest } from '@/services/drug/create';
 import { useDrugCreate } from '@/hooks/drug/use-create';
 import { useShapeDdl } from '@/hooks/shape/use-ddl';
@@ -16,16 +14,16 @@ import { useCategoryDdl } from '@/hooks/category/use-ddl';
 import { useTherapyClassDdl } from '@/hooks/therapyClass/use-ddl';
 
 interface DrugCreateProps {
-  getDrugData     : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
   modalOpen       : boolean,
 }
 
-const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleCloseModal, modalOpen }) => {
+const DrugCreateComponent: React.FC<DrugCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
-  const [shapeOptions, setShapeOptions]               = React.useState<ddlOptions[]>([])
-  const [categoryOptions, setCategoryOptions]         = React.useState<ddlOptions[]>([])
-  const [therapyClassOptions, setTherapyClassOptions] = React.useState<ddlOptions[]>([])
+  const [shapeOptions, setShapeOptions]               = React.useState<DdlOptions[]>([])
+  const [categoryOptions, setCategoryOptions]         = React.useState<DdlOptions[]>([])
+  const [therapyClassOptions, setTherapyClassOptions] = React.useState<DdlOptions[]>([])
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -63,7 +61,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
     })
   }
 
-  const { mutate: submitCreateDrug, isLoading }                                                  = useDrugCreate({ getData: getDrugData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreateDrug, isLoading, isSuccess }                                       = useDrugCreate();
   const { refetch: doGetShape, data: dataShape, isLoading: isLoadingShape }                      = useShapeDdl();
   const { refetch: doGetCategory, data: dataCategory, isLoading: isLoadingCategory }             = useCategoryDdl();
   const { refetch: doGetTherapyClass, data: dataTherapyClass, isLoading: isLoadingTherapyClass } = useTherapyClassDdl();
@@ -114,6 +112,13 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
     )
   }
 
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   React.useEffect( () => {
     getDdlOptions()
@@ -148,7 +153,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -156,7 +161,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -181,7 +186,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {shapeOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -191,7 +196,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                       size       = "medium"
                       label      = "Shape"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -217,7 +222,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {categoryOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -227,7 +232,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                       size       = "medium"
                       label      = "Category"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -252,7 +257,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {therapyClassOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -262,7 +267,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                       size       = "medium"
                       label      = "Therapy Class"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -287,7 +292,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {statusOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -297,7 +302,7 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                       size       = "medium"
                       label      = "Status"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -321,7 +326,9 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Description"}
-                  sx           = {{mb:2}}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                 />
                 )
               }
@@ -332,8 +339,9 @@ const DrugCreateComponent: React.FC<DrugCreateProps> = ({ getDrugData, handleClo
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'distributor_create_submit'
+              sx           = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

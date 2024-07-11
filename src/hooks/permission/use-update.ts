@@ -10,12 +10,9 @@ import { PermissionUpdateRequest } from "@/services/permission/update";
 
 interface usePermissionUpdateProps {
   permission_uid: string,
-  getData       : ()=>void,
-  closeModal    : ()=>void,
-  resetForm     : ()=>void,
 }
 
-export const usePermissionUpdate = ({ permission_uid, getData, closeModal, resetForm }:usePermissionUpdateProps ) => {
+export const usePermissionUpdate = ({ permission_uid }:usePermissionUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,15 +20,7 @@ export const usePermissionUpdate = ({ permission_uid, getData, closeModal, reset
     mutationKey: ['permission-update'],
     mutationFn: (payload: PermissionUpdateRequest) => api.updatePermission(payload, permission_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
-      // await Promise.all([
-      //   dispatch(setUserAuth(data.output_schema.user)),
-      //   dispatch(setAccessToken(data.output_schema.access_token)),
-      //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
-      // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

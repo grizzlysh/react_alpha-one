@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { PermissionDdlResponse } from '@/services/permission/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const usePermissionDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const usePermissionDdl = () => {
     queryFn  : (payload) => api.getPermissionDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<PermissionDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

@@ -1,7 +1,5 @@
 import React from 'react';
 import Button, { ButtonProps as MUIButtonProps } from '@mui/material/Button';
-import theme from '@/utils/theme';
-
 interface ButtonProps extends MUIButtonProps {
   // title     : string,
   // isLoading?: boolean,

@@ -8,17 +8,17 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 import { DistributorCreateInput, DistributorCreateRequest } from '@/services/distributor/create';
 import { useDistributorCreate } from '@/hooks/distributor/use-create';
-import { statusOptions } from '@/utils/ddlOptions';
+import { statusOptions } from '@/utils/ddlOption';
 
 interface DistributorCreateProps {
-  getDistributorData: ()=>void,
+  resetPagination   : ()=>void,
   handleCloseModal  : ()=>void,
   modalOpen         : boolean,
 }
 
-const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistributorData, handleCloseModal, modalOpen }) => {
+const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                  = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -57,7 +57,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
     })
   }
 
-  const { mutate: submitCreateDistributor, isLoading } = useDistributorCreate({ getData: getDistributorData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreateDistributor, isLoading, isSuccess } = useDistributorCreate()
 
   const onSubmit: SubmitHandler<DistributorCreateInput> = (data) => {
     const submitData: DistributorCreateRequest = {
@@ -72,6 +72,14 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
     }
     submitCreateDistributor(submitData)
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -101,7 +109,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -109,7 +117,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -132,7 +140,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -140,7 +148,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                   value        = {value}
                   label        = {"No Permit"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -163,7 +171,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -171,7 +179,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                   value        = {value}
                   label        = {"Phone"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -194,7 +202,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -202,7 +210,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                   value        = {value}
                   label        = {"Contact Person"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -227,7 +235,7 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {statusOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -236,7 +244,8 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                       {...params}
                       size       = "medium"
                       label      = "Status"
-                      helperText = {error ? error.message : null}
+                      error      = {!!error}
+                      helperText = {error ? error.message : " "}
                       />}
                   />
                 )
@@ -261,15 +270,15 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                 <TextField
                   multiline
                   fullWidth
-
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
                   minRows      = {4}
                   size         = "medium"
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Address"}
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                 />
                 )
               }
@@ -292,7 +301,9 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Description"}
-                  sx           = {{mb:2}}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                 />
                 )
               }
@@ -300,11 +311,12 @@ const DistributorCreateComponent: React.FC<DistributorCreateProps> = ({ getDistr
             <LoadingButtonComponent
               buttonColor = 'primary'
               type        = 'submit'
-              disabled    = {false}
+              disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'distributor_create_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

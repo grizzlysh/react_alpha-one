@@ -11,12 +11,12 @@ import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 
 interface PermissionCreateProps {
-  getPermissionData: ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal : ()=>void,
   modalOpen        : boolean,
 }
 
-const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermissionData, handleCloseModal, modalOpen }) => {
+const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -46,12 +46,21 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
     })
   }
   
-  const { mutate: submitCreatePermission, isLoading } = usePermissionCreate({ getData: getPermissionData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreatePermission, isLoading, isSuccess } = usePermissionCreate();
 
   const onSubmit: SubmitHandler<PermissionCreateRequest> = (data) => {
     submitCreatePermission(data)
   }
 
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+
+  
   return (
     <>
       <ModalComponent
@@ -80,7 +89,7 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText = {error ? error.message : null}
+                  helperText = {error ? error.message : " "}
                   size       = "medium"
                   error      = {!!error}
                   onChange   = {onChange}
@@ -88,7 +97,7 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
                   value      = {value}
                   label      = {"Display Name"}
                   variant    = "outlined"
-                  sx         = {{mb:2}}
+                  sx         = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -109,8 +118,10 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Description"}
-                  sx           = {{mb:2}}
                   minRows      = {4}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                   multiline
                   fullWidth
                 />
@@ -124,8 +135,9 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ getPermiss
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'permission_create_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

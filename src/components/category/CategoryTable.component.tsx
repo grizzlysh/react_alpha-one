@@ -18,6 +18,7 @@ import CategoryUpdateComponent from './CategoryUpdate.component';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface CategoryTableProps {
   modalCreate           : boolean,
@@ -31,13 +32,13 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -77,6 +78,11 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getCategoryData = () => {
     doGetCategory().then(
       (resp: any) => {
@@ -87,12 +93,13 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
         const rows    = resp.data.output_schema.data?.map( (val: any,idx: number) => ({no: startNo+idx+1, ...val}) )
         
         setRowData(rows);
-        setRowTotal(resp.data.output_schema.total_data)
+        setRowTotal(resp.data.output_schema.total_data);
       } 
     )
   }
 
 
+  //UPDATE CATEGORY
   const [updateCategory, setUpdateCategory]   = React.useState<Category>(initCategory);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
@@ -101,7 +108,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE CATEGORY
   const [deleteCategoryID, setDeleteCategoryID] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal]   = React.useState(false);
   const handleCloseDeleteModal                  = () => setOpenDeleteModal(false);
@@ -109,11 +116,18 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
     setDeleteCategoryID(category_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useCategoryDelete({ category_uid: deleteCategoryID, getData: getCategoryData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useCategoryDelete({ category_uid: deleteCategoryID });
   const handleDeleteCategory = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
   
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+
   React.useEffect(() => {
     handleQuery();
   }, [pageData, sortData]);
@@ -153,9 +167,20 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
         }
       </PaperComponent>
 
-      <CategoryCreateComponent getCategoryData={getCategoryData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      <CategoryCreateComponent 
+        resetPagination  = {resetPagination}
+        // getCategoryData  = {getCategoryData}
+        handleCloseModal = {handleCloseCreateModal}
+        modalOpen        = {modalCreate}
+      />
       
-      <CategoryUpdateComponent updateCategory={updateCategory} getCategoryData={getCategoryData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      <CategoryUpdateComponent
+        resetPagination  = {resetPagination}
+        updateCategory   = {updateCategory}
+        // getCategoryData  = {getCategoryData}
+        handleCloseModal = {handleCloseUpdateModal}
+        modalOpen        = {openUpdateModal}
+      />
 
       <DeleteConfirmComponent 
         modalId      = 'category-delete'

@@ -8,13 +8,7 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { UserCreateRequest } from "@/services/user/create";
 
-interface useUserCreateProps {
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
-}
-
-export const useUserCreate = ({getData, closeModal, resetForm}: useUserCreateProps) => {
+export const useUserCreate = () => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,9 +17,6 @@ export const useUserCreate = ({getData, closeModal, resetForm}: useUserCreatePro
     mutationFn : (payload: UserCreateRequest) => api.createUser(payload),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

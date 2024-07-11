@@ -8,13 +8,7 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { ShapeCreateRequest } from "@/services/shape/create";
 
-interface useShapeCreateProps {
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
-}
-
-export const useShapeCreate = ({getData, closeModal, resetForm}: useShapeCreateProps) => {
+export const useShapeCreate = () => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,9 +17,6 @@ export const useShapeCreate = ({getData, closeModal, resetForm}: useShapeCreateP
     mutationFn: (payload: ShapeCreateRequest) => api.createShape(payload),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

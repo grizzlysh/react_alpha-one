@@ -1,28 +1,23 @@
 import { http } from '@/services/axios';
-import { ROLE_DDL_PATH } from '@/configs/constant';
+import { INVOICE_DDL_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import Shape from '@/types/Shape.type';
-import { ddlOptions } from '@/utils/ddlOptions';
-
-export interface RoleDdlResponse {
-  data: ddlOptions[],
-}
+import { DdlResponse } from '@/utils/ddlOption';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<RoleDdlResponse>) => {
+  getDataFromService: (response: SuccessResponse<DdlResponse>) => {
     return response;
   }
 }
 
-const getRoleDdl = async () => {
+const getInvoiceDdl = async () => {
 
-  const { data } = await http.get(ROLE_DDL_PATH);
+  const { data } = await http.get(INVOICE_DDL_PATH);
   return data;
 
 }
 
-const roleDdlService = {
-  getRoleDdl,
+const invoiceDdlService = {
+  getInvoiceDdl,
 };
 
-export default roleDdlService;
+export default invoiceDdlService;

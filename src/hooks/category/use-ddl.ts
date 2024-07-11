@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { CategoryDdlResponse } from '@/services/category/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useCategoryDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const useCategoryDdl = () => {
     queryFn  : (payload) => api.getCategoryDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<CategoryDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

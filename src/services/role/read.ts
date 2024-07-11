@@ -2,29 +2,15 @@ import { http } from '@/services/axios';
 import { ROLE_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Role from '@/types/Role.type';
-
-export interface RoleReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface RoleReadResponse {
-  data        : Role[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<RoleReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<Role>>) => {
     return response;
   }
 }
 
-const getRole = async (payload: RoleReadRequest) => {
+const getRole = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(ROLE_READ_PATH, {
     params: {

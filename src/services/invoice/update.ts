@@ -1,21 +1,34 @@
 import { http } from '@/services/axios';
-import { ROLE_UPDATE_PATH } from '@/configs/constant';
+import { INVOICE_UPDATE_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { ddlOptions } from '@/utils/ddlOptions';
+import { DdlOptions } from '@/utils/ddlOption';
 
-export interface RoleUpdatePermissionInput {
-  permission     : ddlOptions | null,
-  read_permit    : boolean,
-  write_permit   : boolean,
-  modify_permit  : boolean,
-  delete_permit  : boolean,
+export interface InvoiceDetailUpdateInput {
+  drug            : DdlOptions | null,
+  no_batch        : string,
+  expired_date    : string,
+  qty_pcs         : number,
+  qty_box         : number,
+  price_box       : number,
+  total_price     : number,
+  discount        : number,
+  discount_nominal: number,
+  ppn             : number,
+  ppn_nominal     : number,
 }
 
-export interface RoleUpdateRequest {
-  display_name    : string,
-  description     : string,
+export interface InvoiceUpdateRequest {
+  no_invoice      : string,
+  invoice_date    : string,
+  receive_date    : string,
+  total_invoice   : number,
+  count_item      : number,
+  due_date        : string,
+  status          : string,
+  total_pay       : number,
+  distributor_uid : string,
+  detail_invoices : string,
   current_user_uid: string,
-  permissions     : string,
 }
 
 
@@ -25,14 +38,14 @@ const map = {
   }
 }
 
-const updateRole = async (payload: RoleUpdateRequest, role_uid: string) => {
-  const { data } = await http.put(ROLE_UPDATE_PATH+role_uid, payload);
+const updateInvoice = async (payload: InvoiceUpdateRequest, invoice_uid: string) => {
+  const { data } = await http.put(INVOICE_UPDATE_PATH+invoice_uid, payload);
   return data;
 
 }
 
-const roleUpdateService = {
-  updateRole,
+const invoiceUpdateService = {
+  updateInvoice,
 };
 
-export default roleUpdateService;
+export default invoiceUpdateService;

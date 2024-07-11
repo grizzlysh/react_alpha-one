@@ -9,13 +9,8 @@ import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { ShapeCreateRequest } from "@/services/shape/create";
 import { CategoryCreateRequest } from "@/services/category/create";
 
-interface useCategoryCreateProps {
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
-}
 
-export const useCategoryCreate = ({getData, closeModal, resetForm}: useCategoryCreateProps) => {
+export const useCategoryCreate = () => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -24,9 +19,6 @@ export const useCategoryCreate = ({getData, closeModal, resetForm}: useCategoryC
     mutationFn: (payload: CategoryCreateRequest) => api.createCategory(payload),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

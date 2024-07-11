@@ -11,13 +11,13 @@ import { TherapyClassUpdateRequest } from '@/services/therapyClass/update';
 import { useTherapyClassUpdate } from '@/hooks/therapyClass/use-update';
 
 interface TherapyClassUpdateProps {
-  updateTherapyClass : TherapyClass,
-  getTherapyClassData: ()=>void,
-  handleCloseModal   : ()=>void,
-  modalOpen          : boolean,
+  updateTherapyClass: TherapyClass,
+  resetPagination   : ()=>void,
+  handleCloseModal  : ()=>void,
+  modalOpen         : boolean,
 }
 
-const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ updateTherapyClass, getTherapyClassData, handleCloseModal, modalOpen }) => {
+const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ updateTherapyClass, resetPagination, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -51,15 +51,24 @@ const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ update
     })
   }
   
-  const { mutate: submitUpdateTherapyClass, isLoading: isLoadingUpdateTherapyClass } = useTherapyClassUpdate({ therapy_class_uid: updateTherapyClass.uid, closeModal: handleCloseModal, getData: getTherapyClassData, resetForm: resetForm })
-
-  React.useEffect( () => {
-    loadData(updateTherapyClass)
-  },[updateTherapyClass])
+  const { mutate: submitUpdateTherapyClass, isLoading: isLoadingUpdateTherapyClass, isSuccess } = useTherapyClassUpdate({ therapy_class_uid: updateTherapyClass.uid })
 
   const onSubmit: SubmitHandler<TherapyClassUpdateRequest> = (data) => {
     submitUpdateTherapyClass(data)
   }
+
+  React.useEffect( () => {
+    loadData(updateTherapyClass)
+  },[updateTherapyClass])
+  
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+
 
   return (
     <>
@@ -91,7 +100,7 @@ const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ update
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateTherapyClass}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -99,7 +108,7 @@ const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ update
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -113,8 +122,9 @@ const TherapyClassUpdateComponent: React.FC<TherapyClassUpdateProps> = ({ update
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdateTherapyClass}
               id          = 'shape_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

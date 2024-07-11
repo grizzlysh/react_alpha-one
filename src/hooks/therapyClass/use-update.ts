@@ -10,12 +10,9 @@ import { TherapyClassUpdateRequest } from "@/services/therapyClass/update";
 
 interface useTherapyClassUpdateProps {
   therapy_class_uid: string,
-  getData          : ()=>void,
-  closeModal       : ()=>void,
-  resetForm        : ()=>void,
 }
 
-export const useTherapyClassUpdate = ({ therapy_class_uid, getData, closeModal, resetForm }:useTherapyClassUpdateProps ) => {
+export const useTherapyClassUpdate = ({ therapy_class_uid }:useTherapyClassUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,15 +20,7 @@ export const useTherapyClassUpdate = ({ therapy_class_uid, getData, closeModal, 
     mutationKey: ['therapyclass-update'],
     mutationFn: (payload: TherapyClassUpdateRequest) => api.updateTherapyClass(payload, therapy_class_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
-      // await Promise.all([
-      //   dispatch(setUserAuth(data.output_schema.user)),
-      //   dispatch(setAccessToken(data.output_schema.access_token)),
-      //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
-      // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

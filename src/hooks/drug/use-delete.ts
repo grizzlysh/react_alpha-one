@@ -11,11 +11,9 @@ import { DrugDeleteRequest } from "@/services/drug/delete";
 
 interface useDrugDeleteProps {
   drug_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
 }
 
-export const useDrugDelete = ({ drug_uid, getData, closeModal }:useDrugDeleteProps) => {
+export const useDrugDelete = ({ drug_uid }:useDrugDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -24,8 +22,6 @@ export const useDrugDelete = ({ drug_uid, getData, closeModal }:useDrugDeletePro
     mutationFn: (payload: DrugDeleteRequest) => api.deleteDrug(payload, drug_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

@@ -4,15 +4,16 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { TherapyClassReadRequest, TherapyClassReadResponse } from '@/services/therapyClass/read';
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
+import TherapyClass from '@/types/TherapyClass.type';
 
-export const useTherapyClassRead = (data: TherapyClassReadRequest) => {
+export const useTherapyClassRead = (data: PaginationRequest) => {
   return useQuery({
     queryKey : ['therapyclass-get'],
     queryFn  : (payload) => api.getTherapyClass(data),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<TherapyClassReadResponse  >) => {
+    onSuccess: async (resp: SuccessResponse<PaginationResponse<TherapyClass>>) => {
       return resp
     },
     // refetchInterval     : 1000,

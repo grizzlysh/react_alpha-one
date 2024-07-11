@@ -1,27 +1,27 @@
 import { http } from '@/services/axios';
-import { ROLE_READ_BYID_PATH } from '@/configs/constant';
+import { INVOICE_READ_BYID_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import Role from '@/types/Role.type';
+import Invoice from '@/types/Invoice.type';
 
-export interface RoleReadByIDResponse {
-  data        : Role,
+export interface InvoiceReadByIDResponse {
+  data : Invoice,
 }
 
 const map = {
-  getDataFromService: (response: SuccessResponse<RoleReadByIDResponse>) => {
+  getDataFromService: (response: SuccessResponse<InvoiceReadByIDResponse>) => {
     return response;
   }
 }
 
-const getRoleByID = async (role_uid: string) => {
+const getInvoiceByID = async (invoice_uid: string) => {
 
-  const { data } = await http.get(ROLE_READ_BYID_PATH+role_uid);
+  const { data } = await http.get(INVOICE_READ_BYID_PATH+invoice_uid);
   return data;
 
 }
 
-const roleReadByIDService = {
-  getRoleByID,
+const invoiceReadByIDService = {
+  getInvoiceByID,
 };
 
-export default roleReadByIDService;
+export default invoiceReadByIDService;

@@ -18,6 +18,7 @@ import PermissionUpdateComponent from './PermissionUpdate.component';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface PermissionTableProps {
   modalCreate           : boolean,
@@ -31,13 +32,13 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'display_name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('display_name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'display_name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -78,6 +79,11 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('display_name')]);
+  }
+
   const getPermissionData = () => {
     doGetPermission().then(
       (resp: any) => {
@@ -93,7 +99,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     )
   }
 
-
+  //UPDATE PERMISSION
   const [updatePermission, setUpdatePermission] = React.useState<Permission>(initPermission);
   const [openUpdateModal, setOpenUpdateModal]   = React.useState(false);
   const handleCloseUpdateModal                  = () => setOpenUpdateModal(false);
@@ -102,7 +108,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE PERMISSION
   const [deletePermissionID, setDeletePermissionID] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal]       = React.useState(false);
   const handleCloseDeleteModal                      = () => setOpenDeleteModal(false);
@@ -110,10 +116,17 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     setDeletePermissionID(permission_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = usePermissionDelete({ permission_uid: deletePermissionID, getData: getPermissionData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = usePermissionDelete({ permission_uid: deletePermissionID });
   const handleDeletePermission = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
+  
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
   
   React.useEffect(() => {
     handleQuery();
@@ -180,8 +193,12 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         modalOnClose = {handleCloseCreateModal}
         isPermanent  = {false}
       > */}
-        <PermissionCreateComponent getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate}/>
-      {/* </ModalComponent> */}
+      <PermissionCreateComponent
+        resetPagination  = {resetPagination}
+        handleCloseModal  = {handleCloseCreateModal}
+        modalOpen         = {modalCreate}
+      />
+     {/* </ModalComponent> */}
 
       {/* <ModalComponent
         modalId      = 'permission-edit'
@@ -191,8 +208,14 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         modalOnClose = {handleCloseUpdateModal}
         isPermanent  = {false}
       > */}
-        <PermissionUpdateComponent updatePermission={updatePermission} getPermissionData={getPermissionData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal}/>
-      {/* </ModalComponent> */}
+      <PermissionUpdateComponent
+        updatePermission = {updatePermission}
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseUpdateModal}
+        modalOpen        = {openUpdateModal}
+        />
+
+       {/* </ModalComponent> */}
 
       <DeleteConfirmComponent 
         modalId      = 'permission-delete'

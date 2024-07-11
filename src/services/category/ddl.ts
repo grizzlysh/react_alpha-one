@@ -1,15 +1,10 @@
 import { http } from '@/services/axios';
 import { CATEGORY_DDL_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import Shape from '@/types/Shape.type';
-import { ddlOptions } from '@/utils/ddlOptions';
-
-export interface CategoryDdlResponse {
-  data: ddlOptions[],
-}
+import { DdlResponse } from '@/utils/ddlOption';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<CategoryDdlResponse>) => {
+  getDataFromService: (response: SuccessResponse<DdlResponse>) => {
     return response;
   }
 }

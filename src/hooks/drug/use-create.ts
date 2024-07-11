@@ -8,13 +8,7 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { DrugCreateRequest } from "@/services/drug/create";
 
-interface useDrugCreateProps {
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
-}
-
-export const useDrugCreate = ({getData, closeModal, resetForm}: useDrugCreateProps) => {
+export const useDrugCreate = () => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,9 +17,6 @@ export const useDrugCreate = ({getData, closeModal, resetForm}: useDrugCreatePro
     mutationFn: (payload: DrugCreateRequest) => api.createDrug(payload),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

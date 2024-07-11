@@ -12,15 +12,15 @@ import Permission from '@/types/Permission.type';
 import ModalComponent from '../_general/molecules/Modal.component';
 
 interface PermissionUpdateProps {
-  updatePermission : Permission,
-  getPermissionData: ()=>void,
-  handleCloseModal : ()=>void,
-  modalOpen        : boolean,
+  updatePermission: Permission,
+  resetPagination : ()=>void,
+  handleCloseModal: ()=>void,
+  modalOpen       : boolean,
 }
 
-const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePermission, getPermissionData, handleCloseModal, modalOpen }) => {
+const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePermission, resetPagination, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                                                  = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -56,15 +56,23 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
     })
   }
   
-  const { mutate: submitUpdatePermission, isLoading: isLoadingUpdatePermission } = usePermissionUpdate({ permission_uid: updatePermission.uid, closeModal: handleCloseModal, getData: getPermissionData, resetForm: resetForm })
-  
-  React.useEffect( () => {
-    loadData(updatePermission)
-  },[updatePermission])
+  const { mutate: submitUpdatePermission, isLoading: isLoadingUpdatePermission, isSuccess } = usePermissionUpdate({ permission_uid: updatePermission.uid })
 
   const onSubmit: SubmitHandler<PermissionUpdateRequest> = (data) => {
     submitUpdatePermission(data)
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+
+  React.useEffect( () => {
+    loadData(updatePermission)
+  },[updatePermission])
 
   return (
     <>
@@ -96,7 +104,7 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdatePermission}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -104,7 +112,7 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
                   value        = {value}
                   label        = {"Display Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -126,7 +134,9 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Description"}
-                  sx           = {{mb:2}}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                   minRows      = {4}
                   multiline
                   fullWidth
@@ -142,8 +152,9 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdatePermission}
               id          = 'permission_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

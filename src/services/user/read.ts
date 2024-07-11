@@ -2,29 +2,15 @@ import { http } from '@/services/axios';
 import { USER_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import User from '@/types/User.type';
-
-export interface UserReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface UserReadResponse {
-  data        : User[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<UserReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<User>>) => {
     return response;
   }
 }
 
-const getUser = async (payload: UserReadRequest) => {
+const getUser = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(USER_READ_PATH, {
     params: {

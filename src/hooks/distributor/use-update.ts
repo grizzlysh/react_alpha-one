@@ -10,12 +10,9 @@ import { DistributorUpdateRequest } from "@/services/distributor/update";
 
 interface useDistributorUpdateProps {
   distributor_uid: string,
-  getData     : ()=>void,
-  closeModal  : ()=>void,
-  resetForm   : ()=>void,
 }
 
-export const useDistributorUpdate = ({ distributor_uid, getData, closeModal, resetForm }:useDistributorUpdateProps ) => {
+export const useDistributorUpdate = ({ distributor_uid }:useDistributorUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,15 +20,7 @@ export const useDistributorUpdate = ({ distributor_uid, getData, closeModal, res
     mutationKey: ['distributor-update'],
     mutationFn : (payload: DistributorUpdateRequest) => api.updateDistributor(payload, distributor_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
-      // await Promise.all([
-      //   dispatch(setUserAuth(data.output_schema.user)),
-      //   dispatch(setAccessToken(data.output_schema.access_token)),
-      //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
-      // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

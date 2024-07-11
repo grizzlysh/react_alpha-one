@@ -19,6 +19,7 @@ import Distributor, { initDistributor } from '@/types/Distributor.type';
 import { useDistributorDelete } from '@/hooks/distributor/use-delete';
 import DistributorCreateComponent from './DistributorCreate.component';
 import DistributorUpdateComponent from './DistributorUpdate.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface DistributorTableProps {
   modalCreate           : boolean,
@@ -32,13 +33,13 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -80,6 +81,11 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getDistributorData = () => {
     doGetDistributor().then(
       (resp: any) => {
@@ -95,7 +101,7 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
     )
   }
 
-
+  //UPDATE DISTRIBUTOR
   const [updateDistributor, setUpdateDistributor] = React.useState<Distributor>(initDistributor);
   const [openUpdateModal, setOpenUpdateModal]     = React.useState(false);
   const handleCloseUpdateModal                    = () => setOpenUpdateModal(false);
@@ -104,7 +110,7 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE DISTRIBUTOR
   const [deleteDistributorID, setDeleteDistributorID] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal]         = React.useState(false);
   const handleCloseDeleteModal                        = () => setOpenDeleteModal(false);
@@ -112,11 +118,18 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
     setDeleteDistributorID(distributor_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useDistributorDelete({ distributor_uid: deleteDistributorID, getData: getDistributorData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useDistributorDelete({ distributor_uid: deleteDistributorID });
   const handleDeleteDistributor = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
   
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+
   React.useEffect(() => {
     handleQuery();
   }, [pageData, sortData]);
@@ -174,9 +187,18 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
         }
       </PaperComponent>
       
-      <DistributorCreateComponent getDistributorData={getDistributorData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      <DistributorCreateComponent
+        resetPagination    = {resetPagination}
+        handleCloseModal   = {handleCloseCreateModal}
+        modalOpen          = {modalCreate}
+      />
 
-      <DistributorUpdateComponent updateDistributor={updateDistributor} getDistributorData={getDistributorData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      <DistributorUpdateComponent
+        resetPagination    = {resetPagination}
+        updateDistributor  = {updateDistributor}
+        handleCloseModal   = {handleCloseUpdateModal}
+        modalOpen          = {openUpdateModal}
+      />
 
       <DeleteConfirmComponent 
         modalId      = 'drug-delete'

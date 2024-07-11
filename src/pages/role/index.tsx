@@ -6,13 +6,9 @@ import AddIcon from '@mui/icons-material/Add';
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'
 import RoleTable from '@/components/role/RoleTable.component'
-import ButtonComponent from '@/components/_general/atoms/Button.component'
 import LinkButtonComponent from '@/components/_general/atoms/LinkButton.component';
 
 const RolePage: NextPage = () => {
-  const [openCreateModal, setOpenCreateModal] = React.useState(false);
-  const handleOpenCreateModal                 = () => setOpenCreateModal(true);
-  const handleCloseCreateModal                = () => setOpenCreateModal(false);
 
   return (
     <AppLayoutComponent title={'Role'}>
@@ -25,10 +21,7 @@ const RolePage: NextPage = () => {
           ADD NEW
         </LinkButtonComponent>
       </HeaderPage>
-      <RoleTable 
-        modalCreate            = {openCreateModal}
-        handleCloseCreateModal = {handleCloseCreateModal}
-      />
+      <RoleTable />
     </AppLayoutComponent>
   )
 }

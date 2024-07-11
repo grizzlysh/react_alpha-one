@@ -2,29 +2,15 @@ import { http } from '@/services/axios';
 import { DRUG_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Drug from '@/types/Drug.type';
-
-export interface DrugReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface DrugReadResponse {
-  data        : Drug[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<DrugReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<Drug>>) => {
     return response;
   }
 }
 
-const getDrug = async (payload: DrugReadRequest) => {
+const getDrug = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(DRUG_READ_PATH, {
     params: {

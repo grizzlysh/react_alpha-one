@@ -4,7 +4,7 @@ import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Role from '@/types/Role.type';
 
 export interface RoleReadByIDResponse {
-  data        : Role,
+  data : Role,
 }
 
 const map = {

@@ -5,15 +5,12 @@ import AddIcon from '@mui/icons-material/Add';
 
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'
-import RoleTable from '@/components/role/RoleTable.component'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import LinkButtonComponent from '@/components/_general/atoms/LinkButton.component';
+import InvoiceTable from '@/components/invoice/InvoiceTable.component';
 
 const InvoicePage: NextPage = () => {
-  const [openCreateModal, setOpenCreateModal] = React.useState(false);
-  const handleOpenCreateModal                 = () => setOpenCreateModal(true);
-  const handleCloseCreateModal                = () => setOpenCreateModal(false);
-
+  
   return (
     <AppLayoutComponent title={'Invoice'}>
       <HeaderPage title={'Invoice'}>
@@ -25,10 +22,7 @@ const InvoicePage: NextPage = () => {
           ADD NEW
         </LinkButtonComponent>
       </HeaderPage>
-      {/* <RoleTable 
-        modalCreate            = {openCreateModal}
-        handleCloseCreateModal = {handleCloseCreateModal}
-      /> */}
+      <InvoiceTable />
     </AppLayoutComponent>
   )
 }

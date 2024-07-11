@@ -9,12 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type';
-import { useCategoryRead } from '@/hooks/category/use-read';
-import Category, { initCategory } from '@/types/Category.type';
-import { useCategoryDelete } from '@/hooks/category/use-delete';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
-import CategoryCreateComponent from './TherapyClassCreate.component';
-import CategoryUpdateComponent from './TherapyClassUpdate.component';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
@@ -23,6 +18,7 @@ import TherapyClass, { initTherapyClass } from '@/types/TherapyClass.type';
 import { useTherapyClassDelete } from '@/hooks/therapyClass/use-delete';
 import TherapyClassCreateComponent from './TherapyClassCreate.component';
 import TherapyClassUpdateComponent from './TherapyClassUpdate.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface TherapyClassTableProps {
   modalCreate           : boolean,
@@ -36,13 +32,13 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -82,6 +78,11 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getTherapyClassData = () => {
     doGetTherapyClass().then(
       (resp: any) => {
@@ -97,7 +98,7 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
     )
   }
 
-
+  //UPDATE THERAPY CLASS
   const [updateTherapyClass, setUpdateTherapyClass]   = React.useState<TherapyClass>(initTherapyClass);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
@@ -106,7 +107,7 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE THERAPY CLASS
   const [deleteTherapyClassID, setDeleteTherapyClassID] = React.useState('');
   const [openDeleteModal, setOpenDeleteModal]           = React.useState(false);
   const handleCloseDeleteModal                          = () => setOpenDeleteModal(false);
@@ -114,10 +115,18 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
     setDeleteTherapyClassID(therapy_class_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useTherapyClassDelete({ therapy_class_uid: deleteTherapyClassID, getData: getTherapyClassData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useTherapyClassDelete({ therapy_class_uid: deleteTherapyClassID });
   const handleDeletTherapyClass = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+
   
   React.useEffect(() => {
     handleQuery();
@@ -158,9 +167,18 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
         }
       </PaperComponent>
 
-      <TherapyClassCreateComponent getTherapyClassData={getTherapyClassData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      <TherapyClassCreateComponent
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseCreateModal}
+        modalOpen        = {modalCreate}
+      />
       
-      <TherapyClassUpdateComponent updateTherapyClass={updateTherapyClass} getTherapyClassData={getTherapyClassData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      <TherapyClassUpdateComponent
+        updateTherapyClass = {updateTherapyClass}
+        resetPagination    = {resetPagination}
+        handleCloseModal   = {handleCloseUpdateModal}
+        modalOpen          = {openUpdateModal}
+      />
 
       <DeleteConfirmComponent 
         modalId      = 'therapyclass-delete'

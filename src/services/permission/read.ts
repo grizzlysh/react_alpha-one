@@ -2,29 +2,15 @@ import { http } from '@/services/axios';
 import { PERMISSION_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Permission from '@/types/Permission.type';
-
-export interface PermissionReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface PermissionReadResponse {
-  data        : Permission[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<PermissionReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<Permission>>) => {
     return response;
   }
 }
 
-const getPermission = async (payload: PermissionReadRequest) => {
+const getPermission = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(PERMISSION_READ_PATH, {
     params: {

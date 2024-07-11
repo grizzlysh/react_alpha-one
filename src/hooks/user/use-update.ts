@@ -10,12 +10,9 @@ import { UserUpdateRequest } from "@/services/user/update";
 
 interface useUserUpdateProps {
   user_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
 }
 
-export const useUserUpdate = ({ user_uid, getData, closeModal, resetForm }:useUserUpdateProps ) => {
+export const useUserUpdate = ({ user_uid }:useUserUpdateProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -29,9 +26,6 @@ export const useUserUpdate = ({ user_uid, getData, closeModal, resetForm }:useUs
       //   dispatch(setRefreshToken(data.output_schema.refresh_token)),
       // ]);
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

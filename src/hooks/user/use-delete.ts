@@ -10,11 +10,9 @@ import { UserDeleteRequest } from "@/services/user/delete";
 
 interface useUserDeleteProps {
   user_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
 }
 
-export const useUserDelete = ({ user_uid, getData, closeModal }:useUserDeleteProps) => {
+export const useUserDelete = ({ user_uid }:useUserDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,8 +21,6 @@ export const useUserDelete = ({ user_uid, getData, closeModal }:useUserDeletePro
     mutationFn : (payload: UserDeleteRequest) => api.deleteUser(payload, user_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

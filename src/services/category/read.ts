@@ -2,29 +2,15 @@ import { http } from '@/services/axios';
 import { CATEGORY_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Category from '@/types/Category.type';
-
-export interface CategoryReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface CategoryReadResponse {
-  data        : Category[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<CategoryReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<Category>>) => {
     return response;
   }
 }
 
-const getCategory = async (payload: CategoryReadRequest) => {
+const getCategory = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(CATEGORY_READ_PATH, {
     params: {

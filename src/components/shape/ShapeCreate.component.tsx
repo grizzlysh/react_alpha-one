@@ -10,14 +10,14 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 
 interface ShapeCreateProps {
-  getShapeData    : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
-  modalOpen      : boolean,
+  modalOpen       : boolean,
 }
 
-const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handleCloseModal, modalOpen }) => {
+const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                  = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -43,12 +43,20 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
     })
   }
 
-  const { mutate: submitCreateShape, isLoading } = useShapeCreate({ getData: getShapeData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreateShape, isLoading, isSuccess } = useShapeCreate()
 
   const onSubmit: SubmitHandler<ShapeCreateRequest> = (data) => {
     submitCreateShape(data)
   }
 
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+  
   return (
     <>
       <ModalComponent
@@ -77,7 +85,7 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -85,7 +93,7 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -98,8 +106,9 @@ const ShapeCreateComponent: React.FC<ShapeCreateProps> = ({ getShapeData, handle
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'shape_create_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

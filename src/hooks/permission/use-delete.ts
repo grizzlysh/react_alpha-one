@@ -10,11 +10,9 @@ import { PermissionDeleteRequest } from "@/services/permission/delete";
 
 interface usePermissionDeleteProps {
   permission_uid: string,
-  getData      : ()=>void,
-  closeModal   : ()=>void,
 }
 
-export const usePermissionDelete = ({ permission_uid, getData, closeModal }:usePermissionDeleteProps) => {
+export const usePermissionDelete = ({ permission_uid }:usePermissionDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,8 +21,6 @@ export const usePermissionDelete = ({ permission_uid, getData, closeModal }:useP
     mutationFn: (payload: PermissionDeleteRequest) => api.deletePermission(payload, permission_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

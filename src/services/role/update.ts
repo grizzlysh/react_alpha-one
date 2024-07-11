@@ -1,10 +1,10 @@
 import { http } from '@/services/axios';
 import { ROLE_UPDATE_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { ddlOptions } from '@/utils/ddlOptions';
+import { DdlOptions } from '@/utils/ddlOption';
 
-export interface RoleUpdatePermissionInput {
-  permission     : ddlOptions | null,
+export interface RolePermissionUpdateInput {
+  permission     : DdlOptions | null,
   read_permit    : boolean,
   write_permit   : boolean,
   modify_permit  : boolean,

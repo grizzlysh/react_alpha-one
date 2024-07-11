@@ -8,7 +8,7 @@ import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data
 import Permission from '@/types/Permission.type'
 import UserOnline from '@/types/UserOnline.type'
 import { useRoleCreate } from '@/hooks/role/use-create'
-import { RoleCreatePermissionInput, RoleCreateRequest } from '@/services/role/create'
+import { RolePermissionCreateInput, RoleCreateRequest } from '@/services/role/create'
 import { usePermissionRead } from '@/hooks/permission/use-read'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
@@ -17,17 +17,19 @@ import ButtonComponent from '@/components/_general/atoms/Button.component'
 import CheckboxComponent from '@/components/_general/atoms/Checkbox.component'
 import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
 import { usePermissionDdl } from '@/hooks/permission/use-ddl';
-
+import { useRouter } from 'next/router';
+import { DdlOptions } from '@/utils/ddlOption';
 
 const RoleCreateComponent: React.FC = () => {
 
-  const [permissionOptions, setPermissionOptions]     = React.useState<{value: string, label: string}[]>([])
+  const router                                        = useRouter();
+  const [permissionOptions, setPermissionOptions]     = React.useState<DdlOptions[]>([])
   const [duplicatePermission, setDuplicatePermission] = React.useState(false);
   const [permissionList, setPermissionList]           = React.useState<{}[]>([])
 
   const { refetch: doGetPermission, data, isLoading: isLoadingPermission } = usePermissionDdl();
 
-  const { mutate: submitCreateRole, isLoading } = useRoleCreate()
+  const { mutate: submitCreateRole, isLoading, isSuccess } = useRoleCreate()
   const currentUser: UserOnline                 = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -92,7 +94,7 @@ const RoleCreateComponent: React.FC = () => {
     control: controlPermission,
     handleSubmit: handleSubmitPermission,
     formState: { isValid: isValidPermission, errors: errorsPermission },
-  } = useForm<RoleCreatePermissionInput>({
+  } = useForm<RolePermissionCreateInput>({
     defaultValues: {
       permission   : null,
       read_permit  : false,
@@ -103,7 +105,7 @@ const RoleCreateComponent: React.FC = () => {
     mode: 'all',
   })
 
-  const onAddPermission = (data: RoleCreatePermissionInput) => {
+  const onAddPermission = (data: RolePermissionCreateInput) => {
     const permissionIndex      = permissionList.length;
     // const permissionSelected   = permissionOptions.find(option => option.value === data.permission_uid ) || '';
     // const permission_name      = permissionSelected ? permissionSelected.label : '';
@@ -158,303 +160,307 @@ const RoleCreateComponent: React.FC = () => {
     getPermissionOptions()
   },[])
 
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      router.push('/role', undefined, { shallow: true })
+    }
+  }, [isSuccess]);
+
   return (
     <PaperComponent>
       <Stack direction={"column"} gap={2}>        
         <Box width={'100%'}>
+          <Stack
+            // direction = {"row"}
+            display = {"flex"}
+            // gap     = {2}
+            sx      = {{
+              '@media (min-width: 0px)'  : {
+                flexDirection: 'column',
+                alignItems   : 'center',
+                gap          : 0,
+                marginBottom : 2,
+              },
+              '@media (min-width: 700px)': {
+                flexDirection : 'row',
+                alignItems    : 'stretch',
+                justifyContent: 'flex-start',
+                gap           : 2,
+                marginBottom  : 0,
+                // divider      : (<Divider orientation="vertical" flexItem />)
+              },
+            }}  
+          >
             <Stack
-              // direction = {"row"}
-              display = {"flex"}
-              // gap     = {2}
-              sx      = {{
-                marginBottom: 2,
+              sx = {{
                 '@media (min-width: 0px)'  : {
                   flexDirection: 'column',
                   alignItems   : 'center',
-                  gap          : 0,
+                  width        : '100%',
                 },
                 '@media (min-width: 700px)': {
-                  flexDirection : 'row',
-                  alignItems    : 'stretch',
-                  justifyContent: 'flex-start',
-                  gap           : 2,
-                  // divider      : (<Divider orientation="vertical" flexItem />)
+                  flexDirection: 'column',
+                  alignItems   : 'center',
+                  width        : '50%',
                 },
               }}  
             >
-              <Stack
+              <Controller
+                name    = "display_name"
+                control = {control}
+                rules   = {{ 
+                  required: {
+                    value  : true,
+                    message: "Display Name fields is required"
+                  },
+                  validate: val => val != '' || "ERROR"
+                }}
+                render  = { ({ 
+                    field     : { onChange, value },
+                    fieldState: { error },
+                    formState,
+                  }) => (
+                  <TextField            
+                    autoComplete = 'off'
+                    helperText = {error ? error.message : " "}
+                    size       = "medium"
+                    error      = {!!error}
+                    onChange   = {onChange}
+                    type       = 'string'
+                    value      = {value}
+                    label      = {"Display Name"}
+                    variant    = "outlined"
+                    sx         = {{mb:1}}
+                    fullWidth
+                  />
+                  )
+                }
+              />
+
+              <Controller
+                name    = "description"
+                control = {control}
+                render  = { ({ 
+                    field     : { onChange, value },
+                    fieldState: { error },
+                    formState,
+                  }) => (
+                  <TextField
+                    multiline
+                    fullWidth
+                    minRows      = {4}
+                    autoComplete = 'off'
+                    size         = "medium"
+                    onChange     = {onChange}
+                    value        = {value}
+                    label        = {"Description"}
+                    error        = {!!error}
+                    helperText   = {error ? error.message : " "}
+                    sx           = {{mb:1}}
+                  />
+                  )
+                }
+              />
+            </Stack>
+            
+            <Stack
+              sx = {{
+                '@media (min-width: 0px)'  : {
+                  flexDirection: 'column',
+                  alignItems   : 'center',
+                  width        : '100%',
+                },
+                '@media (min-width: 700px)': {
+                  flexDirection : 'column',
+                  alignItems    : 'flex-start',
+                  justifyContent: 'start',
+                  width         : '50%',
+                },
+              }}  
+            >
+              <Box 
                 sx = {{
+                  width: '100%',
                   '@media (min-width: 0px)'  : {
-                    flexDirection: 'column',
-                    alignItems   : 'center',
-                    width        : '100%',
+                    mb: 2,
                   },
                   '@media (min-width: 700px)': {
-                    flexDirection: 'column',
-                    alignItems   : 'center',
-                    width        : '50%',
+                    mb: 1,
                   },
-                }}  
+                }}
               >
                 <Controller
-                  name    = "display_name"
-                  control = {control}
-                  rules   = {{ 
+                  name    = "permission"
+                  control = {controlPermission}
+                  rules   = {{
+                    // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                     required: {
                       value  : true,
-                      message: "Display Name fields is required"
+                      message: "Permission fields is required"
                     },
                   }}
                   render  = { ({ 
                       field     : { onChange, value },
                       fieldState: { error },
-                      formState,
                     }) => (
-                    <TextField            
-                      autoComplete = 'off'
-                      helperText = {error ? error.message : null}
-                      size       = "medium"
-                      error      = {!!error}
-                      onChange   = {onChange}
-                      type       = 'string'
-                      value      = {value}
-                      label      = {"Display Name"}
-                      variant    = "outlined"
-                      sx         = {{mb:2}}
-                      fullWidth
-                    />
+                      <Autocomplete
+                        // fullWidth
+                        value                = {value}
+                        id                   = "permission"
+                        options              = {permissionOptions}
+                        // sx                   = {{ width: 300 }}
+                        onChange             = {(event: any, newValue) => { onChange(newValue); checkDuplicate(); }}
+                        isOptionEqualToValue = { (option: any, value: any) => value === "" ||  option.value == value.value}
+                        renderInput          = {(params: any) => 
+                          <TextField
+                            fullWidth
+                            {...params}
+                            label      = "Permission"
+                            error      = {!!error}
+                            helperText = {error ? error.message : " "}
+                          />
+                        }
+                      />
+                    // <SelectComponent
+                    //   error        = {!!error}
+                    //   selectState  = {value}
+                    //   handleChange = {handleSelectPermission}
+                    //   selectId     = 'permission-select'
+                    //   selectLabel  = 'Permission'
+                    //   options      = {permissionOptions}
+                    //   helperText   = {error ? error.message : " "}
+                    // />
                     )
                   }
                 />
+              </Box>
 
-                <Controller
-                  name    = "description"
-                  control = {control}
-                  render  = { ({ 
-                      field     : { onChange, value },
-                      fieldState: { error },
-                      formState,
-                    }) => (
-                    <TextField
-                      multiline
-                      fullWidth
-                      minRows      = {4}
-                      autoComplete = 'off'
-                      size         = "medium"
-                      onChange     = {onChange}
-                      value        = {value}
-                      label        = {"Description"}
-                      sx           = {{
-                        '@media (min-width: 0px)'  : {
-                          mb: 2,
-                        },
-                        '@media (min-width: 700px)': {
-                          mb: 0,
-                        },
-                      }}
-                    />
-                    )
-                  }
-                />
-              </Stack>
-              
-              <Stack
-                sx = {{
+              <Box
+                width = {'100%'}
+                sx    = {{
                   '@media (min-width: 0px)'  : {
-                    flexDirection: 'column',
-                    alignItems   : 'center',
-                    width        : '100%',
+                    mb: 2,
                   },
                   '@media (min-width: 700px)': {
-                    flexDirection : 'column',
-                    alignItems    : 'flex-start',
-                    justifyContent: 'space-between',
-                    width         : '50%',
+                    mb: 3,
                   },
-                }}  
-              >
-                <Box 
-                  sx = {{
-                    width: '100%',
-                    '@media (min-width: 0px)'  : {
-                      mb: 2,
-                    },
-                    '@media (min-width: 700px)': {
-                      mb: 0,
-                    },
-                  }}
+                }}
+              >    
+                <Stack 
+                  flexDirection  = {"row"}
+                  justifyContent = {"space-evenly"}
+                  alignContent   = {"center"}
+                  alignItems     = {"center"}
                 >
                   <Controller
-                    name    = "permission"
+                    name    = "write_permit"
                     control = {controlPermission}
-                    rules   = {{
-                      // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                      required: {
-                        value  : true,
-                        message: "Permission fields is required"
-                      },
+                    rules   = {{ 
+                      validate: (value, formValues) => value || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false
                     }}
                     render  = { ({ 
                         field     : { onChange, value },
                         fieldState: { error },
                       }) => (
-                        <Autocomplete
-                          // fullWidth
-                          value                = {value}
-                          id                   = "permission"
-                          options              = {permissionOptions}
-                          // sx                   = {{ width: 300 }}
-                          onChange             = {(event: any, newValue) => { onChange(newValue); checkDuplicate(); }}
-                          isOptionEqualToValue = { (option: any, value: any) => value === "" ||  option.value == value.value}
-                          renderInput          = {(params: any) => 
-                            <TextField
-                              fullWidth
-                              {...params}
-                              label      = "Permission"
-                              error      = {!!error}
-                              helperText = {error ? error.message : null}
-                            />
-                          }
-                        />
-                      // <SelectComponent
-                      //   error        = {!!error}
-                      //   selectState  = {value}
-                      //   handleChange = {handleSelectPermission}
-                      //   selectId     = 'permission-select'
-                      //   selectLabel  = 'Permission'
-                      //   options      = {permissionOptions}
-                      //   helperText   = {error ? error.message : null}
-                      // />
+                      <CheckboxComponent 
+                        error        = {!!error}
+                        helperText   = {error ? error.message : null}
+                        checkId      = {'write-check'}
+                        checkLabel   = {'Write'}
+                        checkState   = {value}
+                        handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
+                      />
                       )
                     }
                   />
-                </Box>
+                  <Controller
+                    name    = "read_permit"
+                    control = {controlPermission}
+                    rules   = {{ 
+                      validate: (value, formValues) => formValues.write_permit || value || formValues.modify_permit || formValues.delete_permit != false
+                    }}
+                    render  = { ({ 
+                        field     : { onChange, value },
+                        fieldState: { error },
+                      }) => (
+                      <CheckboxComponent
+                        error        = {!!error}
+                        helperText   = {error ? error.message : null}
+                        checkId       = {'read-check'}
+                        checkLabel    = {'Read'}
+                        checkState    = {value}
+                        handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
+                      />
+                      )
+                    }
+                  />
+                  <Controller
+                    name    = "modify_permit"
+                    control = {controlPermission}
+                    rules   = {{ 
+                      validate: (value, formValues) => formValues.write_permit || formValues.read_permit || value || formValues.delete_permit != false
+                    }}
+                    render  = { ({ 
+                        field     : { onChange, value },
+                        fieldState: { error },
+                      }) => (
+                      <CheckboxComponent
+                        error        = {!!error}
+                        helperText   = {error ? error.message : null}
+                        checkId      = {'modify-check'}
+                        checkLabel   = {'Modify'}
+                        checkState   = {value}
+                        handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
+                      />
+                      )
+                    }
+                  />
+                  <Controller
+                    name    = "delete_permit"
+                    control = {controlPermission}
+                    rules   = {{ 
+                      validate: (value, formValues) => formValues.write_permit || formValues.read_permit || formValues.modify_permit || value != false
+                    }}
+                    render  = { ({ 
+                        field     : { onChange, value },
+                        fieldState: { error },
+                      }) => (
+                      <CheckboxComponent 
+                        error        = {!!error}
+                        helperText   = {error ? error.message : null}
+                        checkId      = {'delete-check'}
+                        checkLabel   = {'Delete'}
+                        checkState   = {value}
+                        handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
+                      />
+                      )
+                    }
+                  />
+                </Stack>
+              </Box>
 
-                <Box
-                  width = {'100%'}
-                  sx    = {{
-                    '@media (min-width: 0px)'  : {
-                      mb: 2,
-                    },
-                    '@media (min-width: 700px)': {
-                      mb: 0,
-                    },
-                  }}
-                >    
-                  <Stack 
-                    flexDirection  = {"row"}
-                    justifyContent = {"space-evenly"}
-                    alignContent   = {"center"}
-                    alignItems     = {"center"}
-                  >
-                    <Controller
-                      name    = "write_permit"
-                      control = {controlPermission}
-                      rules   = {{ 
-                        validate: (value, formValues) => value || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false
-                      }}
-                      render  = { ({ 
-                          field     : { onChange, value },
-                          fieldState: { error },
-                        }) => (
-                        <CheckboxComponent 
-                          error        = {!!error}
-                          helperText   = {error ? error.message : null}
-                          checkId      = {'write-check'}
-                          checkLabel   = {'Write'}
-                          checkState   = {value}
-                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
-                        />
-                        )
-                      }
-                    />
-                    <Controller
-                      name    = "read_permit"
-                      control = {controlPermission}
-                      rules   = {{ 
-                        validate: (value, formValues) => formValues.write_permit || value || formValues.modify_permit || formValues.delete_permit != false
-                      }}
-                      render  = { ({ 
-                          field     : { onChange, value },
-                          fieldState: { error },
-                        }) => (
-                        <CheckboxComponent
-                          error        = {!!error}
-                          helperText   = {error ? error.message : null}
-                          checkId       = {'read-check'}
-                          checkLabel    = {'Read'}
-                          checkState    = {value}
-                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
-                        />
-                        )
-                      }
-                    />
-                    <Controller
-                      name    = "modify_permit"
-                      control = {controlPermission}
-                      rules   = {{ 
-                        validate: (value, formValues) => formValues.write_permit || formValues.read_permit || value || formValues.delete_permit != false
-                      }}
-                      render  = { ({ 
-                          field     : { onChange, value },
-                          fieldState: { error },
-                        }) => (
-                        <CheckboxComponent
-                          error        = {!!error}
-                          helperText   = {error ? error.message : null}
-                          checkId      = {'modify-check'}
-                          checkLabel   = {'Modify'}
-                          checkState   = {value}
-                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
-                        />
-                        )
-                      }
-                    />
-                    <Controller
-                      name    = "delete_permit"
-                      control = {controlPermission}
-                      rules   = {{ 
-                        validate: (value, formValues) => formValues.write_permit || formValues.read_permit || formValues.modify_permit || value != false
-                      }}
-                      render  = { ({ 
-                          field     : { onChange, value },
-                          fieldState: { error },
-                        }) => (
-                        <CheckboxComponent 
-                          error        = {!!error}
-                          helperText   = {error ? error.message : null}
-                          checkId      = {'delete-check'}
-                          checkLabel   = {'Delete'}
-                          checkState   = {value}
-                          handleChange = { (event:any) => { onChange(event); checkDuplicate();}}
-                        />
-                        )
-                      }
-                    />
-                  </Stack>
-                </Box>
-
-                <ButtonComponent
-                  fullWidth
-                  disabled    = {!isValidPermission || !duplicatePermission}
-                  buttonColor = 'secondary'
-                  onClick     = {handleSubmitPermission(onAddPermission)}
-                >
-                  ADD PERMISSION
-                </ButtonComponent>
-              </Stack>
+              <ButtonComponent
+                fullWidth
+                disabled    = {!isValidPermission || !duplicatePermission}
+                buttonColor = 'secondary'
+                onClick     = {handleSubmitPermission(onAddPermission)}
+              >
+                ADD PERMISSION
+              </ButtonComponent>
             </Stack>
-            
-            <LoadingButtonComponent
-              fullWidth
-              buttonColor = 'primary'
-              disabled    = {!isValid || !(permissionList.length>0)}
-              isLoading   = {isLoading}
-              id          = 'role_create_submit'
-              onClick     = {handleSubmit(onSubmit)}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
+          </Stack>
+          
+          <LoadingButtonComponent
+            fullWidth
+            buttonColor = 'primary'
+            disabled    = {!isValid || !(permissionList.length>0)}
+            isLoading   = {isLoading}
+            id          = 'role_create_submit'
+            onClick     = {handleSubmit(onSubmit)}
+            sx          = {{mt:1}}
+          >
+            SUBMIT
+          </LoadingButtonComponent>
         </Box>
         <Box 
           sx={{

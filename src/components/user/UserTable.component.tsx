@@ -17,10 +17,10 @@ import ModalComponent from '../_general/molecules/Modal.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
-import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 import UserUpdateComponent from './UserUpdate.component';
 import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
 import { useUserUpdatePassword } from '@/hooks/user/use-update-password';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface UserTableProps {
   modalCreate           : boolean,
@@ -34,10 +34,10 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData);
   const [queryOptions, setQueryOptions] = React.useState({
     field: sortData[0]?.field,
     sort : sortData[0]?.sort,
@@ -99,6 +99,11 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getUserData = () => {
     doGetUser().then(
       (resp: any) => {
@@ -114,7 +119,7 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     )
   }
 
-
+  //UPDATE USER
   const [updateUser, setUpdateUser]           = React.useState<User>(initUser);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
@@ -123,7 +128,7 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE USER
   const [deleteUserID, setDeleteUserID]       = React.useState('');
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const handleCloseDeleteModal                = () => setOpenDeleteModal(false);
@@ -131,7 +136,7 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     setDeleteUserID(user_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadingDelete } = useUserDelete({ user_uid: deleteUserID, getData: getUserData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useUserDelete({ user_uid: deleteUserID });
   const handleDeleteUser = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -143,7 +148,7 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     setResetUserID(user_uid)
     setOpenResetModal(true);
   }
-  const { mutate: submitResetPassword, isLoading: isLoadingReset } = useUserUpdatePassword({ user_uid: resetUserID, closeModal: handleCloseResetModal });
+  const { mutate: submitResetPassword, isLoading: isLoadingReset, isSuccess: isSuccessReset } = useUserUpdatePassword({ user_uid: resetUserID });
 
   const handleResetUser = () => {
     submitResetPassword({password: 'password', repassword: 'password', current_user_uid: currentUser.uid})
@@ -153,10 +158,23 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
     handleQuery();
   }, [pageData, sortData]);
 
-
   React.useEffect(() => {
     getUserData()
   },[queryOptions])
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+ 
+  React.useEffect(() => {
+    if(isSuccessReset == true) {
+      handleCloseResetModal ();
+    }
+  }, [isSuccessReset]);
+
 
   return (
     <>
@@ -206,34 +224,18 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
         }
       </PaperComponent>
       
-      {/* <ModalComponent
-        modalId      = 'user-create'
-        modalTitle   = 'User Create'
-        modalSize    = 'sm'
-        modalOpen    = {modalCreate}
-        modalOnClose = {handleCloseCreateModal}
-        isPermanent  = {false}
-      > */}
-        <UserCreateComponent getUserData={getUserData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
-      {/* </ModalComponent> */}
+        <UserCreateComponent
+          resetPagination  = {resetPagination}
+          handleCloseModal = {handleCloseCreateModal}
+          modalOpen        = {modalCreate}
+        />
 
-      {/* <ModalComponent
-        modalId      = 'user-edit'
-        modalTitle   = 'User Edit'
-        modalSize    = 'sm'
-        modalOpen    = {openUpdateModal}
-        modalOnClose = {handleCloseUpdateModal}
-        isPermanent  = {false}
-      > */}
-        <UserUpdateComponent updateUser={updateUser} getUserData={getUserData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
-      {/* </ModalComponent> */}
-
-      {/* <DeleteConfirmComponent 
-        modalId      = 'user-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeleteUser}
-      /> */}
+        <UserUpdateComponent
+          updateUser       = {updateUser}
+          resetPagination  = {resetPagination}
+          handleCloseModal = {handleCloseUpdateModal}
+          modalOpen        = {openUpdateModal}
+        />
 
       <ModalConfirmComponent 
         modalId      = 'user-delete'

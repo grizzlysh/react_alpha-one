@@ -10,11 +10,9 @@ import { RoleDeleteRequest } from "@/services/role/delete";
 
 interface useRoleDeleteProps {
   role_uid  : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
 }
 
-export const useRoleDelete = ({ role_uid, getData, closeModal }:useRoleDeleteProps) => {
+export const useRoleDelete = ({ role_uid }:useRoleDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,8 +21,6 @@ export const useRoleDelete = ({ role_uid, getData, closeModal }:useRoleDeletePro
     mutationFn : (payload: RoleDeleteRequest) => api.deleteRole(payload, role_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

@@ -54,7 +54,6 @@ const BreadcrumbsComponent = () => {
         }
       }
     });
-    console.log(breadMap);
     return breadMap[subpath]
   }, [])
 
@@ -74,7 +73,6 @@ const BreadcrumbsComponent = () => {
         textDefault  : getDefaultTextGenerator(subpath),
       }
     })
-    console.log(crumbList);
     return [{ linkRef: "/", textDefault: "Dashboard" }, ...crumbList];
   },[router.asPath, router.pathname, router.query])
 

@@ -48,6 +48,12 @@ import drugCreateService from "./drug/create";
 import drugUpdateService from "./drug/update";
 import drugDeleteService from "./drug/delete";
 import drugDdlService from "./drug/ddl";
+import invoiceCreateService from "./invoice/create";
+import invoiceDeleteService from "./invoice/delete";
+import invoiceReadByIDService from "./invoice/read_by_id";
+import invoiceReadService from "./invoice/read";
+import invoiceUpdateService from "./invoice/update";
+import invoiceDdlService from "./invoice/ddl";
 
 const api = {
   ...authLoginService,
@@ -100,6 +106,12 @@ const api = {
   ...drugUpdateService,
   ...drugDdlService,
   ...drugDeleteService,
+  ...invoiceCreateService,
+  ...invoiceDeleteService,
+  ...invoiceReadByIDService,
+  ...invoiceReadService,
+  ...invoiceUpdateService,
+  ...invoiceDdlService,
 
   
 };

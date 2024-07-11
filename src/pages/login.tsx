@@ -160,7 +160,7 @@ const LoginPage: NextPage = () => {
                       }) => (
                       <TextField
                         autoComplete = 'off'
-                        helperText   = {error ? error.message : null}
+                        helperText   = {error ? error.message : " "}
                         color        = {'primary'}
                         size         = "medium"
                         error        = {!!error}
@@ -169,7 +169,7 @@ const LoginPage: NextPage = () => {
                         value        = {value}
                         label        = {"Username"}
                         variant      = "outlined"
-                        sx           = {{mb:2}}
+                        // sx           = {{mb:2}}
                         fullWidth
                       />
                       )
@@ -193,7 +193,7 @@ const LoginPage: NextPage = () => {
                       <TextField                    
                         fullWidth
                         autoComplete = 'off'
-                        helperText   = {error ? error.message : null}
+                        helperText   = {error ? error.message : " "}
                         color        = {'primary'}
                         size         = "medium"
                         error        = {!!error}
@@ -202,7 +202,7 @@ const LoginPage: NextPage = () => {
                         value        = {value}
                         label        = {"Password"}
                         variant      = "outlined"
-                        sx           = {{mb:2}}
+                        // sx           = {{mb:2}}
                         InputProps   = {{
                           endAdornment : (
                             <InputAdornment position="end">
@@ -229,7 +229,7 @@ const LoginPage: NextPage = () => {
                     isLoading   = {isLoading}
                     variant     = 'contained'
                     sx          = {{
-                      mt: 2,
+                      mt: 4,
                     }}
                   >
                     LOG IN

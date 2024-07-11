@@ -11,11 +11,9 @@ import { CategoryDeleteRequest } from "@/services/category/delete";
 
 interface useCategoryDeleteProps {
   category_uid : string,
-  getData   : ()=>void,
-  closeModal: ()=>void,
 }
 
-export const useCategoryDelete = ({ category_uid, getData, closeModal }:useCategoryDeleteProps) => {
+export const useCategoryDelete = ({ category_uid }:useCategoryDeleteProps) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -24,8 +22,6 @@ export const useCategoryDelete = ({ category_uid, getData, closeModal }:useCateg
     mutationFn: (payload: CategoryDeleteRequest) => api.deleteCategory(payload, category_uid),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

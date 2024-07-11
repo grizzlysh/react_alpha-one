@@ -13,23 +13,23 @@ import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 import { useRoleDdl } from '@/hooks/role/use-ddl';
-import { sexOptions } from '@/utils/ddlOptions';
+import { DdlOptions, sexOptions } from '@/utils/ddlOption';
 
 interface UserUpdateProps {
   updateUser      : User,
-  getUserData     : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
   modalOpen       : boolean,
 }
 
-const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserData, handleCloseModal, modalOpen }) => {
+const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, resetPagination, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline                                      = useTypedSelector(
     (state) => state.reducer.user.user,
   );
 
   const [disablePassword, setDisablePassword]                  = React.useState(true)
-  const [roleOptions, setRoleOptions]                          = React.useState<{value: string, label: string}[]>([])
+  const [roleOptions, setRoleOptions]                          = React.useState<DdlOptions[]>([])
   const { refetch: doGetRole, data, isLoading: isLoadingRole } = useRoleDdl();
   
   const { 
@@ -53,7 +53,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     }
   })
 
-  const resteForm = () => {
+  const resetForm = () => {
     reset({
       username        : '',
       name            : '',
@@ -77,7 +77,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     })
   }
   
-  const { mutate: submitUpdateUser, isLoading: isLoadingUpdateUser } = useUserUpdate({ user_uid: updateUser.uid, closeModal: handleCloseModal, getData: getUserData, resetForm: resteForm})
+  const { mutate: submitUpdateUser, isLoading: isLoadingUpdateUser, isSuccess } = useUserUpdate({ user_uid: updateUser.uid })
   
   const getRoleOptions = () => {
     doGetRole().then(
@@ -120,6 +120,15 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
     getRoleOptions()
     loadData(updateUser)
   },[updateUser])
+    
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+
 
   return (
     <>
@@ -128,7 +137,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
         modalTitle   = 'User Edit'
         modalSize    = 'sm'
         modalOpen    = {modalOpen}
-        modalOnClose = {()=>{handleCloseModal(); resteForm();}}
+        modalOnClose = {()=>{handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -149,7 +158,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -157,7 +166,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                   value        = {value}
                   label        = {"Username"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -180,7 +189,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -188,14 +197,14 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
               }
             />
 
-            <Box sx = {{ mb: 2, }}>
+            <Box>
               <Controller
                 name    = "sex"
                 control = {control}
@@ -214,7 +223,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                       value                = {value}
                       id                   = "sex-autocomplete"
                       options              = {sexOptions}
-                      sx                   = {{mb:2}}
+                      sx                   = {{mb:1}}
                       onChange             = {(event: any, value: any) => { onChange(value) }}
                       isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                       renderInput          = {(params: any) => 
@@ -224,7 +233,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                         size       = "medium"
                         label      = "Sex"
                         error      = {!!error}
-                        helperText = {error ? error.message : null}
+                        helperText = {error ? error.message : " "}
                       />}
                     />
                   )
@@ -248,7 +257,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -256,14 +265,14 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                   value        = {value}
                   label        = {"Email"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
               }
             />
 
-            <Box sx = {{ mb: 2, }}>
+            <Box>
 
               <Controller
                 name    = "role_uid"
@@ -283,7 +292,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                       value                = {value}
                       id                   = "role-autocomplete"
                       options              = {roleOptions}
-                      sx                   = {{mb:2}}
+                      sx                   = {{mb:1}}
                       onChange             = {(event: any, value: any) => { onChange(value) }}
                       isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                       renderInput          = {(params: any) => 
@@ -293,7 +302,7 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
                         size       = "medium"
                         label      = "Role"
                         error      = {!!error}
-                        helperText = {error ? error.message : null}
+                        helperText = {error ? error.message : " "}
                       />}
                     />
                   )
@@ -307,8 +316,9 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, getUserDat
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdateUser}
               id          = 'user_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

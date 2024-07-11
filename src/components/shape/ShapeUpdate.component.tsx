@@ -5,10 +5,6 @@ import { Skeleton, Stack, TextField, Typography } from "@mui/material";
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
-import { usePermissionUpdate } from '@/hooks/permission/use-update';
-import { PermissionUpdateRequest } from '@/services/permission/update';
-import { usePermissionReadByID } from '@/hooks/permission/use-read-by-id';
-import Permission from '@/types/Permission.type';
 import Shape from '@/types/Shape.type';
 import { useShapeUpdate } from '@/hooks/shape/use-update';
 import { ShapeUpdateRequest } from '@/services/shape/update';
@@ -16,14 +12,14 @@ import ModalComponent from '../_general/molecules/Modal.component';
 
 interface ShapeUpdateProps {
   updateShape     : Shape,
-  getShapeData    : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
   modalOpen       : boolean,
 }
 
-const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShapeData, handleCloseModal, modalOpen }) => {
+const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, resetPagination, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                                        = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -55,15 +51,23 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
     })
   }
   
-  const { mutate: submitUpdateShape, isLoading: isLoadingUpdateShape } = useShapeUpdate({ shape_uid: updateShape.uid, closeModal: handleCloseModal, getData: getShapeData, resetForm: resetForm })
+  const { mutate: submitUpdateShape, isLoading: isLoadingUpdateShape, isSuccess } = useShapeUpdate({ shape_uid: updateShape.uid })
+
+  const onSubmit: SubmitHandler<ShapeUpdateRequest> = (data) => {
+    submitUpdateShape(data)
+  }
 
   React.useEffect( () => {
     loadData(updateShape)
   },[updateShape])
 
-  const onSubmit: SubmitHandler<ShapeUpdateRequest> = (data) => {
-    submitUpdateShape(data)
-  }
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -95,7 +99,7 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateShape}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -103,7 +107,7 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -117,8 +121,9 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, getShap
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdateShape}
               id          = 'shape_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

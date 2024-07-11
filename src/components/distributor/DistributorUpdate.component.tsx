@@ -10,18 +10,18 @@ import ModalComponent from '../_general/molecules/Modal.component';
 import Distributor from '@/types/Distributor.type';
 import { DistributorUpdateInput, DistributorUpdateRequest } from '@/services/distributor/update';
 import { useDistributorUpdate } from '@/hooks/distributor/use-update';
-import { statusOptions } from '@/utils/ddlOptions';
+import { statusOptions } from '@/utils/ddlOption';
 
 interface DistributorUpdateProps {
-  updateDistributor : Distributor,
-  getDistributorData: ()=>void,
-  handleCloseModal  : ()=>void,
-  modalOpen         : boolean,
+  updateDistributor: Distributor,
+  resetPagination  : ()=>void,
+  handleCloseModal : ()=>void,
+  modalOpen        : boolean,
 }
 
-const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDistributor, getDistributorData, handleCloseModal, modalOpen }) => {
+const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDistributor, resetPagination, handleCloseModal, modalOpen }) => {
 
-  const currentUser: UserOnline                                        = useTypedSelector(
+  const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
@@ -65,11 +65,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
     })
   }
   
-  const { mutate: submitUpdateDistributor, isLoading: isLoadingUpdateDistributor } = useDistributorUpdate({ distributor_uid: updateDistributor.uid, closeModal: handleCloseModal, getData: getDistributorData, resetForm: resetForm })
-
-  React.useEffect( () => {
-    loadData(updateDistributor)
-  },[updateDistributor])
+  const { mutate: submitUpdateDistributor, isLoading: isLoadingUpdateDistributor, isSuccess } = useDistributorUpdate({ distributor_uid: updateDistributor.uid })
 
   const onSubmit: SubmitHandler<DistributorUpdateInput> = (data) => {
     const submitData: DistributorUpdateRequest = {
@@ -84,6 +80,18 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
     }
     submitUpdateDistributor(submitData)
   }
+
+  React.useEffect( () => {
+    loadData(updateDistributor)
+  },[updateDistributor])
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -114,7 +122,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateDistributor}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -122,7 +130,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -146,7 +154,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateDistributor}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -154,7 +162,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   value        = {value}
                   label        = {"No Permit"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -178,7 +186,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateDistributor}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -186,7 +194,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   value        = {value}
                   label        = {"Phone"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -210,7 +218,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                 <TextField            
                   autoComplete = 'off'
                   disabled     = {isLoadingUpdateDistributor}
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -218,7 +226,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   value        = {value}
                   label        = {"Contact Person"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -244,7 +252,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                     disabled             = {isLoadingUpdateDistributor}
                     id                   = "controllable-states-demo"
                     options              = {statusOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -253,7 +261,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                       {...params}
                       size       = "medium"
                       label      = "Status"
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                       />}
                   />
                 )
@@ -279,7 +287,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   multiline
                   fullWidth
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   error        = {!!error}
                   disabled     = {isLoadingUpdateDistributor}
                   minRows      = {4}
@@ -287,7 +295,7 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Address"}
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                 />
                 )
               }
@@ -311,7 +319,9 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
                   onChange     = {onChange}
                   value        = {value}
                   label        = {"Description"}
-                  sx           = {{mb:2}}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                 />
                 )
               }
@@ -323,8 +333,9 @@ const DistributorUpdateComponent: React.FC<DistributorUpdateProps> = ({ updateDi
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdateDistributor}
               id          = 'shape_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

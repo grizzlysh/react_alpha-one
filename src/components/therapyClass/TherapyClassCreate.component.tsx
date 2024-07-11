@@ -14,12 +14,12 @@ import { useTherapyClassCreate } from '@/hooks/therapyClass/use-create';
 import { TherapyClassCreateRequest } from '@/services/therapyClass/create';
 
 interface TherapyClassCreateProps {
-  getTherapyClassData: ()=>void,
-  handleCloseModal   : ()=>void,
-  modalOpen          : boolean,
+  resetPagination : ()=>void,
+  handleCloseModal: ()=>void,
+  modalOpen       : boolean,
 }
 
-const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ getTherapyClassData, handleCloseModal, modalOpen }) => {
+const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -47,11 +47,20 @@ const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ getThe
     })
   }
 
-  const { mutate: submitCreateTherapyClass, isLoading } = useTherapyClassCreate({ getData: getTherapyClassData, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitCreateTherapyClass, isLoading, isSuccess } = useTherapyClassCreate()
 
   const onSubmit: SubmitHandler<TherapyClassCreateRequest> = (data) => {
     submitCreateTherapyClass(data)
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+  
 
   return (
     <>
@@ -81,7 +90,7 @@ const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ getThe
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -89,7 +98,7 @@ const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ getThe
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -102,8 +111,9 @@ const TherapyClassCreateComponent: React.FC<TherapyClassCreateProps> = ({ getThe
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'shape_create_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

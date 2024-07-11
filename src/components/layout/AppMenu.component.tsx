@@ -120,7 +120,7 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
                       alignItems    : 'center',
                       lineHeight    : 1.5,
                       fontSize      : '0.875rem',
-                      fontWeight    : 700,
+                      py            : 0.5,
                       // "&:hover"     : {
                       //   color         : theme.palette.primary.main,
                       //   textDecoration: "none"

@@ -18,7 +18,7 @@ const LoadingButtonComponent: React.FC<LoadingButtonProps> = ({ isLoading, butto
         variant   = 'contained'
         color     = {buttonColor}
         sx        = {{
-          textTransform  : 'none',
+          textTransform  : 'none !important',
           px             : '12px',
           borderRadius   : 2,
           fontSize       : '0.875rem',
@@ -34,7 +34,7 @@ const LoadingButtonComponent: React.FC<LoadingButtonProps> = ({ isLoading, butto
         variant   = 'contained'
         color     = {buttonColor}
         sx        = {{
-          textTransform  : 'none',
+          textTransform  : 'none !important',
           px             : '12px',
           borderRadius   : 2,
           fontSize       : '0.875rem',

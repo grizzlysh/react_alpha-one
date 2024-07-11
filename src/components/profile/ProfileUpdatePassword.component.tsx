@@ -61,11 +61,18 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
     })
   }
   
-  const { mutate: submitChangePassword, isLoading } = useUserUpdatePassword({ user_uid: user_uid, closeModal: handleCloseModal, resetForm: resetForm })
+  const { mutate: submitChangePassword, isLoading, isSuccess } = useUserUpdatePassword({ user_uid: user_uid })
 
   const onSubmit: SubmitHandler<UserUpdatePasswordRequest> = (data) => {
     submitChangePassword(data)
   }
+
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -96,7 +103,7 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
                 <TextField            
                   fullWidth
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -104,7 +111,7 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
                   value        = {value}
                   label        = {"New Password"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   InputProps   = {{
                     endAdornment : (
                       <InputAdornment position="end">
@@ -141,7 +148,7 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
                 <TextField            
                   fullWidth
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -149,7 +156,7 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
                   value        = {value}
                   label        = {"Confirm New Password"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   InputProps   = {{
                     endAdornment : (
                       <InputAdornment position="end">
@@ -174,8 +181,9 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
               disabled    = {!isValid}
               isLoading   = {isLoading}
               id          = 'profile_change_password'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

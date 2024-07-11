@@ -2,14 +2,10 @@ import { http } from '@/services/axios';
 import { ROLE_DDL_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Shape from '@/types/Shape.type';
-import { ddlOptions } from '@/utils/ddlOptions';
-
-export interface RoleDdlResponse {
-  data: ddlOptions[],
-}
+import { DdlResponse } from '@/utils/ddlOption';
 
 const map = {
-  getDataFromService: (response: SuccessResponse<RoleDdlResponse>) => {
+  getDataFromService: (response: SuccessResponse<DdlResponse>) => {
     return response;
   }
 }

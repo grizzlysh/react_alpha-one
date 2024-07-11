@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { DrugDdlResponse } from '@/services/drug/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useDrugDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const useDrugDdl = () => {
     queryFn  : (payload) => api.getDrugDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<DrugDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

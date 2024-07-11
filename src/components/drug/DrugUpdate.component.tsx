@@ -7,9 +7,7 @@ import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
-import { DistributorUpdateInput, DistributorUpdateRequest } from '@/services/distributor/update';
-import { useDistributorUpdate } from '@/hooks/distributor/use-update';
-import { ddlOptions, statusOptions } from '@/utils/ddlOptions';
+import { DdlOptions, statusOptions } from '@/utils/ddlOption';
 import Drug from '@/types/Drug.type';
 import { DrugUpdateInput, DrugUpdateRequest } from '@/services/drug/update';
 import { useDrugUpdate } from '@/hooks/drug/use-update';
@@ -19,16 +17,16 @@ import { useTherapyClassDdl } from '@/hooks/therapyClass/use-ddl';
 
 interface DrugUpdateProps {
   updateDrug      : Drug,
-  getDrugData     : ()=>void,
+  resetPagination : ()=>void,
   handleCloseModal: ()=>void,
   modalOpen       : boolean,
 }
 
-const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugData, handleCloseModal, modalOpen }) => {
+const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, resetPagination, handleCloseModal, modalOpen }) => {
 
-  const [shapeOptions, setShapeOptions]               = React.useState<ddlOptions[]>([])
-  const [categoryOptions, setCategoryOptions]         = React.useState<ddlOptions[]>([])
-  const [therapyClassOptions, setTherapyClassOptions] = React.useState<ddlOptions[]>([])
+  const [shapeOptions, setShapeOptions]               = React.useState<DdlOptions[]>([])
+  const [categoryOptions, setCategoryOptions]         = React.useState<DdlOptions[]>([])
+  const [therapyClassOptions, setTherapyClassOptions] = React.useState<DdlOptions[]>([])
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -81,7 +79,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
   const { refetch: doGetShape, data: dataShape, isLoading: isLoadingShape }                      = useShapeDdl();
   const { refetch: doGetCategory, data: dataCategory, isLoading: isLoadingCategory }             = useCategoryDdl();
   const { refetch: doGetTherapyClass, data: dataTherapyClass, isLoading: isLoadingTherapyClass } = useTherapyClassDdl();
-  const { mutate: submitUpdateDrug, isLoading: isLoadingUpdateDrug }                             = useDrugUpdate({ drug_uid: updateDrug.uid, closeModal: handleCloseModal, getData: getDrugData, resetForm: resetForm })
+  const { mutate: submitUpdateDrug, isLoading: isLoadingUpdateDrug, isSuccess}                   = useDrugUpdate({ drug_uid: updateDrug.uid })
 
   const getDdlOptions = () => {
     doGetShape().then(
@@ -115,16 +113,6 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
     )
   }
 
-  React.useEffect( () => {
-    loadData(updateDrug)
-  },[updateDrug])
-
-
-  React.useEffect( () => {
-    getDdlOptions()
-  },[])
-
-
   const onSubmit: SubmitHandler<DrugUpdateInput> = (data) => {
     const submitData: DrugUpdateRequest = {
       
@@ -138,6 +126,24 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
     }
     submitUpdateDrug(submitData)
   }
+  
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetForm();
+      resetPagination();
+      handleCloseModal();
+    }
+  }, [isSuccess]);
+
+  React.useEffect( () => {
+    loadData(updateDrug)
+  },[updateDrug])
+
+
+  React.useEffect( () => {
+    getDdlOptions()
+  },[])
+
 
   return (
     <>
@@ -168,7 +174,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                 }) => (
                 <TextField            
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
+                  helperText   = {error ? error.message : " "}
                   size         = "medium"
                   error        = {!!error}
                   onChange     = {onChange}
@@ -176,7 +182,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                   value        = {value}
                   label        = {"Name"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  sx           = {{mb:1}}
                   fullWidth
                 />
                 )
@@ -201,7 +207,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                     value                = {value}
                     id                   = "shape-autocomplete"
                     options              = {shapeOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -211,7 +217,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                       size       = "medium"
                       label      = "Shape"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -237,7 +243,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                     value                = {value}
                     id                   = "category-autocomplete"
                     options              = {categoryOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -247,7 +253,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                       size       = "medium"
                       label      = "Category"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -272,7 +278,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                     value                = {value}
                     id                   = "therapyclass-autocomplete"
                     options              = {therapyClassOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -282,7 +288,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                       size       = "medium"
                       label      = "Therapy Class"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -307,7 +313,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                     value                = {value}
                     id                   = "controllable-states-demo"
                     options              = {statusOptions}
-                    sx                   = {{mb:2}}
+                    sx                   = {{mb:1}}
                     onChange             = {(event: any, value: any) => { onChange(value) }}
                     isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
                     renderInput          = {(params: any) => 
@@ -317,7 +323,7 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                       size       = "medium"
                       label      = "Status"
                       error      = {!!error}
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                     />}
                   />
                 )
@@ -335,15 +341,15 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
                 <TextField
                   minRows      = {4}
                   autoComplete = 'off'
-                  helperText   = {error ? error.message : null}
                   size         = "medium"
-                  error        = {!!error}
                   onChange     = {onChange}
                   type         = 'string'
                   value        = {value}
                   label        = {"Description"}
                   variant      = "outlined"
-                  sx           = {{mb:2}}
+                  error        = {!!error}
+                  helperText   = {error ? error.message : " "}
+                  sx           = {{mb:1}}
                   multiline
                   fullWidth
                 />
@@ -356,8 +362,9 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, getDrugDat
               disabled    = {!isValid || !isDirty}
               isLoading   = {isLoadingUpdateDrug}
               id          = 'drug_update_submit'
+              sx          = {{mt:1}}
             >
-              Submit
+              SUBMIT
             </LoadingButtonComponent>
           </Stack>
         </form>

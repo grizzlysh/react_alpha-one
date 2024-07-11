@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { DistributorDdlResponse } from '@/services/distributor/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useDistributorDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const useDistributorDdl = () => {
     queryFn  : (payload) => api.getDistributorDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<DistributorDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

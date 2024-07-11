@@ -8,13 +8,7 @@ import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
 import { DistributorCreateRequest } from "@/services/distributor/create";
 
-interface useDistributorCreateProps {
-  getData   : ()=>void,
-  closeModal: ()=>void,
-  resetForm : ()=>void,
-}
-
-export const useDistributorCreate = ({getData, closeModal, resetForm}: useDistributorCreateProps) => {
+export const useDistributorCreate = () => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -23,9 +17,6 @@ export const useDistributorCreate = ({getData, closeModal, resetForm}: useDistri
     mutationFn: (payload: DistributorCreateRequest) => api.createDistributor(payload),
     onSuccess: async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      getData()
-      resetForm()
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

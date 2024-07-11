@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { ShapeDdlResponse } from '@/services/shape/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useShapeDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const useShapeDdl = () => {
     queryFn  : (payload) => api.getShapeDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<ShapeDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

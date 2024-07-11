@@ -2,29 +2,16 @@ import { http } from '@/services/axios';
 import { SHAPE_READ_PATH } from '@/configs/constant';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
 import Shape from '@/types/Shape.type';
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
 
-export interface ShapeReadRequest {
-  page : string,
-  size : string,
-  cond : string,
-  sort : string,
-  field: string,
-}
-
-export interface ShapeReadResponse {
-  data        : Shape[],
-  total_data  : number,
-  total_pages : number,
-  current_page: number
-}
 
 const map = {
-  getDataFromService: (response: SuccessResponse<ShapeReadResponse>) => {
+  getDataFromService: (response: SuccessResponse<PaginationResponse<Shape>>) => {
     return response;
   }
 }
 
-const getShape = async (payload: ShapeReadRequest) => {
+const getShape = async (payload: PaginationRequest) => {
 
   const { data } = await http.get(SHAPE_READ_PATH, {
     params: {

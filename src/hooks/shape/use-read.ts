@@ -4,15 +4,16 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { ShapeReadRequest, ShapeReadResponse } from '@/services/shape/read';
+import { PaginationRequest, PaginationResponse } from '@/utils/pagination';
+import Shape from '@/types/Shape.type';
 
-export const useShapeRead = (data: ShapeReadRequest) => {
+export const useShapeRead = (data: PaginationRequest) => {
   return useQuery({
     queryKey : ['shape-get'],
     queryFn  : (payload) => api.getShape(data),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<ShapeReadResponse>) => {
+    onSuccess: async (resp: SuccessResponse<PaginationResponse<Shape>>) => {
       return resp
     },
     // refetchInterval     : 1000,

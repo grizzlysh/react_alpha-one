@@ -18,6 +18,7 @@ import Drug, { initDrug } from '@/types/Drug.type';
 import { useDrugDelete } from '@/hooks/drug/use-delete';
 import DrugCreateComponent from './DrugCreate.component';
 import DrugUpdateComponent from './DrugUpdate.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface DrugTableProps {
   modalCreate           : boolean,
@@ -31,13 +32,13 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -48,13 +49,13 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterable: false, align: 'center', headerAlign: 'center' },
     { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterable : false, sortable: false, align: 'center', headerAlign: 'center' },
     { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
-    { field: 'shapes', headerName: 'Shapes', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
+    { field: 'shapes', headerName: 'Bentuk', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
       valueGetter: (params:GridRenderCellParams) => (params.row.shapes.name).toUpperCase()
     },
-    { field: 'categories', headerName: 'Shapes', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
+    { field: 'categories', headerName: 'Tipe', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
       valueGetter: (params:GridRenderCellParams) => (params.row.categories.name).toUpperCase()
     },
-    { field: 'therapy_classes', headerName: 'Shapes', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
+    { field: 'therapy_classes', headerName: 'Kelas Terapi', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
       valueGetter: (params:GridRenderCellParams) => (params.row.therapy_classes.name).toUpperCase()
     },
     { field: 'status', headerName: 'Status', type: 'boolean', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
@@ -86,6 +87,11 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getDrugData = () => {
     doGetDrug().then(
       (resp: any) => {
@@ -101,7 +107,7 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     )
   }
 
-
+  //UPDATE DRUG
   const [updateDrug, setUpdateDrug]           = React.useState<Drug>(initDrug);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
@@ -110,7 +116,7 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE DRUG
   const [deleteDrugID, setDeleteDrugID]       = React.useState('');
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const handleCloseDeleteModal                = () => setOpenDeleteModal(false);
@@ -118,7 +124,7 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     setDeleteDrugID(drug_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useDrugDelete({ drug_uid: deleteDrugID, getData: getDrugData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useDrugDelete({ drug_uid: deleteDrugID });
   const handleDeleteDrug = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -131,6 +137,13 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
   React.useEffect(() => {
     getDrugData()
   },[queryOptions])
+  
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
 
   return (
     <>
@@ -180,9 +193,18 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
         }
       </PaperComponent>
       
-      <DrugCreateComponent getDrugData={getDrugData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      <DrugCreateComponent
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseCreateModal}
+        modalOpen        = {modalCreate}
+      />
 
-      <DrugUpdateComponent updateDrug={updateDrug} getDrugData={getDrugData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      <DrugUpdateComponent
+        updateDrug       = {updateDrug}
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseUpdateModal}
+        modalOpen        = {openUpdateModal}
+      />
 
       <DeleteConfirmComponent 
         modalId      = 'drug-delete'

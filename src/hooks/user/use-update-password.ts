@@ -6,16 +6,13 @@ import api from "@/services"
 import { AlertError, AlertSuccess } from "@/utils/notification";
 import { SuccessResponse } from "@/types/SuccessResponse.type";
 import { ErrorResponse } from "@/types/ErrorResponse.type";
-import { UserUpdateRequest } from "@/services/user/update";
 import { UserUpdatePasswordRequest } from "@/services/user/update_password";
 
 interface useUserUpdatePasswordProps {
   user_uid   : string,
-  closeModal : ()=>void,
-  resetForm ?: ()=>void,
 }
 
-export const useUserUpdatePassword = ({ user_uid, closeModal, resetForm }:useUserUpdatePasswordProps ) => {
+export const useUserUpdatePassword = ({ user_uid }:useUserUpdatePasswordProps ) => {
   const dispatch = useDispatch();
   const router   = useRouter();
 
@@ -24,8 +21,6 @@ export const useUserUpdatePassword = ({ user_uid, closeModal, resetForm }:useUse
     mutationFn : (payload: UserUpdatePasswordRequest) => api.updatePasswordUser(payload, user_uid),
     onSuccess  : async (resp: SuccessResponse<{}>) => {
       AlertSuccess(resp.status_schema.status_message)
-      resetForm && resetForm() 
-      closeModal()
     },
     onError: (err: ErrorResponse<{}>) => {
       // let message = data?.response.data.Message || 'Something went wrong, please try again!'

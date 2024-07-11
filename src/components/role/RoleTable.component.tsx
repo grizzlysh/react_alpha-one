@@ -14,13 +14,9 @@ import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
-interface RoleTableProps {
-  modalCreate           : boolean,
-  handleCloseCreateModal: ()=>void,
-}
-
-const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
+const RoleTable: React.FC = () => {
 
   const router                  = useRouter();
   const currentUser: UserOnline = useTypedSelector(
@@ -28,13 +24,13 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'display_name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('display_name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'display_name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -93,6 +89,10 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
     )
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('display_name')]);
+  }
 
   const [updateRoleUID, setUpdateRoleUID]     = React.useState('');
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
@@ -110,7 +110,7 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
     setDeleteRoleUID(role_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadingDelete } = useRoleDelete({ role_uid: deleteRoleUID, getData: getRoleData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useRoleDelete({ role_uid: deleteRoleUID });
   const handleDeleteRole = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -124,6 +124,13 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
     getRoleData()
   },[queryOptions])
 
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+  
   return (
     <>
       <PaperComponent>
@@ -174,7 +181,7 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
         <RoleCreateComponent getRoleData={getRoleData} handleCloseModal={handleCloseCreateModal} />
       </ModalComponent> */}
 
-      <ModalComponent
+      {/* <ModalComponent
         modalId      = 'role-edit'
         modalTitle   = 'Role Edit'
         modalSize    = 'sm'
@@ -182,9 +189,8 @@ const RoleTable: React.FC<RoleTableProps> = ({ modalCreate, handleCloseCreateMod
         modalOnClose = {handleCloseUpdateModal}
         isPermanent  = {false}
       >
-        <></>
-        {/* <PermissionUpdateComponent updatePermissionID={updatePermissionID} getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/> */}
-      </ModalComponent>
+        <PermissionUpdateComponent updatePermissionID={updatePermissionID} getPermissionData={getPermissionData} handleCloseModal={handleCloseCreateModal}/>
+      </ModalComponent> */}
 
       <DeleteConfirmComponent 
         modalId      = 'role-delete'

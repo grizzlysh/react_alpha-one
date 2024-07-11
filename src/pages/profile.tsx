@@ -57,7 +57,8 @@ const ProfilePage: NextPage = () => {
                 value        = {currentUser.username}
                 label        = {"Username"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}
@@ -70,7 +71,8 @@ const ProfilePage: NextPage = () => {
                 value        = {(currentUser.name).toUpperCase()}
                 label        = {"Name"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}
@@ -83,7 +85,8 @@ const ProfilePage: NextPage = () => {
                 value        = {currentUser.sex == 'm' ? "Laki" : "Perempuan"}
                 label        = {"Sex"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}
@@ -100,9 +103,10 @@ const ProfilePage: NextPage = () => {
               </Button> */}
 
               <ButtonComponent
-                buttonColor = 'primary'
                 // startIcon   = {<AddIcon />}
+                buttonColor = 'primary'
                 onClick     = {handleOpenUpdatePasswordModal}
+                // sx          = {{mt:0}}
               >
                 
                 CHANGE PASSWORD
@@ -117,7 +121,8 @@ const ProfilePage: NextPage = () => {
                 value        = {currentUser.email}
                 label        = {"Email"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}
@@ -130,7 +135,8 @@ const ProfilePage: NextPage = () => {
                 value        = {moment(currentUser.created_at).format("DD MMMM YYYY HH:mm:ss")}
                 label        = {"Created At"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}
@@ -143,7 +149,8 @@ const ProfilePage: NextPage = () => {
                 value        = {currentUser.role.display_name}
                 label        = {"Roles"}
                 variant      = "outlined"
-                sx           = {{mb:2}}
+                helperText   = {" "}
+                // sx           = {{mb:2}}
                 InputProps   = {{
                   readOnly: true,
                 }}

@@ -8,17 +8,15 @@ import { ShapeReadByIDResponse } from '@/services/shape/read_by_id';
 
 interface useShapeReadByIDProps {
   shape_uid: string,
-  loadData : (data: any)=>void,
 }
 
-export const useShapeReadByID = ({ shape_uid, loadData }: useShapeReadByIDProps) => {
+export const useShapeReadByID = ({ shape_uid }: useShapeReadByIDProps) => {
   return useQuery({
     queryKey : ['shape-get-by-id'],
     queryFn  : (payload) => api.getShapeByID(shape_uid),
     enabled  : false,
     retry    : false,
     onSuccess: async (resp: SuccessResponse<ShapeReadByIDResponse>) => {
-      loadData(resp.output_schema.data)
       return resp
     },
     // refetchInterval     : 1000,

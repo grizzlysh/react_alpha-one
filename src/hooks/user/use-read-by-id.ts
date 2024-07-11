@@ -8,17 +8,15 @@ import { UserReadByIDResponse } from '@/services/user/read_by_id';
 
 interface useUserReadByIDProps {
   user_uid: string,
-  loadData: (data: any)=>void,
 }
 
-export const usePermissionReadByID = ({ user_uid, loadData }: useUserReadByIDProps) => {
+export const usePermissionReadByID = ({ user_uid }: useUserReadByIDProps) => {
   return useQuery({
     queryKey : ['user-get-by-id'],
     queryFn  : (payload) => api.getUserByID(user_uid),
     enabled  : false,
     retry    : false,
     onSuccess: async (resp: SuccessResponse<UserReadByIDResponse>) => {
-      loadData(resp.output_schema.data)
       return resp
     },
     // refetchInterval     : 1000,

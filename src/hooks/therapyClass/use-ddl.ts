@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 
 import api from '@/services';
 import { SuccessResponse } from '@/types/SuccessResponse.type';
-import { TherapyClassDdlResponse } from '@/services/therapyClass/ddl';
+import { DdlResponse } from '@/utils/ddlOption';
 
 export const useTherapyClassDdl = () => {
   return useQuery({
@@ -12,7 +12,7 @@ export const useTherapyClassDdl = () => {
     queryFn  : (payload) => api.getTherapyClassDdl(),
     enabled  : false,
     retry    : false,
-    onSuccess: async (resp: SuccessResponse<TherapyClassDdlResponse>) => {
+    onSuccess: async (resp: SuccessResponse<DdlResponse>) => {
       return resp
     },
     // refetchInterval     : 1000,

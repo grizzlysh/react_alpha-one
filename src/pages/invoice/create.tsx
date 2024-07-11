@@ -3,16 +3,16 @@ import { NextPage } from 'next'
 
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'
-import RoleCreateComponent from '../../components/role/RoleCreate.component'
+import InvoiceCreateComponent from '@/components/invoice/InvoiceCreate.component'
 
-const RoleCreatePage: NextPage = () => {
+const InvoiceCreatePage: NextPage = () => {
 
   return (
     <AppLayoutComponent title={'Invoice Create'}>
       <HeaderPage title={'Invoice Create'}/>
-      <RoleCreateComponent />
+      <InvoiceCreateComponent />
     </AppLayoutComponent>
   )
 }
 
-export default RoleCreatePage;
+export default InvoiceCreatePage;

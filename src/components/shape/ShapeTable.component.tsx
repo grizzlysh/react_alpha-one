@@ -19,6 +19,7 @@ import TableFilterComponent from '../_general/molecules/TableFilter.component';
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component';
 import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 import ShapeUpdateComponent from './ShapeUpdate.component';
+import { initPageData, initSortData } from '@/utils/pagination';
 
 interface ShapeTableProps {
   modalCreate           : boolean,
@@ -32,13 +33,13 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([{field: 'name', sort : 'asc',}])
+  const [sortData, setSortData]         = React.useState([initSortData('name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
-  const [pageData, setPageData]         = React.useState({page: 0, pageSize: 5 });
+  const [pageData, setPageData]         = React.useState(initPageData());
   const [queryOptions, setQueryOptions] = React.useState({
-    field: 'name',
-    sort : 'asc',
+    field: sortData[0]?.field,
+    sort : sortData[0]?.sort,
     page : pageData.page.toString(),
     size : pageData.pageSize.toString(),
     cond : ''
@@ -78,6 +79,11 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
     });
   }
 
+  const resetPagination = () => {
+    setPageData(initPageData());
+    setSortData([initSortData('name')]);
+  }
+
   const getShapeData = () => {
     doGetShape().then(
       (resp: any) => {
@@ -93,7 +99,7 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
     )
   }
 
-
+  //UPDATE SHAPE
   const [updateShape, setUpdateShape]         = React.useState<Shape>(initShape);
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
@@ -102,7 +108,7 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
     setOpenUpdateModal(true);
   }
   
-  
+  //DELETE SHAPE
   const [deleteShapeID, setDeleteShapeID]     = React.useState('');
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const handleCloseDeleteModal                = () => setOpenDeleteModal(false);
@@ -110,11 +116,18 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
     setDeleteShapeID(shape_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete } = useShapeDelete({ shape_uid: deleteShapeID, getData: getShapeData, closeModal: handleCloseDeleteModal });
+  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useShapeDelete({ shape_uid: deleteShapeID });
   const handleDeleteShape = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
   
+  React.useEffect(() => {
+    if(isSuccess == true) {
+      resetPagination();
+      handleCloseDeleteModal();
+    }
+  }, [isSuccess]);
+
   React.useEffect(() => {
     handleQuery();
   }, [pageData, sortData]);
@@ -172,9 +185,18 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
         }
       </PaperComponent>
       
-      <ShapeCreateComponent getShapeData={getShapeData} handleCloseModal={handleCloseCreateModal} modalOpen={modalCreate} />
+      <ShapeCreateComponent
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseCreateModal}
+        modalOpen        = {modalCreate}
+      />
 
-      <ShapeUpdateComponent updateShape={updateShape} getShapeData={getShapeData} handleCloseModal={handleCloseUpdateModal} modalOpen={openUpdateModal} />
+      <ShapeUpdateComponent
+        updateShape      = {updateShape}
+        resetPagination  = {resetPagination}
+        handleCloseModal = {handleCloseUpdateModal}
+        modalOpen        = {openUpdateModal}
+      />
 
       <DeleteConfirmComponent 
         modalId      = 'shape-delete'
