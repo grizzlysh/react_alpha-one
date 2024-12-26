@@ -10,6 +10,8 @@ import { PermissionUpdateRequest } from '@/services/permission/update';
 import { usePermissionReadByID } from '@/hooks/permission/use-read-by-id';
 import Permission from '@/types/Permission.type';
 import ModalComponent from '../_general/molecules/Modal.component';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface PermissionUpdateProps {
   updatePermission: Permission,
@@ -20,6 +22,11 @@ interface PermissionUpdateProps {
 
 const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePermission, resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -84,81 +91,89 @@ const PermissionUpdateComponent: React.FC<PermissionUpdateProps> = ({ updatePerm
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <>
-            <Controller
-              name    = "display_name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Display Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  disabled     = {isLoadingUpdatePermission}
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Display Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
+        <Stack direction={'column'}>
+          <>
+          <Controller
+            name    = "display_name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Display Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                disabled     = {isLoadingUpdatePermission}
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Display Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
 
-            <Controller
-              name    = "description"
-              control = {control}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField
-                  autoComplete = 'off'
-                  disabled     = {isLoadingUpdatePermission}
-                  size         = "medium"
-                  onChange     = {onChange}
-                  value        = {value}
-                  label        = {"Description"}
-                  error        = {!!error}
-                  helperText   = {error ? error.message : " "}
-                  sx           = {{mb:1}}
-                  minRows      = {4}
-                  multiline
-                  fullWidth
-                />
-                )
-              }
-            />
-            </>
+          <Controller
+            name    = "description"
+            control = {control}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField
+                autoComplete = 'off'
+                disabled     = {isLoadingUpdatePermission}
+                size         = "medium"
+                onChange     = {onChange}
+                value        = {value}
+                label        = {"Description"}
+                error        = {!!error}
+                helperText   = {error ? error.message : " "}
+                sx           = {{mb:1}}
+                minRows      = {4}
+                multiline
+                fullWidth
+              />
+              )
+            }
+          />
+          </>
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdatePermission}
-              id          = 'permission_update_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid || !isDirty}
+            id          = 'permission-update-submit'
+            // type        = 'submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'permission-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoadingUpdatePermission}
+      />
     </>
   )
 };

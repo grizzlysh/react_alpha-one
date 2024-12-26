@@ -11,6 +11,8 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import { useUserUpdatePassword } from '@/hooks/user/use-update-password';
 import { UserUpdatePasswordRequest } from '@/services/user/update_password';
 import ModalComponent from '../_general/molecules/Modal.component';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface UserUpdatePasswordProps {
   user_uid        : string,
@@ -20,6 +22,11 @@ interface UserUpdatePasswordProps {
 
 const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ user_uid, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal]       = React.useState(false);
+  const handleCloseConfirmModal                       = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                        = () => {
+    setOpenConfirmModal(true);
+  }
   const [showPassword, setShowPassword]     = React.useState(false);
   const [showRepassword, setShowRepassword] = React.useState(false);
   const currentUser: UserOnline             = useTypedSelector(
@@ -84,110 +91,129 @@ const ProfileUpdatePasswordComponent: React.FC<UserUpdatePasswordProps> = ({ use
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <Controller
-              name    = "password"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Password fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  fullWidth
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = {showPassword ? 'text' : 'password'}
-                  value        = {value}
-                  label        = {"New Password"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  InputProps   = {{
-                    endAdornment : (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label  = "toggle password visibility"
-                          onClick     = {handleShowPassword}
-                          onMouseDown = {handleMouseShowPassword}
-                          edge        = "end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>),
-                  }}
-                />
-                )
-              }
-            />
+        <Stack direction={'column'}>
+          <Controller
+            name    = "password"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Password field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                fullWidth
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = {showPassword ? 'text' : 'password'}
+                value        = {value}
+                label        = {"New Password"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                InputProps   = {{
+                  endAdornment : (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label  = "toggle password visibility"
+                        onClick     = {handleShowPassword}
+                        onMouseDown = {handleMouseShowPassword}
+                        edge        = "end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>),
+                }}
+              />
+              )
+            }
+          />
 
-            <Controller
-              name    = "repassword"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Confirm New Password fields is required"
-                },
-                validate: (value, formValues) => value == formValues.password
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  fullWidth
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = {showRepassword ? 'text' : 'password'}
-                  value        = {value}
-                  label        = {"Confirm New Password"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  InputProps   = {{
-                    endAdornment : (
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label  = "toggle password visibility"
-                          onClick     = {handleShowRepassword}
-                          onMouseDown = {handleMouseShowRepassword}
-                          edge        = "end"
-                        >
-                          {showRepassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>),
-                  }}
-                />
-                )
-              }
-            />
+          <Controller
+            name    = "repassword"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Confirm New Password field is required"
+              },
+              validate: (value, formValues) => value == formValues.password
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                fullWidth
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = {showRepassword ? 'text' : 'password'}
+                value        = {value}
+                label        = {"Confirm New Password"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                InputProps   = {{
+                  endAdornment : (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label  = "toggle password visibility"
+                        onClick     = {handleShowRepassword}
+                        onMouseDown = {handleMouseShowRepassword}
+                        edge        = "end"
+                      >
+                        {showRepassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>),
+                }}
+              />
+              )
+            }
+          />
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid}
-              isLoading   = {isLoading}
-              id          = 'profile_change_password'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          {/* <LoadingButtonComponent
+            buttonColor = 'primary'
+            type        = 'submit'
+            disabled    = {!isValid}
+            isLoading   = {isLoading}
+            id          = 'profile-change-password-submit'
+            sx          = {{mt:1}}
+          >
+            SUBMIT
+          </LoadingButtonComponent> */}
+
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid}
+            id          = 'permission-update-submit'
+            // type        = 'submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'profile-update-password-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoading}
+      />
     </>
   )
 };

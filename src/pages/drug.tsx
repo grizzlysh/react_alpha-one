@@ -18,7 +18,7 @@ const DrugPage: NextPage = () => {
     <AppLayoutComponent title={'Drug'}>
       <HeaderPage title={'Drug'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          // buttonColor = 'primary'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

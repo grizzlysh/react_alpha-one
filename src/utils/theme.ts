@@ -22,32 +22,9 @@ export const generateTheme = (mode: PaletteMode) => {
     MuiTextField: {
       styleOverrides: {
         root: {
-          // '& .MuiOutlinedInput-root': {
-          //   borderRadius: 8,
-          //   // colors      : (theme) => theme.palette.mode == 'light' ? theme.palette.shadow: theme.palette.radiance,
-          // },
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
-            // '& fieldset': {
-            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
-            // },
-            // '&:hover fieldset': {
-            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
-            // },
-            // '&.Mui-focused fieldset': {
-            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
-            // },
           },
-          // '& .MuiInputLabel-root': {
-          //   color: mode === 'light' ? '#cccccc' : '#FFFDF7'
-          // },
-          // '& .MuiInputBase-input': {
-          //   color: mode === 'light' ? '#0A1106' : '#FFFDF7'
-          // },
-          // '& .MuiInputLabel-root.Mui-focused': {
-          //   color: mode === 'light' ? '#0A1106' : '#FFFDF7',
-          // },
-          // color: (theme) => theme.palette.mode == 'light' ? theme.palette.shadow : theme.palette.radiance,
         }
       }
     },

@@ -14,6 +14,8 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 import { useRoleDdl } from '@/hooks/role/use-ddl';
 import { DdlOptions, sexOptions } from '@/utils/ddlOption';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface UserUpdateProps {
   updateUser      : User,
@@ -24,6 +26,11 @@ interface UserUpdateProps {
 
 const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline                                      = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -140,189 +147,196 @@ const UserUpdateComponent: React.FC<UserUpdateProps> = ({ updateUser, resetPagin
         modalOnClose = {()=>{handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
         <Stack direction={'column'}>
-            <Controller
-              name    = "username"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Username fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Username"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
-
-            <Controller
-              name    = "name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
-
-            <Box>
-              <Controller
-                name    = "sex"
-                control = {control}
-                rules   = {{
-                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                  required: {
-                    value  : true,
-                    message: "Sex fields is required"
-                  },
-                }}
-                render  = { ({ 
-                    field     : { onChange, value },
-                    fieldState: { error },
-                  }) => (
-                    <Autocomplete
-                      value                = {value}
-                      id                   = "sex-autocomplete"
-                      options              = {sexOptions}
-                      sx                   = {{mb:1}}
-                      onChange             = {(event: any, value: any) => { onChange(value) }}
-                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                      renderInput          = {(params: any) => 
-                      <TextField
-                        fullWidth
-                        {...params}
-                        size       = "medium"
-                        label      = "Sex"
-                        error      = {!!error}
-                        helperText = {error ? error.message : " "}
-                      />}
-                    />
-                  )
-                }
+          <Controller
+            name    = "username"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Username field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Username"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
               />
-            </Box>
+              )
+            }
+          />
 
+          <Controller
+            name    = "name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
+
+          <Box>
             <Controller
-              name    = "email"
+              name    = "sex"
               control = {control}
-              rules   = {{ 
+              rules   = {{
+                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                 required: {
                   value  : true,
-                  message: "Email fields is required"
+                  message: "Sex field is required"
                 },
               }}
               render  = { ({ 
                   field     : { onChange, value },
                   fieldState: { error },
-                  formState,
                 }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'email'
-                  value        = {value}
-                  label        = {"Email"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
+                  <Autocomplete
+                    value                = {value}
+                    id                   = "sex-autocomplete"
+                    options              = {sexOptions}
+                    sx                   = {{mb:1}}
+                    onChange             = {(event: any, value: any) => { onChange(value) }}
+                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                    renderInput          = {(params: any) => 
+                    <TextField
+                      fullWidth
+                      {...params}
+                      size       = "medium"
+                      label      = "Sex"
+                      error      = {!!error}
+                      helperText = {error ? error.message : " "}
+                    />}
+                  />
                 )
               }
             />
+          </Box>
 
-            <Box>
-
-              <Controller
-                name    = "role_uid"
-                control = {control}
-                rules   = {{
-                  // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                  required: {
-                    value  : true,
-                    message: "Role fields is required"
-                  },
-                }}
-                render  = { ({ 
-                    field     : { onChange, value },
-                    fieldState: { error },
-                  }) => (
-                    <Autocomplete
-                      value                = {value}
-                      id                   = "role-autocomplete"
-                      options              = {roleOptions}
-                      sx                   = {{mb:1}}
-                      onChange             = {(event: any, value: any) => { onChange(value) }}
-                      isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                      renderInput          = {(params: any) => 
-                      <TextField
-                        fullWidth
-                        {...params}
-                        size       = "medium"
-                        label      = "Role"
-                        error      = {!!error}
-                        helperText = {error ? error.message : " "}
-                      />}
-                    />
-                  )
-                }
+          <Controller
+            name    = "email"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Email field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'email'
+                value        = {value}
+                label        = {"Email"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
               />
-            </Box>
+              )
+            }
+          />
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdateUser}
-              id          = 'user_update_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          <Box>
+
+            <Controller
+              name    = "role_uid"
+              control = {control}
+              rules   = {{
+                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
+                required: {
+                  value  : true,
+                  message: "Role field is required"
+                },
+              }}
+              render  = { ({ 
+                  field     : { onChange, value },
+                  fieldState: { error },
+                }) => (
+                  <Autocomplete
+                    value                = {value}
+                    id                   = "role-autocomplete"
+                    options              = {roleOptions}
+                    sx                   = {{mb:1}}
+                    onChange             = {(event: any, value: any) => { onChange(value) }}
+                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                    renderInput          = {(params: any) => 
+                    <TextField
+                      fullWidth
+                      {...params}
+                      size       = "medium"
+                      label      = "Role"
+                      error      = {!!error}
+                      helperText = {error ? error.message : " "}
+                    />}
+                  />
+                )
+              }
+            />
+          </Box>
+
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid || !isDirty}
+            id          = 'user_update_submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'user-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoadingUpdateUser}
+      />
     </>
   )
 };

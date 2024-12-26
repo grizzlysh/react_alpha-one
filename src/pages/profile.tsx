@@ -107,7 +107,7 @@ const ProfilePage: NextPage = () => {
 
               <ButtonComponent
                 // startIcon   = {<AddIcon />}
-                buttonColor = 'primary'
+                buttonColor = 'shadow'
                 onClick     = {handleOpenUpdatePasswordModal}
                 // sx          = {{mt:0}}
               >

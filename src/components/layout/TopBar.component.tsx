@@ -5,9 +5,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
-import { Toolbar, IconButton, Typography, MenuItem, Menu, Stack, ListItemIcon, Paper } from '@mui/material';
+import { Toolbar, IconButton, Typography, MenuItem, Menu, Stack, ListItemIcon, useTheme } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 
 import { DRAWER_WIDTH } from '@/configs/constant';
@@ -78,8 +78,9 @@ interface TopBarProps {
 const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, handleLogout, isTitleVisible, title, ...props} ) => {
 
   const router                          = useRouter();
+  const theme                           = useTheme();
   const [profileModal, setProfileModal] = React.useState<null | HTMLElement>(null)
-
+  
   const handleOpenProfileModal = (event: React.MouseEvent<HTMLElement>) => {
     setProfileModal(event.currentTarget)
   }
@@ -101,7 +102,8 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
         color    = 'transparent'
         sx       = {{   
           // backgroundColor: "red",
-          // backgroundColor: 'Color(0x44000000)',
+          // backgroundColor: theme.palette.radiance.dark,
+          // opacity:0.2,
           // opacity       : "50%",
           paddingRight  : '0 !important',
           backdropFilter: "blur(20px)",
@@ -119,8 +121,9 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
             edge       = "start"
             aria-label = "open drawer"
             onClick    = {handleDrawer}
-            color      = "inherit"
+            // color      = "inherit"
             sx         = {{
+              color      : theme.palette.shadow.main,
               marginRight: '36px',
               ...(openDrawer && { display: "none" }),
             }}
@@ -133,7 +136,7 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
             id         = {'topbar-title'}
             component  = "h1"
             variant    = "h4"
-            color      = "initial"
+            // color      = "initial"
             fontSize   = {'1.5rem'}
             fontWeight = {700}
             lineHeight = {1.5}
@@ -148,8 +151,9 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
               },
               opacity   : 0,
               flexGrow  : 1,
-              visibility: !isTitleVisible ? "visible" : "hidden",
-              animation : !isTitleVisible ? 'fadeIn 0.5s forwards': 'fadeOut 0.5s forwards',
+              color     : theme.palette.shadow.main,
+              visibility: !isTitleVisible ? "visible"                              : "hidden",
+              animation : !isTitleVisible ? 'fadeIn 0.5s forwards'                 : 'fadeOut 0.5s forwards',
             }}
           >
             {title}
@@ -163,7 +167,11 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
             onClick       = {handleOpenProfileModal}
             color         = "inherit"
           >
-            <AccountCircleIcon />
+            <AccountCircleIcon 
+              sx       = {{
+                color : theme.palette.shadow.main,
+              }}
+            />
           </IconButton>
             {/* <IconButton
               color   = "inherit"
@@ -198,13 +206,23 @@ const TopBarComponent: React.FC<TopBarProps> = ( {openDrawer, handleDrawer, hand
           >
             <MenuItem onClick={handleProfile}>
               <ListItemIcon>
-                <ManageAccountsIcon fontSize="small" />
+                <ManageAccountsIcon
+                  fontSize = "small"
+                  sx       = {{
+                    color : theme.palette.shadow.main,
+                  }}
+                />
               </ListItemIcon>
                Profile
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
-                <LogoutIcon fontSize="small" />
+                <LogoutIcon
+                  fontSize = "small"
+                  sx       = {{
+                    color : theme.palette.shadow.main,
+                  }}
+                />
               </ListItemIcon>
               Logout
             </MenuItem>

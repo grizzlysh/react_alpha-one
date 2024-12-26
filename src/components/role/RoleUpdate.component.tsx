@@ -6,14 +6,10 @@ import { Autocomplete, Box, Stack, TextField } from '@mui/material'
 import { DataGrid, GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type'
-import Permission from '@/types/Permission.type'
 import { useRoleUpdate } from '@/hooks/role/use-update'
-import { RoleCreateRequest } from '@/services/role/create'
 import { useRoleReadByID } from '@/hooks/role/use-read-by-id'
-import { usePermissionRead } from '@/hooks/permission/use-read'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
-import SelectComponent from '@/components/_general/atoms/Select.component'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import CheckboxComponent from '@/components/_general/atoms/Checkbox.component'
 import TableSkeletonComponent from '../_general/molecules/TableSkeleton.component'
@@ -21,6 +17,7 @@ import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.co
 import { usePermissionDdl } from '@/hooks/permission/use-ddl';
 import { RolePermissionUpdateInput, RoleUpdateRequest } from '@/services/role/update';
 import { DdlOptions } from '@/utils/ddlOption';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
 
 interface RoleUpdateProps {
   updateRole: string
@@ -28,6 +25,11 @@ interface RoleUpdateProps {
 
 const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
 
+  const [openConfirmModal, setOpenConfirmModal]       = React.useState(false);
+  const handleCloseConfirmModal                       = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                        = () => {
+    setOpenConfirmModal(true);
+  }
   const { mutate: submitUpdateRole, isLoading } = useRoleUpdate({role_uid: updateRole})
   const currentUser: UserOnline                 = useTypedSelector(
     (state) => state.reducer.user.user,
@@ -46,6 +48,9 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
       renderCell: (params:any) => params.api.getAllRowIds().indexOf(params.id)+1
     },
     { field: 'permission_name', headerName: 'Permission', type : 'string', flex : 0.7, minWidth: 200, sortable: false,},
+    // { field: 'permission_name', headerName: 'Permission', type : 'string', flex : 0.7, minWidth: 200, sortable: false,
+    //   valueGetter: (params:GridRenderCellParams) => (params.row.permission_name).toUpperCase()
+    // },
     { field: 'permission_uid', headerName: 'Permission', type : 'string', flex : 0.7, minWidth: 200, sortable: false,},
     { field: 'write_permit', headerName: 'Write', type : 'boolean', flex : 0.2, minWidth: 94, sortable: false,},
     { field: 'read_permit', headerName: 'Read', type : 'boolean', flex : 0.2, minWidth: 94, sortable: false,},
@@ -70,7 +75,12 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
           return;
         }
 
-        setPermissionOptions(resp.data.output_schema.data)
+        const uppercaseData = resp.data.output_schema.data.map(item => ({
+          ...item,
+          label: item.label.toUpperCase(),
+        }));
+
+        setPermissionOptions(uppercaseData)
       } 
     )
   }
@@ -98,7 +108,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
   }
 
 
-  const { refetch: doGetRole, data: dataRole, isLoading: isLoadingGetRole } = useRoleReadByID({ role_uid: updateRole });
+  const { refetch: doGetRole, data: dataRole, isLoading: isLoadingRole } = useRoleReadByID({ role_uid: updateRole });
   
   
   const getRoleData = () => {
@@ -117,7 +127,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
 
         const permissions = resp.data.output_schema.data.permission_role?.map( (val: any) => (
           {
-            permission_name: val.permissions.display_name,
+            permission_name: val.permissions.display_name.toUpperCase(),
             permission_uid : val.permissions.uid,
             // permission   : {labal: val.permissions.display_name, value: val.permissions.uid},
             write_permit : val.write_permit,
@@ -237,26 +247,27 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
   }, [permissionList])
 
   return (
-    <PaperComponent>
-      <Stack direction={"column"} gap={2}>        
-        <Box width={'100%'}>
-          {/* <form onSubmit={handleSubmit(onSubmit)}> */}
+    <>
+      <PaperComponent>
+        <Stack direction={"column"} gap={2}>        
+          <Box width={'100%'}>
             <Stack
               // direction = {"row"}
               display = {"flex"}
               // gap     = {2}
               sx      = {{
-                marginBottom: 2,
                 '@media (min-width: 0px)'  : {
                   flexDirection: 'column',
                   alignItems   : 'center',
                   gap          : 0,
+                  marginBottom : 2,
                 },
                 '@media (min-width: 700px)': {
                   flexDirection : 'row',
                   alignItems    : 'stretch',
                   justifyContent: 'flex-start',
                   gap           : 2,
+                  marginBottom  : 0,
                   // divider      : (<Divider orientation="vertical" flexItem />)
                 },
               }}  
@@ -281,7 +292,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                   rules   = {{ 
                     required: {
                       value  : true,
-                      message: "Display Name fields is required"
+                      message: "Display Name field is required"
                     },
                   }}
                   render  = { ({ 
@@ -291,7 +302,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                     }) => (
                     <TextField            
                       autoComplete = 'off'
-                      helperText = {error ? error.message : null}
+                      helperText = {error ? error.message : " "}
                       size       = "medium"
                       error      = {!!error}
                       onChange   = {onChange}
@@ -299,7 +310,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       value      = {value}
                       label      = {"Display Name"}
                       variant    = "outlined"
-                      sx         = {{mb:2}}
+                      sx         = {{mb:1}}
                       fullWidth
                     />
                     )
@@ -323,14 +334,9 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       onChange     = {onChange}
                       value        = {value}
                       label        = {"Description"}
-                      sx           = {{
-                        '@media (min-width: 0px)'  : {
-                          mb: 2,
-                        },
-                        '@media (min-width: 700px)': {
-                          mb: 0,
-                        },
-                      }}
+                      error        = {!!error}
+                      helperText   = {error ? error.message : " "}
+                      sx           = {{mb:1}}
                     />
                     )
                   }
@@ -347,7 +353,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                   '@media (min-width: 700px)': {
                     flexDirection : 'column',
                     alignItems    : 'flex-start',
-                    justifyContent: 'space-between',
+                    justifyContent: 'start',
                     width         : '50%',
                   },
                 }}  
@@ -359,7 +365,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       mb: 2,
                     },
                     '@media (min-width: 700px)': {
-                      mb: 0,
+                      mb: 1,
                     },
                   }}
                 >
@@ -370,7 +376,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
                       required: {
                         value  : true,
-                        message: "Permission fields is required"
+                        message: "Permission field is required"
                       },
                     }}
                     render  = { ({ 
@@ -391,7 +397,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                               {...params}
                               label      = "Permission"
                               error      = {!!error}
-                              helperText = {error ? error.message : null}
+                              helperText = {error ? error.message : " "}
                             />
                           }
                         />
@@ -407,7 +413,7 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                       mb: 2,
                     },
                     '@media (min-width: 700px)': {
-                      mb: 0,
+                      mb: 3,
                     },
                   }}
                 >    
@@ -507,7 +513,8 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
                 <ButtonComponent
                   fullWidth
                   disabled    = {!isValidPermission || !duplicatePermission}
-                  buttonColor = 'secondary'
+                  buttonColor = 'shadow'
+                  id          = 'role-add-permission'
                   onClick     = {handleSubmitPermission(onAddPermission)}
                 >
                   ADD PERMISSION
@@ -515,44 +522,66 @@ const RoleUpdateComponent: React.FC<RoleUpdateProps> = ({ updateRole }) => {
               </Stack>
             </Stack>
             
-            <LoadingButtonComponent
+            {/* <LoadingButtonComponent
               fullWidth
               buttonColor = 'primary'
               disabled    = {!isValid || !(permissionList.length>0) || !isDirty}
               isLoading   = {isLoading}
               id          = 'role_update_submit'
               onClick     = {handleSubmit(onSubmit)}
+              sx          = {{mt:1}}
             >
               SUBMIT
-            </LoadingButtonComponent>
-          {/* </form> */}
-        </Box>
-        {
-          (updateRole == '' || isLoadingGetRole) ? 
-          <TableSkeletonComponent />
-          :
-          <Box 
-            sx={{
-              width     : '100%',
-              minWidth  : 0,
-              height    : 400,
-              display   : 'grid',
-              transition: 'width 0.2s ease-out',
-            }}
-          >
-            <DataGrid        
-              // rows              = {[{no: 1, permisson_name: "a", read: true, write: true, modify: true, delete: true, }]}
-              disableRowSelectionOnClick
-              disableColumnMenu     = {true}
-              getRowId              = { (row: any) => row.permission_uid }
-              rows                  = {permissionList}
-              columnVisibilityModel = {{permission_uid: false}}
-              columns               = {permisisonColumn}
-            />
+            </LoadingButtonComponent> */}
+
+            <ButtonComponent
+              fullWidth
+              buttonColor = 'shadow'
+              onClick     = {handleOpenConfirmModal}
+              disabled    = {!isValid || !(permissionList.length>0) || !isDirty}
+              id          = 'role-update-submit'
+              // sx        = {{mt:1}}
+            >
+              SUBMIT
+            </ButtonComponent>
           </Box>
-        }
-      </Stack>
-    </PaperComponent>
+          {
+            (updateRole == '' || isLoadingRole) ? 
+            <TableSkeletonComponent />
+            :
+            <Box 
+              sx={{
+                width     : '100%',
+                minWidth  : 0,
+                height    : 400,
+                display   : 'grid',
+                transition: 'width 0.2s ease-out',
+              }}
+            >
+              <DataGrid        
+                // rows              = {[{no: 1, permisson_name: "a", read: true, write: true, modify: true, delete: true, }]}
+                disableRowSelectionOnClick
+                disableColumnMenu     = {true}
+                getRowId              = { (row: any) => row.permission_uid }
+                rows                  = {permissionList}
+                columnVisibilityModel = {{permission_uid: false}}
+                columns               = {permisisonColumn}
+              />
+            </Box>
+          }
+        </Stack>
+      </PaperComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'role-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoading}
+      />
+    </>
   )
 
 };

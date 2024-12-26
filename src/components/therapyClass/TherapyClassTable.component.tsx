@@ -45,11 +45,8 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
   });
   const { refetch: doGetTherapyClass, data, isLoading: isLoadingTherapyClass } = useTherapyClassRead(queryOptions);
 
-  const [columnData, setColumnData] = React.useState([
+  const [columnData, setColumnData] = React.useState<any>([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -66,6 +63,9 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false, align: 'center', headerAlign: 'center' },
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
   ]);
 
   const handleQuery = () => {
@@ -115,7 +115,7 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
     setDeleteTherapyClassID(therapy_class_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useTherapyClassDelete({ therapy_class_uid: deleteTherapyClassID });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useTherapyClassDelete({ therapy_class_uid: deleteTherapyClassID });
   const handleDeletTherapyClass = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -180,11 +180,12 @@ const TherapyClassTable: React.FC<TherapyClassTableProps> = ({ modalCreate, hand
         modalOpen          = {openUpdateModal}
       />
 
-      <DeleteConfirmComponent 
-        modalId      = 'therapyclass-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeletTherapyClass}
+      <DeleteConfirmComponent
+        modalId       = 'therapyclass-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeletTherapyClass}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

@@ -17,7 +17,7 @@ const ShapePage: NextPage = () => {
     <AppLayoutComponent title={'Shape'}>
       <HeaderPage title={'Shape'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          // buttonColor = 'primary'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

@@ -19,20 +19,18 @@ import { useDrugDelete } from '@/hooks/drug/use-delete';
 import DrugCreateComponent from './DrugCreate.component';
 import DrugUpdateComponent from './DrugUpdate.component';
 import { initPageData, initSortData } from '@/utils/pagination';
+import { useStockRead } from '@/hooks/stock/use-read';
+import Stock from '@/types/Stock.type';
 
-interface DrugTableProps {
-  modalCreate           : boolean,
-  handleCloseCreateModal: ()=>void,
-}
 
-const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateModal }) => {
+const StockTable: React.FC = () => {
 
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
   
   const [textSearch, setTextSearch]     = React.useState('');
-  const [sortData, setSortData]         = React.useState([initSortData('name')])
+  const [sortData, setSortData]         = React.useState([initSortData('drugs.name')])
   const [rowData, setRowData]           = React.useState<{}[]>([]);
   const [rowTotal, setRowTotal]         = React.useState(0);
   const [pageData, setPageData]         = React.useState(initPageData());
@@ -43,38 +41,46 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     size : pageData.pageSize.toString(),
     cond : ''
   });
-  const { refetch: doGetDrug, data, isLoading: isLoadingDrug } = useDrugRead(queryOptions);
+  const { refetch: doGetStock, data, isLoading: isLoadingDrug } = useStockRead(queryOptions);
 
   const [columnData, setColumnData] = React.useState<any>([
     { field: 'action', type: 'actions', width:50,  align: 'center', headerAlign: 'center', getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
-        key     = {"edit-"+params.id}
+        key     = {"Edit Harga-"+params.id}
         icon    = {<EditIcon />}
-        label   = "Edit"
+        label   = "Edit Harga"
         onClick = {() => handleOpenUpdateModal(params.row)}
         showInMenu
       />,
       <GridActionsCellItem
-        key     = {"delete-"+params.id}
-        icon    = {<DeleteIcon />}
-        label   = "Delete"
-        onClick = {() => {handleOpenDeleteModal(params.row.uid)}}
+        key     = {"detail-"+params.id}
+        icon    = {<EditIcon />}
+        label   = "Detail"
+        onClick = {() => handleOpenUpdateModal(params.row)}
+        showInMenu
+      />,
+      <GridActionsCellItem
+        key     = {"print-"+params.id}
+        icon    = {<EditIcon />}
+        label   = "Print"
+        onClick = {() => handleOpenUpdateModal(params.row)}
         showInMenu
       />,
     ]},
     { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterable: false, align: 'center', headerAlign: 'center' },
     { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterable : false, sortable: false, align: 'center', headerAlign: 'center' },
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
-    { field: 'shapes', headerName: 'Bentuk', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => (params.row.shapes.name).toUpperCase()
+    // { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
+    { field: 'drugs.name', headerName: 'Obat', type: 'string', minWidth:200, flex: 0.75, sortable: true, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => (params.row.drugs.name).toUpperCase()
     },
-    { field: 'categories', headerName: 'Tipe', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => (params.row.categories.name).toUpperCase()
-    },
-    { field: 'therapy_classes', headerName: 'Kelas Terapi', type: 'string', minWidth:200, flex: 0.75, sortable: false, align: 'center', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => (params.row.therapy_classes.name).toUpperCase()
-    },
-    { field: 'status', headerName: 'Status', type: 'boolean', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
+    { field: 'total_qty', headerName: 'Total Qty', type: 'number', minWidth:100, flex: 0.75, align: 'right', headerAlign: 'center' },
+    { field: 'price_buy', headerName: 'Harga Beli', type: 'number', minWidth:100, flex: 0.75, align: 'right', headerAlign: 'center' },
+    { field: 'price', headerName: 'Estimasi Harga', type: 'number', minWidth:100, flex: 0.75, align: 'right', headerAlign: 'center' },
+    { field: 'price_manual', headerName: 'Harga Manual', type: 'number', minWidth:100, flex: 0.75, align: 'right', headerAlign: 'center' },
+    
+    
+    // { field: 'barcode', headerName: 'Barcode', type: 'string', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
+    // { field: 'status', headerName: 'Status', type: 'boolean', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
   ]);
 
   const handleQuery = () => {
@@ -92,8 +98,8 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     setSortData([initSortData('name')]);
   }
 
-  const getDrugData = () => {
-    doGetDrug().then(
+  const getStockData = () => {
+    doGetStock().then(
       (resp: any) => {
         if(resp.status == "error"){
           return;
@@ -107,26 +113,13 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
     )
   }
 
-  //UPDATE DRUG
-  const [updateDrug, setUpdateDrug]           = React.useState<Drug>(initDrug);
+  //UPDATE STOCK
+  const [updateStock, setUpdateStock]         = React.useState<Stock>();
   const [openUpdateModal, setOpenUpdateModal] = React.useState(false);
   const handleCloseUpdateModal                = () => setOpenUpdateModal(false);
-  const handleOpenUpdateModal                 = (drug: Drug) => {
-    setUpdateDrug(drug)
+  const handleOpenUpdateModal                 = (stock: Stock) => {
+    setUpdateStock(stock)
     setOpenUpdateModal(true);
-  }
-  
-  //DELETE DRUG
-  const [deleteDrugID, setDeleteDrugID]       = React.useState('');
-  const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
-  const handleCloseDeleteModal                = () => setOpenDeleteModal(false);
-  const handleOpenDeleteModal                 = (drug_uid: string) => {
-    setDeleteDrugID(drug_uid)
-    setOpenDeleteModal(true);
-  }
-  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useDrugDelete({ drug_uid: deleteDrugID });
-  const handleDeleteDrug = () => {
-    submitDelete({current_user_uid: currentUser.uid})
   }
   
   React.useEffect(() => {
@@ -135,22 +128,15 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
 
 
   React.useEffect(() => {
-    getDrugData()
+    getStockData()
   },[queryOptions])
-  
-  React.useEffect(() => {
-    if(isSuccess == true) {
-      resetPagination();
-      handleCloseDeleteModal();
-    }
-  }, [isSuccess]);
 
   return (
     <>
       <PaperComponent>
         <TableFilterComponent 
-          buttonId     = 'drug-filter'
-          modalId      = 'drug-filter'
+          buttonId     = 'stock-filter'
+          modalId      = 'stock-filter'
           menuArray    = {[{ handleClick: () => console.log(), title: 'test'}]}
           textSearch   = {textSearch}
           handleSearch = {setTextSearch}
@@ -192,29 +178,15 @@ const DrugTable: React.FC<DrugTableProps> = ({ modalCreate, handleCloseCreateMod
           />
         }
       </PaperComponent>
-      
-      <DrugCreateComponent
-        resetPagination  = {resetPagination}
-        handleCloseModal = {handleCloseCreateModal}
-        modalOpen        = {modalCreate}
-      />
 
-      <DrugUpdateComponent
-        updateDrug       = {updateDrug}
+      {/* <DrugUpdateComponent
+        updateDrug       = {updateStock}
         resetPagination  = {resetPagination}
         handleCloseModal = {handleCloseUpdateModal}
         modalOpen        = {openUpdateModal}
-      />
-
-      <DeleteConfirmComponent 
-        modalId       = 'drug-delete'
-        modalOpen     = {openDeleteModal}
-        modalOnClose  = {handleCloseDeleteModal}
-        onDelete      = {handleDeleteDrug}
-        buttonLoading = {isLoadingDelete}
-      />
+      /> */}
     </>
   )
 }
 
-export default DrugTable;
+export default StockTable;

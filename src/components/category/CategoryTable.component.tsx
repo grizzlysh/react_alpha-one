@@ -45,11 +45,8 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
   });
   const { refetch: doGetCategory, data, isLoading: isLoadingCategory } = useCategoryRead(queryOptions);
 
-  const [columnData, setColumnData] = React.useState([
+  const [columnData, setColumnData] = React.useState<any>([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -66,6 +63,9 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false, align: 'center', headerAlign: 'center' },
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
   ]);
 
   const handleQuery = () => {
@@ -116,7 +116,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
     setDeleteCategoryID(category_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useCategoryDelete({ category_uid: deleteCategoryID });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useCategoryDelete({ category_uid: deleteCategoryID });
   const handleDeleteCategory = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -183,10 +183,11 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ modalCreate, handleCloseC
       />
 
       <DeleteConfirmComponent 
-        modalId      = 'category-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeleteCategory}
+        modalId       = 'category-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeleteCategory}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

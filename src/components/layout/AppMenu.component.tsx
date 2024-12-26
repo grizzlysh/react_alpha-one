@@ -5,10 +5,10 @@ import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, Li
 import { ChevronLeft, ExpandMore, ExpandLess, ChevronRight } from '@mui/icons-material';
 
 import menu from '@/utils/menu';
-import theme from '@/utils/theme';
 import VerticalMenuComponent from '../_general/atoms/VerticalMenu.component';
 import VerticalModalComponent from '../_general/atoms/VerticalModal.component';
 import { Menu } from '@/types/Menu.type';
+import { useTheme } from '@mui/material';
 
 
 interface AppMenuProps {
@@ -35,6 +35,8 @@ const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, hand
   //     ...prev, [menu.title]: !prev[menu.title] 
   //   }));
   // };
+
+  const theme = useTheme();
 
   return (
     <>

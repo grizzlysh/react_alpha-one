@@ -47,10 +47,6 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
 
   const [columnData, setColumnData] = React.useState([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
-    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -67,6 +63,10 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
+    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
+    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
   ]);
 
   const handleQuery = () => {
@@ -116,7 +116,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
     setDeletePermissionID(permission_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = usePermissionDelete({ permission_uid: deletePermissionID });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = usePermissionDelete({ permission_uid: deletePermissionID });
   const handleDeletePermission = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -222,6 +222,7 @@ const PermissionTable: React.FC<PermissionTableProps> = ({ modalCreate, handleCl
         modalOpen    = {openDeleteModal}
         modalOnClose = {handleCloseDeleteModal}
         onDelete     = {handleDeletePermission}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

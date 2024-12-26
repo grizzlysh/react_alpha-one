@@ -54,6 +54,9 @@ import invoiceReadByIDService from "./invoice/read_by_id";
 import invoiceReadService from "./invoice/read";
 import invoiceUpdateService from "./invoice/update";
 import invoiceDdlService from "./invoice/ddl";
+import stockReadService from "./stock/read";
+import stockReadByIDService from "./stock/read_by_id";
+import stockUpdateService from "./stock/update";
 
 const api = {
   ...authLoginService,
@@ -112,6 +115,9 @@ const api = {
   ...invoiceReadService,
   ...invoiceUpdateService,
   ...invoiceDdlService,
+  ...stockReadByIDService,
+  ...stockReadService,
+  ...stockUpdateService,
 
   
 };

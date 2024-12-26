@@ -1,5 +1,5 @@
 import React from 'react';
-import { People, Groups, Dashboard, Book, Circle, LocalShipping, MedicationLiquid, Receipt, LocalPharmacy } from '@mui/icons-material';
+import { People, Groups, Dashboard, Book, Circle, LocalShipping, MedicationLiquid, ReceiptLong, Inventory, LocalPharmacy } from '@mui/icons-material';
 import { Menu } from '@/types/Menu.type';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import { Box } from '@mui/material';
@@ -111,13 +111,20 @@ const menu: Menu[] = [
     state: ['/drug'],
     icon: <MedicationLiquid />,
   },
-
   {
     title: 'Invoice',
     path: '/invoice',
     url: 'invoice',
     state: ['/invoice'],
-    icon: <Receipt />,
+    icon: <ReceiptLong />,
+  },
+
+  {
+    title: 'Stock',
+    path: '/stock',
+    url: 'stock',
+    state: ['/stock'],
+    icon: <Inventory />,
   },
 
   

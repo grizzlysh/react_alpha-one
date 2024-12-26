@@ -2,6 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArticleIcon from '@mui/icons-material/Article';
 import { GridActionsCellItem, GridRenderCellParams } from '@mui/x-data-grid'
 
 import UserOnline from '@/types/UserOnline.type';
@@ -16,7 +17,7 @@ import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.componen
 import { initPageData, initSortData } from '@/utils/pagination';
 import { useInvoiceDelete } from '@/hooks/invoice/use-delete';
 import { useInvoiceRead } from '@/hooks/invoice/use-read';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 const InvoiceTable: React.FC = () => {
 
@@ -41,28 +42,14 @@ const InvoiceTable: React.FC = () => {
   
   const [columnData, setColumnData] = React.useState<any>([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex: 0.3, filterble: false, align: 'left', headerAlign: 'center'},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false, align: 'left', headerAlign: 'center'},
-    { field: 'no_invoice', headerName: 'No Invoice', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center'},
-    { field: 'distributors', headerName: 'Distributor', type: 'string', minWidth:150, flex: 0.75, sortable: false, align: 'left', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => (params.row.distributors.name).toUpperCase()
-    },
-    { field: 'invoice_date', headerName: 'Tanggal Invoice', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => moment(params.row.invoice_date).format('DD-MM-YYYY').toString()
-    },
-    { field: 'receive_date', headerName: 'Tanggal Penerimaan', type: 'string', minWidth:200, flex: 0.75, align: 'left', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => moment(params.row.receive_date).format('DD-MM-YYYY').toString()
-    },
-    { field: 'total_invoice', headerName: 'Total Faktur', type: 'string', minWidth:150, flex: 0.75, align: 'right', headerAlign: 'center'},
-    { field: 'count_item', headerName: 'Banyak Barang', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center'},
-    { field: 'due_date', headerName: 'Jatuh Tempo', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => moment(params.row.due_date).format('DD-MM-YYYY').toString()
-    },
-    { field: 'status', headerName: 'Status', type: 'string', minWidth:125, flex: 0.75, align: 'left', headerAlign: 'center',
-      valueGetter: (params:GridRenderCellParams) => (params.row.status).toUpperCase()
-    },
-    { field: 'total_pay', headerName: 'Total Bayar', type: 'string', minWidth:150, flex: 0.75, align: 'right', headerAlign: 'center'},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
+      <GridActionsCellItem
+        key     = {"detail-"+params.id}
+        icon    = {<ArticleIcon />}
+        label   = "Detail"
+        onClick = {() => {handleOpenDetailModal(params.row)}}
+        showInMenu
+      />,
       <GridActionsCellItem
         key     = {"edit-"+params.id}
         icon    = {<EditIcon />}
@@ -81,6 +68,27 @@ const InvoiceTable: React.FC = () => {
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex: 0.3, filterble: false, align: 'left', headerAlign: 'center'},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false, align: 'center', headerAlign: 'center'},
+    { field: 'no_invoice', headerName: 'No Invoice', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center'},
+    { field: 'distributors', headerName: 'Distributor', type: 'string', minWidth:150, flex: 0.75, sortable: false, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => (params.row.distributors.name).toUpperCase()
+    },
+    { field: 'invoice_date', headerName: 'Tanggal Invoice', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => moment(params.row.invoice_date).format('DD/MM/YYYY').toString()
+    },
+    { field: 'receive_date', headerName: 'Tanggal Penerimaan', type: 'string', minWidth:200, flex: 0.75, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => moment(params.row.receive_date).format('DD/MM/YYYY').toString()
+    },
+    { field: 'total_invoice', headerName: 'Total Faktur', type: 'number', minWidth:150, flex: 0.75, align: 'right', headerAlign: 'center'},
+    { field: 'count_item', headerName: 'Banyak Barang', type: 'number', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center'},
+    { field: 'due_date', headerName: 'Jatuh Tempo', type: 'string', minWidth:150, flex: 0.75, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => moment(params.row.due_date).format('DD/MM/YYYY').toString()
+    },
+    { field: 'status', headerName: 'Status', type: 'string', minWidth:125, flex: 0.75, align: 'left', headerAlign: 'center',
+      valueGetter: (params:GridRenderCellParams) => (params.row.status).toUpperCase()
+    },
+    { field: 'total_pay', headerName: 'Total Bayar', type: 'number', minWidth:150, flex: 0.75, align: 'right', headerAlign: 'center'},
   ]);
 
   const handleQuery = () => {
@@ -113,13 +121,15 @@ const InvoiceTable: React.FC = () => {
     )
   }
 
-  //UPDATE INVOICE
-  const [updateInvoiceUID, setUpdateInvoiceUID] = React.useState('');
-  const [openUpdateModal, setOpenUpdateModal]   = React.useState(false);
-  const handleCloseUpdateModal                  = () => setOpenUpdateModal(false);
-  const handleOpenUpdateModal                   = (invoice_uid: string) => {
-    setUpdateInvoiceUID(invoice_uid)
-    setOpenUpdateModal(true);
+  //DETAIL INVOICE
+  const [detailInvoicData, setDetailInvoicData] = React.useState([]);
+  const [openDetailModal, setOpenDetailModal]   = React.useState(false);
+  const handleCloseUpdateModal                  = () => setOpenDetailModal(false);
+  const handleOpenDetailModal                   = (invoice_data: []) => {
+    console.log(invoice_data)
+    console.log("oke")
+    setDetailInvoicData(invoice_data)
+    setOpenDetailModal(true);
   }
   
   //DELETE INVOICE
@@ -192,10 +202,11 @@ const InvoiceTable: React.FC = () => {
       </PaperComponent>
 
       <DeleteConfirmComponent 
-        modalId      = 'invoice-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeleteInvoice}
+        modalId       = 'invoice-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeleteInvoice}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

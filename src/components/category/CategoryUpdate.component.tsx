@@ -9,6 +9,8 @@ import ModalComponent from '../_general/molecules/Modal.component';
 import Category from '@/types/Category.type';
 import { useCategoryUpdate } from '@/hooks/category/use-update';
 import { CategoryUpdateRequest } from '@/services/category/update';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface CategoryUpdateProps {
   updateCategory  : Category,
@@ -20,6 +22,11 @@ interface CategoryUpdateProps {
 
 const CategoryUpdateComponent: React.FC<CategoryUpdateProps> = ({ updateCategory, resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -80,55 +87,63 @@ const CategoryUpdateComponent: React.FC<CategoryUpdateProps> = ({ updateCategory
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <>
-            <Controller
-              name    = "name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  disabled     = {isLoadingUpdateCategory}
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
-            </>
+        <Stack direction={'column'}>
+          <>
+          <Controller
+            name    = "name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                disabled     = {isLoadingUpdateCategory}
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
+          </>
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdateCategory}
-              id          = 'shape_update_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid || !isDirty}
+            id          = 'category-update-submit'
+            // type        = 'submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'category-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoadingUpdateCategory}
+      />
     </>
   )
 };

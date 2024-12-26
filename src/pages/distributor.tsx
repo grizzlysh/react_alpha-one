@@ -17,7 +17,7 @@ const DistribiutorPage: NextPage = () => {
     <AppLayoutComponent title={'Distributor'}>
       <HeaderPage title={'Distributor'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          // buttonColor = 'primary'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

@@ -17,7 +17,8 @@ const LoadingButtonComponent: React.FC<LoadingButtonProps> = ({ isLoading, butto
     <>
     { (isLoading) ?
       <Button
-        variant   = 'contained'
+        variant  = 'contained'
+        disabled = {true}
         // color     = {buttonColor}
         sx        = {{
           backgroundColor: theme.palette[buttonColor != undefined ? buttonColor : 'shadow'].main,

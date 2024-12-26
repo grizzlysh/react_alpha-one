@@ -15,7 +15,7 @@ const InvoicePage: NextPage = () => {
     <AppLayoutComponent title={'Invoice'}>
       <HeaderPage title={'Invoice'}>
         <LinkButtonComponent
-          buttonColor = 'primary'
+          buttonColor = 'shadow'
           startIcon   = {<AddIcon />}
           url         = {'/invoice/create'}
         >

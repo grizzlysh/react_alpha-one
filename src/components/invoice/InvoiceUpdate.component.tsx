@@ -3,6 +3,7 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
 import 'moment/locale/id';
 import { v4 as uuidv4 } from 'uuid';
+import startCase from 'lodash/startCase';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Autocomplete, Box, Button, FormControlLabel, FormGroup, InputAdornment, Paper, Stack, Switch, TextField } from '@mui/material'
@@ -26,26 +27,39 @@ import CurrencyTextFieldLimitComponent from '../_general/atoms/CurrencyTextField
 import { invoiceStatusOptions } from '@/utils/ddlOption';
 import CurrencyTextFieldDecimalComponent from '../_general/atoms/CurrencyTextFieldDecimal.component';
 import { decimal2point } from '@/utils/generalFunc';
+import { useInvoiceUpdate } from '@/hooks/invoice/use-update';
+import { useInvoiceReadByID } from '@/hooks/invoice/use-read-by-id';
+import { InvoiceUpdateInput } from '@/services/invoice/update';
+import { useRouter } from 'next/router';
+import { InvoiceDetail } from '@/types/Invoice.type';
 import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
 
 
-const InvoiceCreateComponent: React.FC = () => {
+const InvoiceUpdateComponent: React.FC = () => {
 
-  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
-  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
-  const handleOpenConfirmModal                  = () => {
+  const [openConfirmModal, setOpenConfirmModal]       = React.useState(false);
+  const handleCloseConfirmModal                       = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                        = () => {
     setOpenConfirmModal(true);
   }
+
+  const router         = useRouter();
+  const { invoice_id } = router.query;
+  const { isReady }    = router;
+  const invoice_uid    = isReady && invoice_id.toString()
 
   const [distributorOptions, setDistributorOptions]         = React.useState<DdlOptions[]>([]);
   const [drugOptions, setDrugOptions]                       = React.useState<DdlOptions[]>([]);
   const [duplicateInvoiceDetail, setDuplicateInvoiceDetail] = React.useState(false);
   const [invoiceDetailList, setInvoiceDetailList]           = React.useState<{}[]>([])
+  const invoiceDetailListRef                                = React.useRef<{}[]>([])
+  const invoiceDetailListOriginalRef                        = React.useRef<{}[]>([])
 
   const { refetch: doGetDistributor, data: dataDistributor, isLoading: isLoadingDistributor } = useDistributorDdl();
   const { refetch: doGetDrug, data: dataDrug, isLoading: isLoadingDrug }                      = useDrugDdl();
+  const { refetch: doGetInvoice, data: dataInvoice, isLoading: isLoadingInvoice }             = useInvoiceReadByID({ invoice_uid: invoice_uid });
 
-  const { mutate: submitCreateInvoice, isLoading } = useInvoiceCreate()
+  const { mutate: submitUpdateInvoice, isLoading } = useInvoiceUpdate({invoice_uid: invoice_uid})
   const currentUser: UserOnline                    = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -55,6 +69,7 @@ const InvoiceCreateComponent: React.FC = () => {
     { field: 'nomber', type: 'number', headerName: 'No', flex : 0.1, sortable: false,
       renderCell: (params:any) => params.api.getAllRowIds().indexOf(params.id)+1
     },
+    { field: 'status', headerName: 'Status', type : 'string', flex : 0.7, minWidth: 150, sortable: false, headerAlign: 'center', },
     { field: 'drug_name', headerName: 'Nama Obat', type : 'string', flex : 0.7, minWidth: 150, sortable: false, headerAlign: 'center', },
     { field: 'drug_uid', headerName: 'Drug UID', type : 'string', flex : 0.7, minWidth: 150, sortable: false, headerAlign: 'center', },
     { field: 'expired_date', headerName: 'Tanggal Expired', type : 'string', flex : 0.7, minWidth: 150, sortable: false, headerAlign: 'center', },
@@ -68,6 +83,7 @@ const InvoiceCreateComponent: React.FC = () => {
     { field: 'ppn_nominal', headerName: 'PPN', type : 'number', flex : 0.7, minWidth: 100, sortable: false, headerAlign: 'center', },
     { field: 'total_price', headerName: 'Total Harga', type : 'number', flex : 0.7, minWidth: 100, sortable: false, headerAlign: 'center', },
     { field: 'action', type: 'actions', flex : 0.2, width:50, getActions: (params: GridRenderCellParams) =>
+      (params.row.status == 'exist') ? [] :
       [
         <GridActionsCellItem
           key     = {"edit-"+params.id}
@@ -88,8 +104,8 @@ const InvoiceCreateComponent: React.FC = () => {
   ])
 
 
-  const getDdlOptions = () => {
-    doGetDrug().then(
+  const getDdlOptions = async () => {
+    await doGetDrug().then(
       (resp: any) => {
         if(resp.status == "error"){
           return;
@@ -121,13 +137,67 @@ const InvoiceCreateComponent: React.FC = () => {
     )
   }
 
+  const getInvoiceData = async () => {
+    await doGetInvoice().then(
+      (resp: any) => {
+        if(resp.status == "error"){
+          return;
+        }
+
+        const total_debt    = resp.data.output_schema.data.total_invoice - resp.data.output_schema.data.total_pay;
+
+        reset({
+          no_invoice      : resp.data.output_schema.data.no_invoice,
+          // invoice_date    : resp.data.output_schema.data.invoice_date,
+          invoice_date    : moment(resp.data.output_schema.data.invoice_date).format('DD/MM/YYYY').toString(),
+          receive_date    : moment(resp.data.output_schema.data.receive_date).format('DD/MM/YYYY').toString(),
+          total_invoice   : resp.data.output_schema.data.total_invoice,
+          count_item      : resp.data.output_schema.data.count_item,
+          due_date        : moment(resp.data.output_schema.data.due_date).format('DD/MM/YYYY').toString(),
+          status          : { label:startCase(resp.data.output_schema.data.status), value: resp.data.output_schema.data.status },
+          total_pay       : resp.data.output_schema.data.total_pay,
+          total_debt      : total_debt,
+          distributor_uid : { label: resp.data.output_schema.data.distributors?.name.toUpperCase(), value: resp.data.output_schema.data.distributors?.uid },
+          detail_invoices : JSON.stringify(resp.data.output_schema.data.detail_invoices),
+          current_user_uid: currentUser.uid,
+        })
+
+        const invoiceDetails = resp.data.output_schema.data.detail_invoices?.map( (val: InvoiceDetail) => (
+          {
+            unique_id       : val.uid,
+            drug_uid        : val.drugs.uid,
+            drug_name       : val.drugs.name.toUpperCase(),
+            no_batch        : val.no_batch,
+            expired_date    : moment(val.expired_date).format('DD/MM/YYYY'),
+            qty_pcs         : val.qty_pcs,
+            qty_box         : val.qty_box,
+            price_box       : val.price_box,
+            total_price     : val.total_price,
+            discount        : val.discount,
+            discount_nominal: val.discount_nominal,
+            ppn             : val.ppn,
+            ppn_nominal     : val.ppn_nominal,
+            status          : 'exist'
+          }
+        ))
+
+        setInvoiceDetailList(invoiceDetails)
+        invoiceDetailListOriginalRef.current = invoiceDetails;
+        
+        // setPermissionList(permissions)
+        // permissionListOriginalRef.current = permissions;
+      }
+    )
+  }
+
   const { 
+    reset,
     control,
     setValue,
     getValues,
     handleSubmit,
-    formState: { isValid, errors },
-  } = useForm<InvoiceCreateInput>({
+    formState: { isValid, isDirty, errors },
+  } = useForm<InvoiceUpdateInput>({
     defaultValues: {
       no_invoice      : '',
       invoice_date    : '',
@@ -144,8 +214,9 @@ const InvoiceCreateComponent: React.FC = () => {
     }
   })
 
-  const onSubmit: SubmitHandler<InvoiceCreateInput> = (data) => {
+  const onSubmit: SubmitHandler<InvoiceUpdateInput> = (data) => {
 
+    // const total_pay   = data.total_pay ? parseFloat(data.total_pay) : 0;
     const total_pay   = data.total_pay ? parseFloat(data.total_pay) : 0;
     const countItem   = invoiceDetailList.length;
     const invoiceData = {
@@ -161,8 +232,8 @@ const InvoiceCreateComponent: React.FC = () => {
       detail_invoices : JSON.stringify(invoiceDetailList),
       current_user_uid: data.current_user_uid,
     }
-    submitCreateInvoice(invoiceData)
-    // console.log(invoiceData)
+    submitUpdateInvoice(invoiceData)
+    console.log(invoiceData)
   }
   
   const { 
@@ -201,14 +272,15 @@ const InvoiceCreateComponent: React.FC = () => {
       drug_name       : data.drug?.label,
       no_batch        : data.no_batch,
       expired_date    : moment(data.expired_date,'DD/MM/YYYY').format('DD/MM/YYYY').toString(),
-      qty_pcs         : data.qty_pcs ? parseFloat(data.qty_pcs) : 0,
-      qty_box         : data.qty_box ? parseFloat(data.qty_box) : 0,
-      price_box       : data.price_box ? parseFloat(data.price_box) : 0,
-      total_price     : data.total_price ? parseFloat(data.total_price) : 0,
-      discount        : data.discount ? parseFloat(data.discount) : 0,
-      discount_nominal: data.discount_nominal ? parseFloat(data.discount_nominal) : 0,
-      ppn             : data.ppn ? 11 : 0,
-      ppn_nominal     : data.ppn_nominal ? parseFloat(data.ppn_nominal) : 0,
+      qty_pcs         : data.qty_pcs ? parseFloat(data.qty_pcs)                               : 0,
+      qty_box         : data.qty_box ? parseFloat(data.qty_box)                               : 0,
+      price_box       : data.price_box ? parseFloat(data.price_box)                           : 0,
+      total_price     : data.total_price ? parseFloat(data.total_price)                       : 0,
+      discount        : data.discount ? parseFloat(data.discount)                             : 0,
+      discount_nominal: data.discount_nominal ? parseFloat(data.discount_nominal)             : 0,
+      ppn             : data.ppn ? 11                                                         : 0,
+      ppn_nominal     : data.ppn_nominal ? parseFloat(data.ppn_nominal)                       : 0,
+      status          : 'new',
     }
     setInvoiceDetailList((prevList) => ([ ...prevList, detailRow ]));
     resetInvoiceDetail({
@@ -257,17 +329,7 @@ const InvoiceCreateComponent: React.FC = () => {
       // return prevList;
     })
 
-
-    // calculateTotalInvoice()
   },[]);
-
-  // const handleSelectPermission = (event: any) => {
-  //   // setValueDetail('permission_uid', event.target.value)
-  //   const permissionSelected = permissionOptions.find(option => option.value === event.target.value ) || '';
-  //   const permission_name    = permissionSelected ? permissionSelected.label : '';
-  //   // setValueDetail('permission_name',permission_name)
-  //   checkDuplicate()
-  // };
 
   const checkDuplicate = () => {
     const input_drug         = getValuesDetail('drug');
@@ -330,7 +392,7 @@ const InvoiceCreateComponent: React.FC = () => {
   const calculateTotalFinal = () => {
 
     const total_invoice = getValues('total_invoice');
-    const total_pay     = parseFloat(getValues('total_pay') || '0');
+    const total_pay     = parseFloat(getValues('total_pay'));
 
     if (total_pay > total_invoice) {
       setValue('total_pay', '0')
@@ -348,19 +410,32 @@ const InvoiceCreateComponent: React.FC = () => {
       setValue('total_debt',decimal2point(total_debt));
     }
   }
+
+  const handleUpdateInvoiceDetailList = () => {
+    const invoiceDetailTemp = JSON.stringify(invoiceDetailListRef.current);
+    
+    if (JSON.stringify(invoiceDetailListRef.current) != JSON.stringify(invoiceDetailListOriginalRef.current)) {
+      setValue('detail_invoices',invoiceDetailTemp, { shouldDirty: true });
+    }
+    else {
+      setValue('detail_invoices',invoiceDetailTemp, { shouldDirty: false });
+      reset(getValues(), { keepDirty: false, keepValues: true});
+    }
+  }
   
   React.useEffect( () => {
     getDdlOptions()
-  },[])
+    if(isReady){
+      getInvoiceData()
+    }
+  },[invoice_uid])
   
   React.useEffect( () => {
+    invoiceDetailListRef.current = invoiceDetailList
+    handleUpdateInvoiceDetailList()
     calculateTotalInvoice()
     calculateTotalFinal()
   },[invoiceDetailList])
-
-  // React.useEffect( () => {
-  //   calculateTotalFinal()
-  // },[calculateTotalInvoice])
   
   return (
     <>
@@ -418,6 +493,7 @@ const InvoiceCreateComponent: React.FC = () => {
                           value                = {value}
                           id                   = "controllable-states-demo"
                           options              = {distributorOptions}
+                          disabled             = {true}
                           sx                   = {{mb:1}}
                           onChange             = {(event: any, value: any) => { onChange(value) }}
                           isOptionEqualToValue = { (option: any, value: any) =>   option.value == value.value}
@@ -451,6 +527,7 @@ const InvoiceCreateComponent: React.FC = () => {
                       }) => (
                       <TextField            
                         autoComplete = 'off'
+                        disabled     = {true}
                         helperText   = {error ? error.message : " "}
                         size         = "medium"
                         error        = {!!error}
@@ -522,7 +599,7 @@ const InvoiceCreateComponent: React.FC = () => {
                       //   value: /^(?!0\d)\d+$/g,
                       //   message: "error"
                       // },
-                      validate: value => value != '' || 'error message'  
+                      // validate: value => value != '' || 'error message'  
                     }}
                     render  = { ({ 
                         field     : { onChange, value },
@@ -646,6 +723,7 @@ const InvoiceCreateComponent: React.FC = () => {
                       }) => (
                         <DatePicker
                           label     = "Invoice Date"
+                          disabled  = {true}
                           value     = {moment(value, 'DD/MM/YYYY')}
                           format    = 'DD/MM/YYYY'
                           onChange  = {onChange}
@@ -678,6 +756,7 @@ const InvoiceCreateComponent: React.FC = () => {
                       }) => (
                         <DatePicker
                           label     = "Receive Date"
+                          disabled  = {true}
                           value     = {moment(value, 'DD/MM/YYYY')}
                           format    = 'DD/MM/YYYY'
                           onChange  = { (event) => {
@@ -713,6 +792,7 @@ const InvoiceCreateComponent: React.FC = () => {
                       }) => (
                         <DatePicker
                           label     = "Due Date"
+                          disabled  = {true}
                           value     = {moment(value, 'DD/MM/YYYY')}
                           format    = 'DD/MM/YYYY'
                           onChange  = {onChange}
@@ -1369,25 +1449,40 @@ const InvoiceCreateComponent: React.FC = () => {
                 // rows              = {[{no: 1,  drug_uid: "1",permisson_name: "a", read: true, write: true, modify: true, delete: true, }]}
                 disableColumnMenu     = {true}
                 rows                  = {invoiceDetailList}
-                columnVisibilityModel = {{unique_id: false, drug_uid: false}}
+                columnVisibilityModel = {{unique_id: false, drug_uid: false, status: false}}
                 columns               = {invoiceDetailColumn}
               />
             </Box>
 
+            {/* <LoadingButtonComponent
+              fullWidth
+              buttonColor = 'primary'
+              // type        = 'submit'
+              disabled    = {!isValid || !(invoiceDetailList.length>0) || !isDirty}
+              isLoading   = {isLoading}
+              id          = 'invoice_create_submit'
+              onClick     = {handleSubmit(onSubmit)}
+              sx          = {{mt:1}}
+            >
+              SUBMIT
+            </LoadingButtonComponent>   */}
+
             <ButtonComponent
+              fullWidth
+              buttonColor = 'shadow'
               onClick     = {handleOpenConfirmModal}
-              disabled    = {!isValid || !(invoiceDetailList.length>0)}
-              id          = 'invoice-create-submit'
+              disabled    = {!isValid || !(invoiceDetailList.length>0) || !isDirty}
+              id          = 'invoice-update-submit'
               // sx        = {{mt:1}}
             >
               SUBMIT
-            </ButtonComponent>           
+            </ButtonComponent>
           </Stack>
         </PaperComponent>
       </LocalizationProvider>
       
       <ModalConfirmComponent
-        modalId       = {'invoice-create-confirm'}
+        modalId       = {'invoice-update-confirm'}
         modalOpen     = {openConfirmModal}
         modalOnClose  = {handleCloseConfirmModal}
         onConfirm     = {handleSubmit(onSubmit)}
@@ -1400,4 +1495,4 @@ const InvoiceCreateComponent: React.FC = () => {
 
 };
 
-export default InvoiceCreateComponent;
+export default InvoiceUpdateComponent;

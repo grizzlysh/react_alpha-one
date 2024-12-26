@@ -67,3 +67,6 @@ export const INVOICE_READ_BYID_PATH      = '/api/invoice/';
 export const INVOICE_UPDATE_PATH         = '/api/invoice/';
 export const INVOICE_DELETE_PATH         = '/api/invoice/';
 export const INVOICE_DDL_PATH            = '/api/invoice/ddl';
+export const STOCK_READ_PATH             = '/api/stock';
+export const STOCK_READ_BYID_PATH        = '/api/stock/';
+export const STOCK_UPDATE_PATH           = '/api/stock/';

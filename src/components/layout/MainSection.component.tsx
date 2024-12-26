@@ -10,10 +10,7 @@ const MainSectionComponent: React.FC<MainSectionProps> = ({ children }) => {
   return (
     <Box
       // sx={{
-      //   backgroundColor: (theme) =>
-      //     theme.palette.mode === 'light'
-      //       ? theme.palette.grey[100]
-      //           :   theme.palette.grey[900],
+      //   backgroundColor: theme.palette.grey[100,
       //   flexGrow: 1,
       //   // width: '100%',
       //   // height  : '100vh',

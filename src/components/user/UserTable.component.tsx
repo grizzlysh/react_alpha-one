@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,6 +20,7 @@ import UserUpdateComponent from './UserUpdate.component';
 import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
 import { useUserUpdatePassword } from '@/hooks/user/use-update-password';
 import { initPageData, initSortData } from '@/utils/pagination';
+import DeleteConfirmComponent from '../_general/molecules/DeleteConfirm.component';
 
 interface UserTableProps {
   modalCreate           : boolean,
@@ -49,21 +49,7 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
 
   const [columnData, setColumnData] = React.useState([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'username', headerName: 'Username', type: 'string', minWidth:150, flex: 0.75},
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:200, flex: 0.75,
-      renderCell: (params:GridRenderCellParams) => (params.value).toUpperCase(),
-    },
-    { field: 'sex', headerName: 'Sex', type: 'string', minWidth:100, flex: 0.4,  
-      renderCell: (params:GridRenderCellParams) => params.value == 'm' ? 'Laki' : 'Perempuan',
-    },
-    { field: 'role_display_name', headerName: 'Role', type: 'string', minWidth:200, flex: 0.75, sortable: false,
-      valueGetter: (params:GridRenderCellParams) => (params.row.role.display_name).toUpperCase()
-    },
-    // { field: 'email_verified_at', headerName: 'Email Verified', type : 'string', minWidth : 200, flex : 0.6,
-    //   renderCell: (params:GridRenderCellParams) => params.value != null ? moment(params.value).format("DD-MMM-YYYY HH:mm:ss") : '',
-    // },
+    
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -87,6 +73,21 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
+    { field: 'username', headerName: 'Username', type: 'string', minWidth:150, flex: 0.75},
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:200, flex: 0.75,
+      renderCell: (params:GridRenderCellParams) => (params.value).toUpperCase(),
+    },
+    { field: 'sex', headerName: 'Sex', type: 'string', minWidth:100, flex: 0.4,  
+      renderCell: (params:GridRenderCellParams) => params.value == 'm' ? 'Laki' : 'Perempuan',
+    },
+    { field: 'role_display_name', headerName: 'Role', type: 'string', minWidth:200, flex: 0.75, sortable: false,
+      valueGetter: (params:GridRenderCellParams) => (params.row.role.display_name).toUpperCase()
+    },
+    // { field: 'email_verified_at', headerName: 'Email Verified', type : 'string', minWidth : 200, flex : 0.6,
+    //   renderCell: (params:GridRenderCellParams) => params.value != null ? moment(params.value).format("DD-MMM-YYYY HH:mm:ss") : '',
+    // },
   ]);
 
   const handleQuery = () => {
@@ -237,15 +238,12 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
           modalOpen        = {openUpdateModal}
         />
 
-      <ModalConfirmComponent 
-        modalId      = 'user-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onConfirm    = {handleDeleteUser}
-        modalTitle   = {'Delete Confirmation'}
-        modalText    = {'Do you want to delete this record?'}
-        modalButton  = {'Delete'}
-        buttonColor  = {'error'}
+      <DeleteConfirmComponent 
+        modalId       = 'user-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeleteUser}
+        buttonLoading = {isLoadingDelete}
       />
 
       <ModalConfirmComponent
@@ -253,10 +251,10 @@ const UserTable: React.FC<UserTableProps> = ({ modalCreate, handleCloseCreateMod
         modalOpen    = {openResetModal}
         modalOnClose = {handleCloseResetModal}
         onConfirm    = {handleResetUser}
-        modalTitle   = {'Reset Password Confirmation'}
-        modalText    = {'Do you want to reset password for this user?'}
-        modalButton  = {'Reset'}
-        buttonColor  = {'error'}
+        // modalTitle   = {'Reset Password Confirmation'}
+        modalText     = {'Do you want to reset password for this user?'}
+        modalButton   = {'Reset'}
+        buttonLoading = {isLoadingReset}
       />
     </>
   )

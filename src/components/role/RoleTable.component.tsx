@@ -39,10 +39,6 @@ const RoleTable: React.FC = () => {
 
   const [columnData, setColumnData] = React.useState([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
-    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -62,6 +58,10 @@ const RoleTable: React.FC = () => {
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
+    { field: 'display_name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
+    { field: 'description', headerName: 'Description', type: 'string', minWidth:100, flex: 0.5},
   ]);
 
   const handleQuery = () => {
@@ -193,10 +193,11 @@ const RoleTable: React.FC = () => {
       </ModalComponent> */}
 
       <DeleteConfirmComponent 
-        modalId      = 'role-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeleteRole}
+        modalId       = 'role-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeleteRole}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

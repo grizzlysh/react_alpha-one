@@ -9,6 +9,7 @@ import ButtonComponent from '../_general/atoms/Button.component';
 import { useTypedSelector } from '@/hooks/other/use-type-selector';
 import UserOnline from '@/types/UserOnline.type';
 import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
 
 interface PermissionCreateProps {
   resetPagination : ()=>void,
@@ -18,6 +19,11 @@ interface PermissionCreateProps {
 
 const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline                       = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -71,77 +77,86 @@ const PermissionCreateComponent: React.FC<PermissionCreateProps> = ({ resetPagin
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <Controller
-              name    = "display_name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Display Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText = {error ? error.message : " "}
-                  size       = "medium"
-                  error      = {!!error}
-                  onChange   = {onChange}
-                  type       = 'string'
-                  value      = {value}
-                  label      = {"Display Name"}
-                  variant    = "outlined"
-                  sx         = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
+        <Stack direction={'column'}>
+          <Controller
+            name    = "display_name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Display Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Display Name"}
+                variant      = "outlined"
+                sx           = {{mb:1
 
-            <Controller
-              name    = "description"
-              control = {control}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField
-                  autoComplete = 'off'
-                  size         = "medium"
-                  onChange     = {onChange}
-                  value        = {value}
-                  label        = {"Description"}
-                  minRows      = {4}
-                  error        = {!!error}
-                  helperText   = {error ? error.message : " "}
-                  sx           = {{mb:1}}
-                  multiline
-                  fullWidth
-                />
-                )
-              }
-            />
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid}
-              isLoading   = {isLoading}
-              id          = 'permission_create_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+                }}
+                fullWidth
+              />
+              )
+            }
+          />
+
+          <Controller
+            name    = "description"
+            control = {control}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField
+                autoComplete = 'off'
+                size         = "medium"
+                onChange     = {onChange}
+                value        = {value}
+                label        = {"Description"}
+                minRows      = {4}
+                error        = {!!error}
+                helperText   = {error ? error.message : " "}
+                sx           = {{mb:1}}
+                multiline
+                fullWidth
+              />
+              )
+            }
+          />
+
+          <ButtonComponent
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid}
+            id          = 'permission-create-submit'
+            // sx        = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'permission-create-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoading}
+      />
     </>
   )
 };

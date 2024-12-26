@@ -47,12 +47,6 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
   const { refetch: doGetDistributor, data, isLoading: isLoadingDistributor } = useDistributorRead(queryOptions);
 
   const [columnData, setColumnData] = React.useState<any>([
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterable: false, align: 'left', headerAlign: 'center' },
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterable : false, sortable: false, align: 'left', headerAlign: 'center' },
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
-    { field: 'address', headerName: 'Address', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
-    { field: 'phone', headerName: 'Phone', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
-    { field: 'status', headerName: 'Status', type: 'boolean', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
     { field: 'action', type: 'actions', width:50,  align: 'center', headerAlign: 'center', getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -69,6 +63,12 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterable: false, align: 'left', headerAlign: 'center' },
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterable : false, sortable: false, align: 'center ', headerAlign: 'center' },
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
+    { field: 'address', headerName: 'Address', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
+    { field: 'phone', headerName: 'Phone', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
+    { field: 'status', headerName: 'Status', type: 'boolean', minWidth:100, flex: 0.75, align: 'center', headerAlign: 'center' },
   ]);
 
   const handleQuery = () => {
@@ -118,7 +118,7 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
     setDeleteDistributorID(distributor_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useDistributorDelete({ distributor_uid: deleteDistributorID });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useDistributorDelete({ distributor_uid: deleteDistributorID });
   const handleDeleteDistributor = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }
@@ -201,10 +201,11 @@ const DistributorTable: React.FC<DistributorTableProps> = ({ modalCreate, handle
       />
 
       <DeleteConfirmComponent 
-        modalId      = 'drug-delete'
-        modalOpen    = {openDeleteModal}
-        modalOnClose = {handleCloseDeleteModal}
-        onDelete     = {handleDeleteDistributor}
+        modalId       = 'drug-delete'
+        modalOpen     = {openDeleteModal}
+        modalOnClose  = {handleCloseDeleteModal}
+        onDelete      = {handleDeleteDistributor}
+        buttonLoading = {isLoadingDelete}
       />
     </>
   )

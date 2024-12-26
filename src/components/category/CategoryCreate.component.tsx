@@ -8,6 +8,8 @@ import LoadingButtonComponent from '../_general/atoms/LoadingButton.component';
 import ModalComponent from '../_general/molecules/Modal.component';
 import { CategoryCreateRequest } from '@/services/category/create';
 import { useCategoryCreate } from '@/hooks/category/use-create';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface CategoryCreateProps {
   resetPagination : ()=>void,
@@ -17,6 +19,11 @@ interface CategoryCreateProps {
 
 const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -67,52 +74,58 @@ const CategoryCreateComponent: React.FC<CategoryCreateProps> = ({ resetPaginatio
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <Controller
-              name    = "name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
+        <Stack direction={'column'}>
+          <Controller
+            name    = "name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid}
-              isLoading   = {isLoading}
-              id          = 'shape_create_submit'
-              sx           = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          <ButtonComponent
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid}
+            id          = 'category-create-submit'
+            // sx        = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>  
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'category-create-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoading}
+      />
     </>
   )
 };

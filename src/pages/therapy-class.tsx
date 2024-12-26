@@ -17,7 +17,7 @@ const TherapyClassPage: NextPage = () => {
     <AppLayoutComponent title={'Therapy Class'}>
       <HeaderPage title={'Therapy Class'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          // buttonColor = 'primary'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

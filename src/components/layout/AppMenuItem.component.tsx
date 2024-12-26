@@ -5,9 +5,9 @@ import { Box, Toolbar, IconButton, Typography, Divider, List, ListItemButton, Li
 import { ChevronLeft, ExpandMore, ExpandLess, ChevronRight } from '@mui/icons-material';
 
 import menu from '@/utils/menu';
-import theme from '@/utils/theme';
 import VerticalMenuComponent from '../_general/atoms/VerticalMenu.component';
 import VerticalModalComponent from '../_general/atoms/VerticalModal.component';
+import { useTheme } from '@mui/material';
 
 
 interface AppMenuProps {
@@ -17,6 +17,8 @@ interface AppMenuProps {
 }
 
 const AppMenuComponent: React.FC<AppMenuProps> = ({ openDrawer, pathActive, handleDrawer }) => {
+
+  const theme                   = useTheme();
   const [openList, setopenList] = React.useState<{[key: string]: any}>({});
 
   const handleListOpen = ( menu: any ) => {

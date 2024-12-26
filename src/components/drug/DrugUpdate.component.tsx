@@ -14,6 +14,8 @@ import { useDrugUpdate } from '@/hooks/drug/use-update';
 import { useShapeDdl } from '@/hooks/shape/use-ddl';
 import { useCategoryDdl } from '@/hooks/category/use-ddl';
 import { useTherapyClassDdl } from '@/hooks/therapyClass/use-ddl';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface DrugUpdateProps {
   updateDrug      : Drug,
@@ -24,6 +26,11 @@ interface DrugUpdateProps {
 
 const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const [shapeOptions, setShapeOptions]               = React.useState<DdlOptions[]>([])
   const [categoryOptions, setCategoryOptions]         = React.useState<DdlOptions[]>([])
   const [therapyClassOptions, setTherapyClassOptions] = React.useState<DdlOptions[]>([])
@@ -155,220 +162,227 @@ const DrugUpdateComponent: React.FC<DrugUpdateProps> = ({ updateDrug, resetPagin
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <Controller
-              name    = "name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
+        <Stack direction={'column'}>
+          <Controller
+            name    = "name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
+
+          <Controller
+            name    = "shape_uid"
+            control = {control}
+            rules   = {{
+              // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
+              required: {
+                value  : true,
+                message: "Shape field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Autocomplete
+                  value                = {value}
+                  id                   = "shape-autocomplete"
+                  options              = {shapeOptions}
+                  sx                   = {{mb:1}}
+                  onChange             = {(event: any, value: any) => { onChange(value) }}
+                  isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                  renderInput          = {(params: any) => 
+                  <TextField
+                    fullWidth
+                    {...params}
+                    size       = "medium"
+                    label      = "Shape"
+                    error      = {!!error}
+                    helperText = {error ? error.message : " "}
+                  />}
                 />
-                )
-              }
-            />
-
-            <Controller
-              name    = "shape_uid"
-              control = {control}
-              rules   = {{
-                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                required: {
-                  value  : true,
-                  message: "Shape fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                }) => (
-                  <Autocomplete
-                    value                = {value}
-                    id                   = "shape-autocomplete"
-                    options              = {shapeOptions}
-                    sx                   = {{mb:1}}
-                    onChange             = {(event: any, value: any) => { onChange(value) }}
-                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                    renderInput          = {(params: any) => 
-                    <TextField
-                      fullWidth
-                      {...params}
-                      size       = "medium"
-                      label      = "Shape"
-                      error      = {!!error}
-                      helperText = {error ? error.message : " "}
-                    />}
-                  />
-                )
-              }
-            />
+              )
+            }
+          />
 
 
-            <Controller
-              name    = "category_uid"
-              control = {control}
-              rules   = {{
-                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                required: {
-                  value  : true,
-                  message: "Category fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                }) => (
-                  <Autocomplete
-                    value                = {value}
-                    id                   = "category-autocomplete"
-                    options              = {categoryOptions}
-                    sx                   = {{mb:1}}
-                    onChange             = {(event: any, value: any) => { onChange(value) }}
-                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                    renderInput          = {(params: any) => 
-                    <TextField
-                      fullWidth
-                      {...params}
-                      size       = "medium"
-                      label      = "Category"
-                      error      = {!!error}
-                      helperText = {error ? error.message : " "}
-                    />}
-                  />
-                )
-              }
-            />
-
-            <Controller
-              name    = "therapy_class_uid"
-              control = {control}
-              rules   = {{
-                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                required: {
-                  value  : true,
-                  message: "Therapy Class fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                }) => (
-                  <Autocomplete
-                    value                = {value}
-                    id                   = "therapyclass-autocomplete"
-                    options              = {therapyClassOptions}
-                    sx                   = {{mb:1}}
-                    onChange             = {(event: any, value: any) => { onChange(value) }}
-                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                    renderInput          = {(params: any) => 
-                    <TextField
-                      fullWidth
-                      {...params}
-                      size       = "medium"
-                      label      = "Therapy Class"
-                      error      = {!!error}
-                      helperText = {error ? error.message : " "}
-                    />}
-                  />
-                )
-              }
-            />
-
-            <Controller
-              name    = "status"
-              control = {control}
-              rules   = {{
-                // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
-                required: {
-                  value  : true,
-                  message: "Status fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                }) => (
-                  <Autocomplete
-                    value                = {value}
-                    id                   = "controllable-states-demo"
-                    options              = {statusOptions}
-                    sx                   = {{mb:1}}
-                    onChange             = {(event: any, value: any) => { onChange(value) }}
-                    isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
-                    renderInput          = {(params: any) => 
-                    <TextField
-                      fullWidth
-                      {...params}
-                      size       = "medium"
-                      label      = "Status"
-                      error      = {!!error}
-                      helperText = {error ? error.message : " "}
-                    />}
-                  />
-                )
-              }
-            />
-
-            <Controller
-              name    = "description"
-              control = {control}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField
-                  minRows      = {4}
-                  autoComplete = 'off'
-                  size         = "medium"
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Description"}
-                  variant      = "outlined"
-                  error        = {!!error}
-                  helperText   = {error ? error.message : " "}
-                  sx           = {{mb:1}}
-                  multiline
-                  fullWidth
+          <Controller
+            name    = "category_uid"
+            control = {control}
+            rules   = {{
+              // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
+              required: {
+                value  : true,
+                message: "Category field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Autocomplete
+                  value                = {value}
+                  id                   = "category-autocomplete"
+                  options              = {categoryOptions}
+                  sx                   = {{mb:1}}
+                  onChange             = {(event: any, value: any) => { onChange(value) }}
+                  isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                  renderInput          = {(params: any) => 
+                  <TextField
+                    fullWidth
+                    {...params}
+                    size       = "medium"
+                    label      = "Category"
+                    error      = {!!error}
+                    helperText = {error ? error.message : " "}
+                  />}
                 />
-                )
-              }
-            />
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdateDrug}
-              id          = 'drug_update_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+              )
+            }
+          />
+
+          <Controller
+            name    = "therapy_class_uid"
+            control = {control}
+            rules   = {{
+              // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
+              required: {
+                value  : true,
+                message: "Therapy Class field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Autocomplete
+                  value                = {value}
+                  id                   = "therapyclass-autocomplete"
+                  options              = {therapyClassOptions}
+                  sx                   = {{mb:1}}
+                  onChange             = {(event: any, value: any) => { onChange(value) }}
+                  isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                  renderInput          = {(params: any) => 
+                  <TextField
+                    fullWidth
+                    {...params}
+                    size       = "medium"
+                    label      = "Therapy Class"
+                    error      = {!!error}
+                    helperText = {error ? error.message : " "}
+                  />}
+                />
+              )
+            }
+          />
+
+          <Controller
+            name    = "status"
+            control = {control}
+            rules   = {{
+              // validate:(value, formValues) => (formValues.write_permit || formValues.read_permit || formValues.modify_permit || formValues.delete_permit != false ),
+              required: {
+                value  : true,
+                message: "Status field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+              }) => (
+                <Autocomplete
+                  value                = {value}
+                  id                   = "controllable-states-demo"
+                  options              = {statusOptions}
+                  sx                   = {{mb:1}}
+                  onChange             = {(event: any, value: any) => { onChange(value) }}
+                  isOptionEqualToValue = { (option: any, value: any) => option.label || "" ||  option.value == value.value}
+                  renderInput          = {(params: any) => 
+                  <TextField
+                    fullWidth
+                    {...params}
+                    size       = "medium"
+                    label      = "Status"
+                    error      = {!!error}
+                    helperText = {error ? error.message : " "}
+                  />}
+                />
+              )
+            }
+          />
+
+          <Controller
+            name    = "description"
+            control = {control}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField
+                minRows      = {4}
+                autoComplete = 'off'
+                size         = "medium"
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Description"}
+                variant      = "outlined"
+                error        = {!!error}
+                helperText   = {error ? error.message : " "}
+                sx           = {{mb:1}}
+                multiline
+                fullWidth
+              />
+              )
+            }
+          />
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid || !isDirty}
+            id          = 'drug-update-submit'
+            // type        = 'submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+      
+      <ModalConfirmComponent
+        modalId       = {'drug-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoadingUpdateDrug}
+      />
     </>
   )
 };

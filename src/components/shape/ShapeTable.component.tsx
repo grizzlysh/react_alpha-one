@@ -46,11 +46,8 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
   });
   const { refetch: doGetShape, data, isLoading: isLoadingShape } = useShapeRead(queryOptions);
 
-  const [columnData, setColumnData] = React.useState([
+  const [columnData, setColumnData] = React.useState<any>([
     // headerClassName: 'super-app-theme--header', headerAlign: 'center',
-    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false,},
-    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false},
-    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75},
     { field: 'action', type: 'actions', width:50, getActions: (params: GridRenderCellParams) => [
       <GridActionsCellItem
         key     = {"edit-"+params.id}
@@ -67,6 +64,9 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
         showInMenu
       />,
     ]},
+    { field: 'uid', headerName: 'ID', type : 'string', flex : 0.3, filterble: false, align: 'right', headerAlign: 'center' },
+    { field: 'no', headerName: 'No', type: 'number', flex: 0.1, filterble : false, sortable: false, align: 'center', headerAlign: 'center' },
+    { field: 'name', headerName: 'Name', type: 'string', minWidth:100, flex: 0.75, align: 'left', headerAlign: 'center' },
   ]);
 
   const handleQuery = () => {
@@ -116,7 +116,7 @@ const ShapeTable: React.FC<ShapeTableProps> = ({ modalCreate, handleCloseCreateM
     setDeleteShapeID(shape_uid)
     setOpenDeleteModal(true);
   }
-  const { mutate: submitDelete, isLoading: isLoadIngDelete, isSuccess } = useShapeDelete({ shape_uid: deleteShapeID });
+  const { mutate: submitDelete, isLoading: isLoadingDelete, isSuccess } = useShapeDelete({ shape_uid: deleteShapeID });
   const handleDeleteShape = () => {
     submitDelete({current_user_uid: currentUser.uid})
   }

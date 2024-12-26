@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { Box } from '@mui/material';
 import { usePathname } from 'next/navigation';
@@ -130,10 +130,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
         <Box 
           sx={{ 
             display        : 'flex',
-            backgroundColor: (theme) =>
-                theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: (theme) => theme.palette.radiance.main,
           }}
         >
           <TopBarComponent openDrawer={appMenuDrawer} handleDrawer={handleMenu} handleLogout={doLogout} isTitleVisible={isTitleVisible} title={title} />
@@ -141,10 +138,7 @@ const AppLayoutComponent: React.FC<AppLayoutProps> = ({ title, children }) => {
           <Box
             component = "main"
             sx        = {{
-              // backgroundColor: (theme) =>
-              //   theme.palette.mode === 'light'
-              //   ? theme.palette.grey[100]
-              //   :  theme.palette.grey[900],
+              // backgroundColor: theme.palette.grey[100],
     
               flexGrow     : 1,
               width        : '100%',

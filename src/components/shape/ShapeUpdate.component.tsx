@@ -9,6 +9,8 @@ import Shape from '@/types/Shape.type';
 import { useShapeUpdate } from '@/hooks/shape/use-update';
 import { ShapeUpdateRequest } from '@/services/shape/update';
 import ModalComponent from '../_general/molecules/Modal.component';
+import ModalConfirmComponent from '../_general/molecules/ModalConfirm.component';
+import ButtonComponent from '../_general/atoms/Button.component';
 
 interface ShapeUpdateProps {
   updateShape     : Shape,
@@ -19,6 +21,11 @@ interface ShapeUpdateProps {
 
 const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, resetPagination, handleCloseModal, modalOpen }) => {
 
+  const [openConfirmModal, setOpenConfirmModal] = React.useState(false);
+  const handleCloseConfirmModal                 = () => setOpenConfirmModal(false);
+  const handleOpenConfirmModal                  = () => {
+    setOpenConfirmModal(true);
+  }
   const currentUser: UserOnline = useTypedSelector(
     (state) => state.reducer.user.user,
   );
@@ -79,55 +86,63 @@ const ShapeUpdateComponent: React.FC<ShapeUpdateProps> = ({ updateShape, resetPa
         modalOnClose = {() => {handleCloseModal(); resetForm();}}
         isPermanent  = {false}
       >
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'column'}>
-            <>
-            <Controller
-              name    = "name"
-              control = {control}
-              rules   = {{ 
-                required: {
-                  value  : true,
-                  message: "Name fields is required"
-                },
-              }}
-              render  = { ({ 
-                  field     : { onChange, value },
-                  fieldState: { error },
-                  formState,
-                }) => (
-                <TextField            
-                  autoComplete = 'off'
-                  disabled     = {isLoadingUpdateShape}
-                  helperText   = {error ? error.message : " "}
-                  size         = "medium"
-                  error        = {!!error}
-                  onChange     = {onChange}
-                  type         = 'string'
-                  value        = {value}
-                  label        = {"Name"}
-                  variant      = "outlined"
-                  sx           = {{mb:1}}
-                  fullWidth
-                />
-                )
-              }
-            />
-            </>
+        <Stack direction={'column'}>
+          <>
+          <Controller
+            name    = "name"
+            control = {control}
+            rules   = {{ 
+              required: {
+                value  : true,
+                message: "Name field is required"
+              },
+            }}
+            render  = { ({ 
+                field     : { onChange, value },
+                fieldState: { error },
+                formState,
+              }) => (
+              <TextField            
+                autoComplete = 'off'
+                disabled     = {isLoadingUpdateShape}
+                helperText   = {error ? error.message : " "}
+                size         = "medium"
+                error        = {!!error}
+                onChange     = {onChange}
+                type         = 'string'
+                value        = {value}
+                label        = {"Name"}
+                variant      = "outlined"
+                sx           = {{mb:1}}
+                fullWidth
+              />
+              )
+            }
+          />
+          </>
 
-            <LoadingButtonComponent
-              buttonColor = 'primary'
-              type        = 'submit'
-              disabled    = {!isValid || !isDirty}
-              isLoading   = {isLoadingUpdateShape}
-              id          = 'shape_update_submit'
-              sx          = {{mt:1}}
-            >
-              SUBMIT
-            </LoadingButtonComponent>
-          </Stack>
-        </form>
+          <ButtonComponent
+            buttonColor = 'shadow'
+            onClick     = {handleOpenConfirmModal}
+            disabled    = {!isValid || !isDirty}
+            id          = 'shape-update-submit'
+            // type        = 'submit'
+            // sx          = {{mt:1}}
+          >
+            SUBMIT
+          </ButtonComponent>
+        </Stack>
       </ModalComponent>
+
+      <ModalConfirmComponent
+        modalId       = {'shape-update-confirm'}
+        modalOpen     = {openConfirmModal}
+        modalOnClose  = {handleCloseConfirmModal}
+        onConfirm     = {handleSubmit(onSubmit)}
+        modalText     = {'Are you sure want to do this action?'}
+        modalButton   = {'APPLY'}
+        buttonLoading = {isLoadingUpdateShape}
+      />
     </>
   )
 };
