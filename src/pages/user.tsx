@@ -18,7 +18,7 @@ const UserPage: NextPage = () => {
     <AppLayoutComponent title={'User'}>
       <HeaderPage title={'User'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          buttonColor = 'shadow'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

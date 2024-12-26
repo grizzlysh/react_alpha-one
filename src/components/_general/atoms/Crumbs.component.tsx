@@ -1,6 +1,6 @@
 import React from 'react';
 import { emphasize, styled } from '@mui/material/styles';
-import { Chip, Link as MUILink, Typography} from '@mui/material';
+import { Chip, Link as MUILink, Typography, useTheme} from '@mui/material';
 // import Chip from '@mui/joy/Chip'
 import Link from 'next/link';
 import HomeIcon from '@mui/icons-material/Home';
@@ -15,10 +15,7 @@ interface CrumbsProps {
 
 
 const StyledCrumb = styled(Chip)(({ theme }) => {
-  const backgroundColor =
-    theme.palette.mode === 'light'
-    ? theme.palette.grey[300]
-    : theme.palette.grey[800];
+  const backgroundColor = theme.palette.grey[300]
   return {
     // fontWeight        : theme.typography.fontWeightRegular,
     backgroundColor,
@@ -39,6 +36,7 @@ const StyledCrumb = styled(Chip)(({ theme }) => {
 
 const CrumbComponent: React.FC<CrumbsProps> = ({ linkRef, textDefault, textGenerator, last }) => {
 
+  const theme           = useTheme();
   const [text, setText] = React.useState(textDefault);
 
   React.useEffect( () => {
@@ -64,7 +62,7 @@ const CrumbComponent: React.FC<CrumbsProps> = ({ linkRef, textDefault, textGener
         // />
         
         <Typography
-          color  = "text.primary"
+          // color  = "text.primary"
           height = {24}
           sx     = {{
             display   : 'flex',
@@ -72,11 +70,10 @@ const CrumbComponent: React.FC<CrumbsProps> = ({ linkRef, textDefault, textGener
             lineHeight: 1.5,
             fontSize  : '1rem',
             fontWeight: 400,
-            color     : '#637381'
           }}
         >
           {/* <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" /> */}
-          {text == 'Dashboard' ? <HomeIcon sx={{ fontSize: "1rem" }} /> : text}
+          {text == 'Dashboard' ? <HomeIcon sx={{ fontSize: "1.25 rem", color : theme.palette.shadow.main }} /> : text}
         </Typography>
       :
         // <StyledCrumb
@@ -104,7 +101,7 @@ const CrumbComponent: React.FC<CrumbsProps> = ({ linkRef, textDefault, textGener
         >
           {/* <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" /> */}
           {/* {text} */}
-          {text == 'Dashboard' ? <HomeIcon sx={{ fontSize: "1rem"}} /> : text}
+          {text == 'Dashboard' ? <HomeIcon sx={{ fontSize: "1.25 rem", color : theme.palette.shadow.main }} /> : text}
         </MUILink>
     }
     </>

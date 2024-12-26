@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, Typography, Stack } from '@mui/material'
 
-import theme from '@/utils/theme';
 import BreadcrumbsComponent from '../molecules/Breadcrumbs.component';
+import { useTheme } from '@mui/material';
 
 interface HeaderPageProps {
   title   : string,
@@ -10,6 +10,8 @@ interface HeaderPageProps {
 }
 const HeaderPage: React.FC<HeaderPageProps> = ({ title, children }) => {
   
+  const theme = useTheme();
+
   return (
     <Stack flexDirection={"row"} alignItems={"center"} marginBottom={3}>
       <Stack flexDirection={"column"} flexGrow={1}>

@@ -11,7 +11,7 @@ import { Box, Button, Stack, TextField } from '@mui/material'
 import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid'
 import UserOnline from '@/types/UserOnline.type'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import ButtonComponent from '@/components/_general/atoms/Button.component'
 import ModalComponent from '@/components/_general/molecules/Modal.component';
 import ProfileUpdatePasswordComponent from '@/components/profile/ProfileUpdatePassword.component';
@@ -51,6 +51,7 @@ const ProfilePage: NextPage = () => {
             <Stack flexDirection={"column"} width={"50%"}>
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -59,12 +60,13 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -73,12 +75,13 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -87,9 +90,9 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
               {/* <Button 
                 fullWidth
@@ -115,6 +118,7 @@ const ProfilePage: NextPage = () => {
             <Stack flexDirection={"column"} width={"50%"}>
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -123,12 +127,13 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -137,12 +142,13 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
               <TextField            
                 fullWidth
+                disabled     = {true}
                 autoComplete = 'off'
                 size         = "medium"
                 type         = 'string'
@@ -151,9 +157,9 @@ const ProfilePage: NextPage = () => {
                 variant      = "outlined"
                 helperText   = {" "}
                 // sx           = {{mb:2}}
-                InputProps   = {{
-                  readOnly: true,
-                }}
+                // InputProps   = {{
+                //   readOnly: true,
+                // }}
               />
             </Stack>
           </Stack>

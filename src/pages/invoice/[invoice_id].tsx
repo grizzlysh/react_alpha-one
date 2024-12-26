@@ -4,29 +4,25 @@ import { useRouter } from 'next/router'
 
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'
-import RoleUpdateComponent from '@/components/role/RoleUpdatecomponent'
+import InvoiceUpdateComponent from '@/components/invoice/InvoiceUpdate.component'
 import { Box, Skeleton } from '@mui/material'
 
-const RoleUpdatePage: NextPage = () => {
+const InvoiceUpdatePage: NextPage = () => {
 
-  const router      = useRouter();
-  const { role_id } = router.query;
-  const role_uid    = role_id ? role_id.toString() : '';
-  
   return (
-    <AppLayoutComponent title={'Role Edit'}>
-      <HeaderPage title={'Role Edit'}/>
+    <AppLayoutComponent title={'Invoice Edit'}>
+      <HeaderPage title={'Invoice Edit'}/>
 
       {/* {
-        role_uid == '' ?
+        invoice_uid == '' ?
         <Skeleton>
           <Box width={'100%'} height={'100%'}></Box>
         </Skeleton>
         : */}
-        <RoleUpdateComponent updateRole={role_uid} />
+        <InvoiceUpdateComponent />
       {/* } */}
     </AppLayoutComponent>
   )
 }
 
-export default RoleUpdatePage;
+export default InvoiceUpdatePage;

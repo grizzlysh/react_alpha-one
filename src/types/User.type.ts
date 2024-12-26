@@ -1,5 +1,5 @@
 
-export default interface User{
+export default interface User {
   uid              : string,
   username         : string,
   name             : string,

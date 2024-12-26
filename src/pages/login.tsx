@@ -11,18 +11,18 @@ import { Button, CssBaseline, Box, Container, Stack, Typography, TextField, Avat
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import styles from '@/styles/Home.module.css'
-import theme from '@/utils/theme'
 import { useLogin } from '@/hooks/auth/use-login'
 import useRedirect from '@/hooks/other/use-redirect'
 import { LoginRequest } from '@/services/auth/login.service'
 import { useTypedSelector } from '@/hooks/other/use-type-selector'
 import PaperComponent from '@/components/_general/atoms/Paper.component'
 import LoadingButtonComponent from '@/components/_general/atoms/LoadingButton.component'
+import { useTheme } from '@mui/material';
 
 
 const LoginPage: NextPage = () => {
-  
+
+  const theme                           = useTheme();
   const [showPassword, setShowPassword] = React.useState(false);
   const accessToken                     = useTypedSelector(
     (state) => state.reducer.user.access_token,
@@ -150,7 +150,7 @@ const LoginPage: NextPage = () => {
                     rules   = {{ 
                       required: {
                         value  : true,
-                        message: "Username fields is required"
+                        message: "Username field is required"
                       },
                     }}
                     render  = { ({ 
@@ -161,7 +161,7 @@ const LoginPage: NextPage = () => {
                       <TextField
                         autoComplete = 'off'
                         helperText   = {error ? error.message : " "}
-                        color        = {'primary'}
+                        // color        = {'primary'}
                         size         = "medium"
                         error        = {!!error}
                         onChange     = {onChange}
@@ -182,7 +182,7 @@ const LoginPage: NextPage = () => {
                     rules   = {{ 
                       required: {
                         value  : true,
-                        message: "Password fields is required"
+                        message: "Password field is required"
                       },
                     }}
                     render  = { ({ 
@@ -194,7 +194,7 @@ const LoginPage: NextPage = () => {
                         fullWidth
                         autoComplete = 'off'
                         helperText   = {error ? error.message : " "}
-                        color        = {'primary'}
+                        // color        = {'primary'}
                         size         = "medium"
                         error        = {!!error}
                         onChange     = {onChange}
@@ -253,7 +253,7 @@ const LoginPage: NextPage = () => {
                     mr        : 1,
                     fontWeight: 200,
                     "&:hover" : {
-                      color         : theme.palette.primary.main,
+                      color: theme.palette.primary.main,
                     }
                   }}
                 >

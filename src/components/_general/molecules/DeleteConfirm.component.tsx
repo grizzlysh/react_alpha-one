@@ -4,20 +4,33 @@ import Fade from '@mui/material/Fade';
 import { Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Button, DialogProps } from '@mui/material';
 import ButtonComponent from '../atoms/Button.component';
 import InfoIcon from '@mui/icons-material/Info';
+import LoadingButtonComponent from '../atoms/LoadingButton.component';
 
 interface DeleteConfirmProps {
   modalOpen   : boolean,
   modalOnClose: () => void,
   onDelete    : () => void,
   modalId     : string,
+  buttonLoading: boolean,
 }
 
-const DeleteConfirmComponent: React.FC<DeleteConfirmProps> = ({modalOpen, modalOnClose, modalId, onDelete }: any) => {
+const DeleteConfirmComponent: React.FC<DeleteConfirmProps> = ({
+  modalOpen,
+  modalOnClose,
+  modalId,
+  onDelete,
+  buttonLoading,
+}: any) => {
 
   const handleOnClose: DialogProps["onClose"] = (event, reason) => {
     if (reason && reason === "backdropClick")
       return;
     modalOnClose()
+  }
+
+  const handleConfirm = () => {
+    onDelete();
+    modalOnClose();
   }
 
   return (
@@ -58,23 +71,42 @@ const DeleteConfirmComponent: React.FC<DeleteConfirmProps> = ({modalOpen, modalO
           Do you want to delete this record?
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions
+          sx={{
+            justifyContent : 'space-evenly'
+          }}
+        >
           
-            <Button 
-              id      = 'button-cancel'
-              color   = 'primary'
-              onClick = {modalOnClose}
-            >
-              Cancel
-            </Button>
-
             <ButtonComponent
+              key         = {'button-cancel'}
+              id          = {'button-cancel'}
+              buttonColor = {'shadow'}
+              onClick     = {modalOnClose}
+              style       = {{
+                width: '40%'
+              }}
+            >
+              CANCEL
+            </ButtonComponent>
+
+            {/* <ButtonComponent
               id          = 'button-delete'
-              onClick     = {onDelete}
+              onClick     = {handleConfirm}
               buttonColor = {'error'}
             >
               Delete
-            </ButtonComponent>
+            </ButtonComponent> */}
+            <LoadingButtonComponent
+              buttonColor = {'error'}
+              onClick     = {handleConfirm}
+              isLoading   = {buttonLoading}
+              id          = {modalId}
+              style       = {{
+                width: '40%'
+              }}
+            >
+              DELETE
+            </LoadingButtonComponent>
 
 
           {/* <Button onClick={modalOnClose}>Disagree</Button>

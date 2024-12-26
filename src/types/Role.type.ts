@@ -1,5 +1,5 @@
 
-export default interface Role{
+export default interface Role {
   uid         : string,
   name        : string,
   display_name: string,

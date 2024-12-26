@@ -1,7 +1,6 @@
 import React from 'react'
 import { NextPage } from 'next'
 
-import theme from '@/utils/theme'
 import ConComp from '@/components/_content'
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'

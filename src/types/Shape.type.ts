@@ -1,5 +1,5 @@
 
-export default interface Shape{
+export default interface Shape {
   uid         : string,
   name        : string,
   created_at  : Date | null,

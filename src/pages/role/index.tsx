@@ -14,7 +14,7 @@ const RolePage: NextPage = () => {
     <AppLayoutComponent title={'Role'}>
       <HeaderPage title={'Role'}>
         <LinkButtonComponent
-          buttonColor = 'primary'
+          buttonColor = 'shadow'
           startIcon   = {<AddIcon />}
           url         = {'/role/create'}
         >

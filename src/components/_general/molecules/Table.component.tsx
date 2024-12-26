@@ -3,7 +3,6 @@ import React, { Dispatch, SetStateAction } from 'react';
 import { DataGrid, GridColDef, GridRowsProp, GridSortModel } from '@mui/x-data-grid';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import theme from '@/utils/theme';
 
 interface TableProps {
   columnData    : readonly GridColDef<{}>[],

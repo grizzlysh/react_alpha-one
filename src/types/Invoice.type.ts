@@ -1,5 +1,21 @@
-
-export default interface Invoice{
+export interface InvoiceDetail {
+  uid             : string,
+  no_batch        : string,
+  expired_date    : Date | null,
+  qty_pcs         : number,
+  qty_box         : number,
+  price_box       : number,
+  total_price     : number,
+  discount        : number,
+  discount_nominal: number,
+  ppn             : number,
+  ppn_nominal     : number,
+  drugs           : {
+    uid : string,
+    name: string,
+  },
+}
+export default interface Invoice {
   uid          : string,
   no_invoice   : string,
   invoice_date : Date | null,
@@ -14,23 +30,7 @@ export default interface Invoice{
     name: string,
   },
   // detail_invoices: InvoiceDetail[],
-  detail_invoices : {
-    uid             : string,
-    no_batch        : string,
-    expired_date    : Date | null,
-    qty_pcs         : number,
-    qty_box         : number,
-    price_box       : number,
-    total_price     : number,
-    discount        : number,
-    discount_nominal: number,
-    ppn             : number,
-    ppn_nominal     : number,
-    drugs           : {
-      uid : string,
-      name: string,
-    },
-  }[],
+  detail_invoices : InvoiceDetail[],
   transaction_invoices : {
     uid       : string,
     pay_date  : Date | null,
@@ -60,12 +60,13 @@ export const initInvoice = () => {
       uid : '',
       name: '',
     },
-    created_at     : null,
-    updated_at     : null,
-    deleted_at     : null,
-    createdby      : null,
-    updatedby      : null,
-    deletedby      : null,
-    permission_role: [],
+    created_at          : null,
+    updated_at          : null,
+    deleted_at          : null,
+    createdby           : null,
+    updatedby           : null,
+    deletedby           : null,
+    detail_invoices     : [],
+    transaction_invoices: [],
   }
 }

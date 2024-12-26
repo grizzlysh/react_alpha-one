@@ -1,5 +1,5 @@
 
-export default interface Distributor{
+export default interface Distributor {
   uid           : string,
   name          : string,
   address       : string,

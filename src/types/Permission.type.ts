@@ -1,5 +1,5 @@
 
-export default interface Permission{
+export default interface Permission {
   uid         : string,
   name        : string,
   display_name: string,

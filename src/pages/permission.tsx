@@ -17,7 +17,7 @@ const PermissionPage: NextPage = () => {
     <AppLayoutComponent title={'Permission'}>
       <HeaderPage title={'Permission'}>     
         <ButtonComponent
-          buttonColor = 'primary'
+          // buttonColor = 'radiance'
           startIcon   = {<AddIcon />}
           onClick     = {handleOpenCreateModal}
         >

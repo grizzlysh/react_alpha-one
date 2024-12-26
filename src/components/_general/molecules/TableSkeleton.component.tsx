@@ -2,8 +2,6 @@ import React, { Dispatch, SetStateAction } from 'react';
 
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowsProp, GridSortModel } from '@mui/x-data-grid';
 import { Box, Skeleton } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import theme from '@/utils/theme';
 
 const TableSkeletonComponent: React.FC = () => {
 

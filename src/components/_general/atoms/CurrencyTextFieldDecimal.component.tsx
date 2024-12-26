@@ -18,7 +18,7 @@ const CurrencyTextFieldDecimalComponent: React.ForwardRefRenderFunction<HTMLInpu
       //   // console.log(REGEX_DECIMAL_ONLY.test(values.value) )
       //   // console.log(values.value)
       //   // return true;
-      //   return REGEX_DECIMAL_ONLY.test(values.value) || values.value == ""
+      //   return floatValue
       // }}
       onValueChange     = {(values) => 
       {

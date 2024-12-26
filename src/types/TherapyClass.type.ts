@@ -1,5 +1,5 @@
 
-export default interface TherapyClass{
+export default interface TherapyClass {
   uid         : string,
   name        : string,
   created_at  : Date | null,

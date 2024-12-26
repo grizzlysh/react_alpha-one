@@ -10,14 +10,17 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 
 import 'react-toastify/dist/ReactToastify.css';
-import { Box } from '@mui/material'
-import { ThemeProvider } from '@mui/material'
+// import { Box } from '@mui/material'
+// import { ThemeProvider } from '@mui/material'
 
-import theme from '@/utils/theme'
+// import { theme } from '@/utils/theme'
 import configs from '@/configs/config'
 import { store, persistor } from '@/stores/store';
 import { IS_DEVELOPMENT } from '@/configs/constant';
 import createEmotionCache from '@/utils/createEmotionCache'
+import { ThemeProvider } from '@mui/material'
+import { generateTheme } from '@/utils/theme'
+import { useState } from 'react'
 
 
 
@@ -43,6 +46,7 @@ export interface MyAppProps extends AppProps {
 // export default function App({ Component, pageProps }: AppProps) {
 export default function MyApp(props: MyAppProps) {
   const { Component, pageProps, emotionCache = clientSideEmotionCache } = props;
+  const theme                                                           = generateTheme('light');
 
   return (
     <Provider store={store}>

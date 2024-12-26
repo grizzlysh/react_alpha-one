@@ -1,6 +1,5 @@
 import { Roboto, Public_Sans } from 'next/font/google'
-import { createTheme } from '@mui/material'
-import { red } from '@mui/material/colors'
+import { createTheme, PaletteMode } from '@mui/material'
 
 export const publicSans = Public_Sans({
   weight  : ['300', '400', '500', '700'],
@@ -17,15 +16,38 @@ export const roboto = Roboto({
   fallback: ['Helvetica', 'Arial', 'sans-serif'],
 });
 
-// Create a theme instance.
-const theme = createTheme({
+export const generateTheme = (mode: PaletteMode) => {
+  return createTheme({
   components: {
     MuiTextField: {
       styleOverrides: {
         root: {
+          // '& .MuiOutlinedInput-root': {
+          //   borderRadius: 8,
+          //   // colors      : (theme) => theme.palette.mode == 'light' ? theme.palette.shadow: theme.palette.radiance,
+          // },
           '& .MuiOutlinedInput-root': {
             borderRadius: 8,
-          }
+            // '& fieldset': {
+            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
+            // },
+            // '&:hover fieldset': {
+            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
+            // },
+            // '&.Mui-focused fieldset': {
+            //   borderColor: mode === 'light' ? '#0A1106' : '#FFFDF7'
+            // },
+          },
+          // '& .MuiInputLabel-root': {
+          //   color: mode === 'light' ? '#cccccc' : '#FFFDF7'
+          // },
+          // '& .MuiInputBase-input': {
+          //   color: mode === 'light' ? '#0A1106' : '#FFFDF7'
+          // },
+          // '& .MuiInputLabel-root.Mui-focused': {
+          //   color: mode === 'light' ? '#0A1106' : '#FFFDF7',
+          // },
+          // color: (theme) => theme.palette.mode == 'light' ? theme.palette.shadow : theme.palette.radiance,
         }
       }
     },
@@ -69,8 +91,9 @@ const theme = createTheme({
     }
   },
   palette: {
+    mode: mode,
     primary: {
-      light       : '#7c8f73',
+      light       : '#EDF5E8',
       main        : '#5C7450',
       dark        : '#405138',
       contrastText: '#fff',
@@ -81,10 +104,29 @@ const theme = createTheme({
       dark        : '#2a2f53',
       contrastText: '#fff',
     },
+    // secondary: {
+    //   light       : '#DD9296',
+    //   main        : '#BA3B3F',
+    //   dark        : '#882d31',
+    //   contrastText: '#fff',
+    // },
+    shadow: { 
+      light       : '#32372F',
+      main        : '#0A1106',
+      dark        : '#1B2019',
+      contrastText: '#fff',
+    },
+    radiance: {
+      light       : '#FFFFFF',
+      main        : '#F6F5F3',
+      // main        : '#FBFBFF',
+      dark        : '#CCCAC4 ',
+      contrastText: '#000',
+    },
     error: {
-      light       : '#b1335a',
-      main        : '#9E0031',
-      dark        : '#6e0022',
+      light       : '#DD9296',
+      main        : '#BA3B3F',
+      dark        : '#882d31',
       contrastText: '#fff',
     },
     warning: {
@@ -111,7 +153,5 @@ const theme = createTheme({
   typography: {
     fontFamily: publicSans.style.fontFamily,
   },
-  
-});
-
-export default theme;
+})
+};

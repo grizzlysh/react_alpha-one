@@ -61,7 +61,7 @@ export const ruleDecimalOnlyWithLimit = (event: any, onChange: any, limit: numbe
   let regex = /^-?\d*[.]?\d{0,2}$/g;
 
   if(value === '' || regex.test(value)){ 
-    if(parseInt(value) >= limit){
+    if(parseFloat(value) >= limit){
       onChange(limit.toString())
     }
     else{

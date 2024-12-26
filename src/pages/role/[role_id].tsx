@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 
 import HeaderPage from '@/components/_general/organisms/HeaderPage.component'
 import AppLayoutComponent from '@/components/layout/AppLayout.component'
-import RoleUpdateComponent from '@/components/role/RoleUpdatecomponent'
+import RoleUpdateComponent from '@/components/role/RoleUpdate.component'
 import { Box, Skeleton } from '@mui/material'
 
 const RoleUpdatePage: NextPage = () => {

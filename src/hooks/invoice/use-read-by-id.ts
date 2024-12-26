@@ -14,7 +14,7 @@ export const useInvoiceReadByID = ({ invoice_uid }: useInvoiceReadByIDProps) => 
 
   return useQuery({
     queryKey : ['invoice-get-by-id'],
-    queryFn  : (payload) => api.getRoleByID(invoice_uid),
+    queryFn  : (payload) => api.getInvoiceByID(invoice_uid),
     enabled  : false,
     retry    : false,
     onSuccess: async (resp: SuccessResponse<InvoiceReadByIDResponse>) => {

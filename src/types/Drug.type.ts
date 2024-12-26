@@ -1,5 +1,5 @@
 
-export default interface Drug{
+export default interface Drug {
   uid        : string,
   name       : string,
   description: string | null,
